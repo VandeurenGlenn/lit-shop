@@ -1,0 +1,31 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "rollup.config.js",
+  "scripts": {
+    "build": "rollup -c",
+    "start": "node exports/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "firebase-admin": "^11.10.1",
+    "http-proxy": "^1.18.1",
+    "koa": "^2.14.2",
+    "koa-better-http-proxy": "^0.2.10",
+    "koa-compress": "^5.1.1",
+    "koa-proxy": "^1.0.0-alpha.3",
+    "koa-router": "^12.0.0",
+    "koa-static": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/http-proxy": "^1.17.11",
+    "@types/koa": "^2.13.8",
+    "@types/mime-types": "^2.1.1",
+    "mime-types": "^2.1.35"
+  }
+}
