@@ -174,7 +174,7 @@ export default class ImagesAlbum extends LitElement {
       </md-list>
     </flex-container>
     <md-fab variant="primary" label="add image" @click=${this.addImage}>
-      <csutom-icon slot="icon">add_a_photo</csutom-icon>
+      <custom-icon slot="icon">add_a_photo</custom-icon>
     </md-fab>
     ` : nothing
   }
