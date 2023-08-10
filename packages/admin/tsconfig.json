@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "module": "ESNext",
+    "target": "ESNext",
+    "outDir": "./www",
+    "moduleResolution":"nodenext",
+    "useDefineForClassFields": false,
+    "allowSyntheticDefaultImports": true,    
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "types": [
+      "@firebase/app",
+      "@firebase/database",
+      "@lit-shop/apis/imgur",
+      "@lit-shop/apis/imgur-base",
+      "@lit-shop/firebase-controller",
+      "lit",
+      "node",
+      "@vandeurenglenn/flex-elements",
+      "@vandeurenglenn/lit-elements/elements.js"
+    ]
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": ["./node_modules"]
+}

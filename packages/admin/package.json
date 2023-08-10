@@ -1,0 +1,58 @@
+{
+  "name": "admin",
+  "version": "1.0.1",
+  "description": "",
+  "scripts": {
+    "build": "wireit",
+    "serve": "jsproject --serve ./www --port 8081",
+    "watch": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "wireit": {
+    "build": {
+      "command": "rollup -c"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@lit-labs/context": "^0.3.3",
+    "@lit-shop/apis": "^1.0.0",
+    "@material/web": "^1.0.0-pre.12",
+    "@vandeurenglenn/custom-date": "^1.6.0",
+    "@vandeurenglenn/custom-elements": "^0.1.14",
+    "@vandeurenglenn/lit-elements": "^0.2.0",
+    "@vandeurenglenn/little-pubsub": "^1.4.4",
+    "cropperjs": "^1.5.13",
+    "custom-pages": "^0.12.1",
+    "custom-tabs": "^0.13.1",
+    "define-custom-element-decorator": "^0.0.9",
+    "dnm-smartcroppr": "^1.4.2",
+    "firebase": "^10.1.0",
+    "firebaseui": "^5.0.0",
+    "javascript-time-ago": "^2.5.9",
+    "lit": "^2.7.5",
+    "scoped-pubsub": "^1.0.3",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@lit-shop/translate": "^1.0.2",
+    "@material-symbols/svg-400": "^0.10.2",
+    "@rollup/plugin-commonjs": "^25.0.2",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-terser": "^0.4.3",
+    "@rollup/plugin-typescript": "^11.1.1",
+    "@types/uuid": "^9.0.2",
+    "@vandeurenglenn/project": "^0.2.0",
+    "lighthouse": "^11.0.0",
+    "puppeteer": "^21.0.0",
+    "rollup": "^3.25.3",
+    "rollup-plugin-css": "^1.0.10",
+    "rollup-plugin-material-symbols": "^2.1.1",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "wireit": "^0.9.5"
+  }
+}

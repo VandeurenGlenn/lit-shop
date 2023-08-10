@@ -1,0 +1,1 @@
+export { CustomPages } from '@vandeurenglenn/lit-elements/pages.js';
