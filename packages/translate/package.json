@@ -1,0 +1,35 @@
+{
+  "name": "@lit-shop/translate",
+  "version": "1.0.2",
+  "description": "",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./exports/translate.js",
+      "types": "./exports/translate.d.ts"
+    },
+    "./translate.js": {
+      "import": "./exports/translate.js",
+      "types": "./exports/translate.d.ts"
+    },
+    "./string": {
+      "import": "./exports/string.js",
+      "types": "./exports/string.d.ts"
+    },
+    "./string.js": {
+      "import": "./exports/string.js",
+      "types": "./exports/string.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "define-custom-element-decorator": "^0.0.9",
+    "lit": "^2.7.5"
+  }
+}
