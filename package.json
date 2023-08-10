@@ -1,0 +1,19 @@
+{
+  "name": "@lit-shop/monorepo",
+  "version": "1.0.0",
+  "description": "webshop using lit",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "chrome-launcher": "^1.0.0",
+    "lighthouse": "^11.0.0"
+  }
+}
