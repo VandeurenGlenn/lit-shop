@@ -1,0 +1,38 @@
+{
+  "name": "@lit-shop/apis",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "exports": {
+    "./device": {
+      "import": "./exports/device.js",
+      "types": "./exports/device.d.ts"
+    },
+    "./imgur-base": {
+      "import": "./exports/imgur-base.js",
+      "types": "./exports/imgur-base.d.ts"
+    },
+    "./imgur": {
+      "import": "./exports/imgur.js",
+      "types": "./exports/imgur/imgur.d.ts"
+    },
+    "./imgur-base.js": {
+      "import": "./exports/imgur-base.js",
+      "types": "./exports/imgur-base.d.ts"
+    },
+    "./imgur.js": {
+      "import": "./exports/imgur.js",
+      "types": "./exports/imgur/imgur.d.ts"
+    },
+    "./imgur/types": {
+      "types": "./exports/imgur/types.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
