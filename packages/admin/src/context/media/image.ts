@@ -1,7 +1,7 @@
 import {createContext} from '@lit-labs/context';
-import { firebaseImgurImage } from '@lit-shop/apis/imgur-base';
+import { imgurBaseImage } from '@lit-shop/apis/imgur-base';
 
-declare type Image = firebaseImgurImage
+declare type Image = imgurBaseImage
 
 export type { Image }
 

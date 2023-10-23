@@ -1,8 +1,8 @@
 import {createContext} from '@lit-labs/context';
-import { Image } from './image.js';
+import { imgurBaseImage } from '@lit-shop/apis/imgur-base';
 
-declare type Images = Image[]
+declare type Images = imgurBaseImage[]
 
-export type { Images, Image }
+export type { Images, imgurBaseImage as Image }
 
 export const ImagesContext = createContext<Images>('images');

@@ -2,7 +2,7 @@
 import { LitElement, css, html, render } from 'lit';
 import '@material/web/fab/fab.js'
 import '@material/web/icon/icon.js'
-import '@material/web/iconbutton/standard-icon-button.js'
+import '@material/web/iconbutton/icon-button.js'
 import '@material/web/button/text-button.js'
 import '@material/web/textfield/filled-text-field.js'
 import { property } from 'lit/decorators.js';
@@ -135,9 +135,9 @@ export default class ImagesImage extends LitElement {
 
     <flex-container center-center>
       <flex-row>
-        <md-standard-icon-button @click=${() => history.back()}>
+        <md-icon-button @click=${() => history.back()}>
           <custom-icon>arrow_back</custom-icon>
-        </md-standard-icon-button>
+        </md-icon-button>
         <flex-it></flex-it>
         <custom-dropdown-menu right>
           <custom-list-item variant="primary" label="edit" @click=${this.editImage}>

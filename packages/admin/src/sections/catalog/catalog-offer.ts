@@ -3,12 +3,11 @@ import { property, query } from 'lit/decorators.js';
 import { customElement } from 'define-custom-element-decorator'
 import { Offer, OfferContext } from '../../context/offer.js';
 import { consume } from '@lit-labs/context';
+import { controller as firebaseController } from '@lit-shop/firebase-controller';
 
 import '@vandeurenglenn/custom-date';
 import '../../elements/input-fields/input-field.js'
 import '../../elements/input-fields/input-fields.js'
-
-import '@material/web/iconbutton/standard-icon-button.js'
 import '@material/web/icon/icon.js'
 import '@vandeurenglenn/lit-elements/dropdown-menu.js'
 import '@vandeurenglenn/lit-elements/icon-font.js'
@@ -18,11 +17,12 @@ import '@vandeurenglenn/lit-elements/pages.js'
 import './../../elements/time/time-ago.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@material/web/fab/fab.js'
-import './../images/images-dialog.js'
+import './../../elements/dialog/image-selector-dialog.js'
 import './../../elements/image-editor/image-editor.js'
 
 import { map } from 'lit/directives/map.js';
 import { CustomPages } from './../../types.js'
+import { ref, set } from 'firebase/database';
 
 @customElement()
 export default class CatalogOffer extends LitElement {
@@ -42,11 +42,13 @@ export default class CatalogOffer extends LitElement {
   offer: Offer
 
   get #dialog() {
-    return this.shadowRoot.querySelector('images-dialog')
+    return this.shadowRoot.querySelector('image-selector-dialog')
   }
 
   async addImage( ) {
     const {action, fields, image} = await this.#dialog.addImage()
+    console.log(action, image);
+    
     if (action === 'submit') {
       let result = []
       if (image.type === 'base64[]') {
@@ -67,6 +69,7 @@ export default class CatalogOffer extends LitElement {
         })]
       } else if (image.type === 'library') {
 console.log('from lib');
+        result = [await api.getImage(image.data)]
 
       } else {
        result = [await api.addImage({
@@ -76,10 +79,15 @@ console.log('from lib');
           image: image.data as string
         })]
       }
+
+      if (!this.offer.images) this.offer.images = []
       
       for (const item of result) {
+        console.log(item);
+        this.offer.images.push(item.link)
         // this.album.images.push(item)
       }
+      this.#save()
       
       this.requestUpdate('offer') 
     }
@@ -99,7 +107,16 @@ console.log('from lib');
       super.willUpdate(_changedProperties)
     }
   }
-  
+  #save = async () => {
+    const _ref = ref(firebaseController.database, `offers/${this.offer.key}`)
+    try {
+      await set(_ref, this.offer)
+    } catch (error) {
+      console.error(error);
+      
+    }
+  }
+
   render() {
     return html`
 <style>
@@ -176,7 +193,7 @@ console.log('from lib');
     right: 24px;
   }
 </style>
-<images-dialog has-library></images-dialog>
+<image-selector-dialog has-library></image-selector-dialog>
 <flex-row class="action-bar">
   <custom-selector attr-for-selected="label" @selected=${({detail}) => this.pages.select(detail)} default-selected="general">
     <custom-button label="general">general</custom-button>
@@ -186,11 +203,12 @@ console.log('from lib');
   <flex-it></flex-it>
 
   <custom-dropdown-menu right class="action-menu">
-    <custom-list-item>
-      <span slot="start"><custom-icon>save</custom-icon></span>
-      <span slot="end">
-        save
-      </span>
+    <custom-list-item @click=${this.#save}>
+      <span slot="start">
+        <custom-icon>save</custom-icon></span>
+        <span slot="end">
+          save
+        </span>
       
     </custom-list-item>
 
@@ -218,7 +236,9 @@ console.log('from lib');
   <section route="images">
     <flex-container>
       <flex-wrap-center>
-        ${map(this.images, image => html``)}
+        ${map(this.offer?.images, image => html`
+        <img src=${`${location.origin}/api/image?image=${image}`}>
+        `)}
       </flex-wrap-center>
     </flex-container>
     <md-fab variant="primary" label="add image" @click=${this.addImage}>

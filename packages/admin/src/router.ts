@@ -71,7 +71,7 @@ export default class Router {
       tag: 'catalog-products'
     },
     '/catalog/categories': {
-      tag: 'top-categories'
+      tag: 'categories-section'
     },
     '/catalog/offers': {
       tag: 'catalog-offers'

@@ -1,6 +1,5 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js'
-import '@material/web/list/list-item-link.js'
 
 import {CustomDrawerItem} from '@vandeurenglenn/lit-elements/drawer-item.js'
 

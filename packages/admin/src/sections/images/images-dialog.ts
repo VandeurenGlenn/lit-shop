@@ -1,7 +1,7 @@
 import { LitElement, html, css, render, nothing } from 'lit';
 import { customElement } from 'define-custom-element-decorator';
 import '@material/web/dialog/dialog.js'
-import '@material/web/button/tonal-button.js'
+import '@material/web/button/filled-tonal-button.js'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js';
 import '@material/web/textfield/outlined-text-field.js';
 import {imgurAlbumParams} from '@lit-shop/apis/imgur/types';
@@ -189,7 +189,7 @@ export class ImagesDialog extends LitElement {
         item.setAttribute('noninteractive', '')
         item.innerHTML = `
           <img data-variant="icon" slot="start" src="${data}">
-          <md-standard-icon-button slot="end"><custom-icon>delete</custom-icon></md-standard-icon-button>
+          <md-icon-button slot="end"><custom-icon>delete</custom-icon></md-icon-button>
         `
         item.onclick=() => {
           this.shadowRoot.querySelector('section[route="file"]').removeChild(item)
@@ -220,7 +220,7 @@ export class ImagesDialog extends LitElement {
   #addImageTemplate() {
     return html`
 
-    <custom-tabs slot="header" attr-for-selected="route" @selected=${this.#onSelected}>
+    <custom-tabs slot="headline" attr-for-selected="route" @selected=${this.#onSelected}>
       <custom-tab route="url">
         <md-icon>link</md-icon>
         <span>url</span>
@@ -267,72 +267,72 @@ export class ImagesDialog extends LitElement {
       <flex-row class="camera-actions"> 
         <flex-it flex="2"></flex-it>
         
-        <md-standard-icon-button @click=${() => this.#cameraFacingMode = 'user'} ?disabled=${this.frontCameraDisabled}>
+        <md-icon-button @click=${() => this.#cameraFacingMode = 'user'} ?disabled=${this.frontCameraDisabled}>
           <md-icon>photo_camera_front</md-icon>
-        </md-standard-icon-button>
+        </md-icon-button>
         
         <flex-it flex="1"></flex-it>
         
-        <md-standard-icon-button style="transform: scale(1.66);" @click=${this.#takePhoto}>
+        <md-icon-button style="transform: scale(1.66);" @click=${this.#takePhoto}>
           <md-icon>photo_camera</md-icon>
-        </md-standard-icon-button>
+        </md-icon-button>
 
         <flex-it flex="1"></flex-it>
 
-        <md-standard-icon-button @click=${() => this.#cameraFacingMode = 'environment'} ?disabled=${async () => !await this.deviceApi.hasBackCam()}>
+        <md-icon-button @click=${() => this.#cameraFacingMode = 'environment'} ?disabled=${async () => !await this.deviceApi.hasBackCam()}>
           <md-icon>photo_camera_back</md-icon>
-        </md-standard-icon-button>
+        </md-icon-button>
 
         <flex-it flex="2"></flex-it>
       </flex-row>
     </section>
 
     <section route="file">
-      <md-tonal-button @click=${this.#selectFile}>
+      <filled-tonal-button @click=${this.#selectFile}>
         <md-icon slot="icon">upload</md-icon>
         select
-      </md-tonal-button>
+      </filled-tonal-button>
     </section>
   </custom-pages>
   
   <flex-row slot="footer">
-    <md-text-button dialog-action="cancel">cancel</md-text-button>
+    <md-text-button value="cancel">cancel</md-text-button>
     <flex-one></flex-one>
-    <md-text-button dialog-action="submit">submit</md-text-button>
+    <md-text-button value="submit">submit</md-text-button>
   </flex-row>
     `
   }
 
   #areYouSureDialogTemplate(deletehash, type: string = 'album') {
     return html`
-    <flex-row slot="header">
+    <flex-row slot="headline">
       <h5>remove ${type}</h5>
       <flex-one></flex-one>        
-      <md-standard-icon-button dialog-action="close">
+      <md-icon-button value="close">
         <custom-icon>close</custom-icon>
-      </md-standard-icon-button>
+      </md-icon-button>
     </flex-row>
 
-    <flex-column>
+    <form id="content-form" slot="content">
       <strong>Are you sure you want to remove <span class="deletehash" deletehash=${deletehash}>${deletehash}</span>?</strong>
-    </flex-column>
+    </form>
 
-    <flex-row slot="footer">
-      <md-text-button dialog-action="cancel">cancel</md-text-button>
+    <flex-row slot="actions">
+      <md-text-button form="content-form" value="cancel">cancel</md-text-button>
       <flex-one></flex-one>
-      <md-text-button dialog-action="submit">submit</md-text-button>
+      <md-text-button form="content-form" value="submit">submit</md-text-button>
     </flex-row>
     `
   }
 
   #createAlbumDialogTemplate() {
     return html`
-    <flex-row slot="header">
+    <flex-row slot="headline">
       <h5>create album</h5>
       <flex-one></flex-one>        
-      <md-standard-icon-button dialog-action="close">
+      <md-icon-button value="close">
         <custom-icon>close</custom-icon>
-      </md-standard-icon-button>
+      </md-icon-button>
     </flex-row>
 
     <flex-column>
@@ -341,15 +341,17 @@ export class ImagesDialog extends LitElement {
     </flex-column>
 
     <flex-row slot="footer">
-      <md-text-button dialog-action="submit">cancel</md-text-button>
+      <md-text-button value="submit">cancel</md-text-button>
       <flex-one></flex-one>
-      <md-text-button dialog-action="submit">submit</md-text-button>
+      <md-text-button value="submit">submit</md-text-button>
     </flex-row>
     `  
   }
 
   #onAction = (): Promise<actionResult> => new Promise((resolve, reject) => {
     const action = ({detail}) => {
+      console.log({detail});
+      
       const inputFields = Array.from(this.renderRoot.querySelectorAll('[input-field]')) as MdFilledTextField[]
       const fields = {}
 
@@ -386,15 +388,15 @@ export class ImagesDialog extends LitElement {
 
   #busytemplate(title, description) {
     return html`
-      <flex-row slot="header">
+      <flex-row slot="headline">
         <h5>${title}</h5>
       </flex-row>
 
-      <flex-column>
+      <flex-column slot="content">
         ${description}
       </flex-column>
 
-      <flex-row style="justify-content: center; width: 100%;">
+      <flex-row slot="actions" style="justify-content: center; width: 100%;">
         <md-circular-progress indeterminate></md-circular-progress>
       </flex-row>
     `  
@@ -402,60 +404,60 @@ export class ImagesDialog extends LitElement {
 
   #removeOriginalTemplate() {
     return html`
-    <flex-row slot="header">
+    <flex-row slot="headline">
       <h5>Keep the original</h5>
       <flex-one></flex-one>        
-      <md-standard-icon-button dialog-action="close">
+      <md-icon-button value="close">
         <custom-icon>close</custom-icon>
-      </md-standard-icon-button>
+      </md-icon-button>
     </flex-row>
 
-    <flex-column>
+    <flex-column slot="content">
       <strong>Keep or remove the original image?</strong>
     </flex-column>
 
-    <flex-row slot="footer">
-      <md-text-button dialog-action="remove">remove</md-text-button>
+    <flex-row slot="actions">
+      <md-text-button value="remove">remove</md-text-button>
       <flex-one></flex-one>
-      <md-text-button dialog-action="close">keep</md-text-button>
+      <md-text-button value="close">keep</md-text-button>
     </flex-row>
     `  
   }
 
   async createAlbum(): Promise<actionResult> {
     render(this.#createAlbumDialogTemplate(), this.#dialog)
-    this.#dialog.open = true
+    this.#dialog.show()
     return this.#onAction()
   }
 
     // @ts-ignore
   async removeAlbum(deletehash): Promise<actionResult> {
     render(this.#areYouSureDialogTemplate(deletehash), this.#dialog)
-    this.#dialog.open = true
+    this.#dialog.show()
     return this.#onAction()
   }
 
   async addImage() {
     render(this.#addImageTemplate(), this.#dialog)
-    this.#dialog.open = true
+    this.#dialog.show()
     return this.#onAction() 
   }
 
   async removeImage(deletehash): Promise<actionResult> {
     render(this.#areYouSureDialogTemplate(deletehash, 'image'), this.#dialog)
-    this.#dialog.open = true
+    this.#dialog.show()
     return this.#onAction()
   }
 
   async removeOriginal() {
     render(this.#removeOriginalTemplate(), this.#dialog)
-    this.#dialog.open = true
+    this.#dialog.show()
     return this.#onAction()
   }
 
   async busy(title, description?) {
     render(this.#busytemplate(title, description), this.#dialog)
-    this.#dialog.open = true
+    this.#dialog.show()
   }
 
   close() {

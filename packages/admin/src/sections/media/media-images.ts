@@ -1,8 +1,6 @@
 
 import styles from './images.css.js'
 import { LitElement, html, nothing } from 'lit';
-import 'custom-tabs/custom-tab.js'
-import 'custom-tabs/custom-tabs.js'
 import { property } from 'lit/decorators.js';
 
 

@@ -2,7 +2,7 @@
 import { LitElement, css, html, render } from 'lit';
 import '@material/web/fab/fab.js'
 import '@material/web/icon/icon.js'
-import '@material/web/iconbutton/standard-icon-button.js'
+import '@material/web/iconbutton/icon-button.js'
 import '@material/web/dialog/dialog.js'
 import '@material/web/button/text-button.js'
 import '@material/web/textfield/filled-text-field.js'
@@ -99,9 +99,9 @@ export default class ImagesAlbums extends LitElement {
           map(this.albums, (album: imgurBaseAlbum) => html`
             <md-list-item headline="${album.title?.length > 31 ? `${album.title.slice(0, 31)}...` : album.title}" @click=${(event) => this.#onclick(event, album.firebaseKey)}>
               <flex-one></flex-one>
-              <md-standard-icon-button data-variant="icon" slot="end" @click=${(event) => event.cancelBubble = true && this.removeAlbum(album.deletehash, album.firebaseKey)}>
+              <md-icon-button data-variant="icon" slot="end" @click=${(event) => event.cancelBubble = true && this.removeAlbum(album.deletehash, album.firebaseKey)}>
                 <custom-icon>delete</custom-icon>
-              </md-standard-icon-button>
+              </md-icon-button>
             </md-list-item> 
           `)
         }

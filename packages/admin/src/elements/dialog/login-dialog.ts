@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js'
 import '@material/web/dialog/dialog.js'
 import '@material/web/button/text-button.js'
-import '@material/web/iconbutton/standard-icon-button.js'
+import '@material/web/iconbutton/icon-button.js'
 import '@material/web/icon/icon.js'
 import '@material/web/textfield/outlined-text-field.js'
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
@@ -129,9 +129,9 @@ export class LoginDialog extends LitElement {
     </custom-pages>
 
     ${this.selected === 'mail' ? html`
-    <md-standard-icon-button slot="footer" @click=${this.signinWithEmail} dialog-action="signin">
+    <md-icon-button slot="footer" @click=${this.signinWithEmail} dialog-action="signin">
       <custom-icon>done</custom-icon>
-    </md-standard-icon-button>` : nothing}
+    </md-icon-button>` : nothing}
     
     </md-dialog>
 

@@ -2,7 +2,7 @@
 import { LitElement, css, html, nothing, render } from 'lit';
 import '@material/web/fab/fab.js'
 import '@material/web/icon/icon.js'
-import '@material/web/iconbutton/standard-icon-button.js'
+import '@material/web/iconbutton/icon-button.js'
 import '@material/web/button/text-button.js'
 import '@material/web/textfield/filled-text-field.js'
 import { property } from 'lit/decorators.js';
@@ -137,9 +137,9 @@ export default class ImagesAlbum extends LitElement {
 
     <flex-container>
       <flex-row center>
-        <md-standard-icon-button @click=${() => history.back()}>
+        <md-icon-button @click=${() => history.back()}>
           <custom-icon>arrow_back</custom-icon>
-        </md-standard-icon-button>
+        </md-icon-button>
         <h4>${this.album.title}</h4>
         <flex-it></flex-it>
         <custom-dropdown-menu right @selected=${this.onselected}>
@@ -165,9 +165,9 @@ export default class ImagesAlbum extends LitElement {
           map(this.album.images, (image: imgurBaseImage) => html`
             <md-list-item headline="${image.title?.length > 31 ? `${image.title.slice(0, 31)}...` : image.title}" @click=${async () => location.hash = `/#!/media/images/image?selected=${await api.lookup(image.id)}`}>
               <flex-one></flex-one>
-              <md-standard-icon-button data-variant="icon" slot="end" @click=${(event) => this.removeImage(image)}>
+              <md-icon-button data-variant="icon" slot="end" @click=${(event) => this.removeImage(image)}>
                 <custom-icon>delete</custom-icon>
-              </md-standard-icon-button>
+              </md-icon-button>
             </md-list-item> 
           `)
         : nothing}

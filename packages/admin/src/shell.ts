@@ -223,8 +223,13 @@ export default class AdminShell extends LitElement {
           break
         case 'offer':
           // load offers only when undefined
-          if (!this.offers) this.offers = await (await fetch('/api/offers')).json()
-          this.offer = this.offers[selection]
+          promises.push((async () => {
+            this.images = await api.getImages()
+          })(),
+          (async () => {
+            if (!this.offers) this.offers = await (await fetch('/api/offers')).json()
+            this.offer = this.offers[selection]
+          })())
           break
         case 'image':
           promises.push((async () => {
