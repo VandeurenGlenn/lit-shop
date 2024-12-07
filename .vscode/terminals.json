@@ -1,0 +1,27 @@
+{
+  "autorun": true,
+  "terminals": [
+    {
+      "name": "command",
+      "description": "The command terminal",
+      "focus": true,
+      "persist": true
+    },
+    {
+      "name": "admin",
+      "commands": [
+        "cd packages/admin",
+        "npm run watch"
+      ]
+    },
+    {
+      "name": "server",
+      "commands": [
+        "cd packages/server",
+        "npm run build",
+        "npm run start"
+      ]
+    }
+   
+  ]
+}
