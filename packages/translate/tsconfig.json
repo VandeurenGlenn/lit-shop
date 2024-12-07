@@ -1,22 +1,14 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "module": "ESNext",
-    "target": "ESNext",
+    "module": "NodeNext",
+    "target": "ES2020",
     "outDir": "./exports",
-    "moduleResolution":"nodenext",
-    "useDefineForClassFields": false,
-    "allowSyntheticDefaultImports": true,    
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
-    "experimentalDecorators": true,
     "declaration": true,
     "emitDeclarationOnly": true,
     "rootDir": "./src",
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
-  "include": [
-    "./src/**/*"
-  ]
+  "include": ["./src/**/*"]
 }

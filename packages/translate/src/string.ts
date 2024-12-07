@@ -1,21 +1,19 @@
-import { translate } from './translate.js'
-import { customElement } from 'define-custom-element-decorator'
+import { translate } from './translate.js';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'translate-string': TranslateString
+    'translate-string': TranslateString;
   }
 }
 
-@customElement()
 export class TranslateString extends HTMLElement {
   static get attributeChangedCallback() {
     return ['value'];
   }
-  
+
   set value(value) {
     this.setAttribute('value', value);
-    this._translate(value)
+    this._translate(value);
   }
 
   get value() {
@@ -23,11 +21,11 @@ export class TranslateString extends HTMLElement {
   }
 
   set translate(value) {
-    this.setAttribute('translate', String(value))
+    this.setAttribute('translate', String(value));
   }
 
   get translate(): boolean {
-    return this.getAttribute('translate') !== 'false'
+    return this.getAttribute('translate') !== 'false';
   }
 
   constructor() {
@@ -35,15 +33,15 @@ export class TranslateString extends HTMLElement {
   }
 
   async _translate(string: string) {
-    if (this.translate) this.innerHTML = await translate(String(this.value))
+    if (this.translate) this.innerHTML = await translate(String(this.value));
   }
 
   attributeChangedCallback(name, old, value) {
-    if (old !== value) this[name] = value
+    if (old !== value) this[name] = value;
   }
 
   connectedCallback() {
-    if (!this.value && this.innerHTML) this.value = this.innerHTML
+    if (!this.value && this.innerHTML) this.value = this.innerHTML;
   }
-
 }
+customElements.define('translate-string', TranslateString);

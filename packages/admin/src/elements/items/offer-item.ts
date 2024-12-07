@@ -1,45 +1,45 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js'
-import '@material/web/list/list-item.js'
-import '@material/web/icon/icon.js'
-import '@material/web/iconbutton/filled-icon-button.js'
-import '@vandeurenglenn/lit-elements/icon-font.js'
+import {
+  customElement,
+  property,
+  html,
+  css,
+  LiteElement,
+} from '@vandeurenglenn/lite';
+import '@material/web/icon/icon.js';
+import '@material/web/iconbutton/filled-icon-button.js';
 
 @customElement('offer-item')
-export class OfferItem extends LitElement {
+export class OfferItem extends LiteElement {
+  @property({ type: Boolean, reflect: true })
+  accessor draggable: boolean = true;
 
   @property({ type: String, reflect: true })
-  draggable: boolean = true;
+  accessor key: string;
+
+  @property({ type: String })
+  accessor name: string;
 
   @property({ type: String, reflect: true })
-  key: string;
-
-  @property({ type: String, reflect: true })
-  name: string;
-
-  @property({ type: String, reflect: true })
-  public: string;
+  accessor public: string;
 
   async connectedCallback() {
-    super.connectedCallback()
-    this.ondragstart = this.#ondragstart.bind(this)
-    await this.updateComplete
+    this.ondragstart = this.#ondragstart.bind(this);
   }
 
   #ondragstart(event) {
-    event.dataTransfer.setData("text", this.key);
+    event.dataTransfer.setData('text', this.key);
   }
 
-  #publicClicked(event) {
+  private _publicClicked(event) {
     console.log('click');
-    event.stopImmediatePropagation()
-    event.stopPropagation()
-    const bool = this.public === 'true'
-    this.public = String(!bool)
+    event.stopImmediatePropagation();
+    event.stopPropagation();
+    const bool = this.public === 'true';
+    this.public = String(!bool);
     console.log(this.public);
     console.log(this.key);
-    
-    firebase.database().ref(`offers/${this.key}/public`).set(this.public)
+
+    firebase.database().ref(`offers/${this.key}/public`).set(this.public);
   }
 
   static styles = [
@@ -47,29 +47,22 @@ export class OfferItem extends LitElement {
       :host {
         display: block;
         pointer-events: auto;
+        background: var(--md-sys-color-surface-variant);
+        padding: 12px 24px;
+        box-sizing: border-box;
+        border-radius: var(--md-sys-shape-corner-large);
       }
 
-      custom-icon-font[public] {
+      custom-icon[public] {
         --custom-icon-color: #4caf50;
-      }
-
-      custom-icon-font {
-        pointer-events: auto;
-        text-decoration: none;
-      }
-
-      md-list-item-link {
-        --md-list-item-link-icon-color: #4caf50;
-        text-decoration: none;
       }
 
       a {
         display: flex;
         align-items: center;
         text-decoration: none;
-        color: initial;
-        padding: 8px 24px 8px 16px;
-        box-sizing: border-box;
+
+        color: var(--md-sys-color-on-surface-variant);
       }
 
       .body {
@@ -80,15 +73,20 @@ export class OfferItem extends LitElement {
         width: 100%;
         min-width: 0;
       }
-    `
+    `,
   ];
 
   render() {
     return html`
-    <a href="#!/catalog/offer?selected=${this.key}">  
-      <span class="body">${this.name}</span>
-      <custom-icon slot="end" ?public=${this.public === 'true'} @click=${this.#publicClicked}>public</custom-icon>
-    </a>
+      <a href="#!/catalog/offer?selected=${this.key}">
+        <span class="body">${this.name}</span>
+        <custom-icon
+          slot="end"
+          ?public=${this.public === 'true'}
+          @click=${this._publicClicked}
+          icon="public"
+        ></custom-icon>
+      </a>
     `;
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@lit-shop/translate",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "type": "module",
   "exports": {
@@ -29,7 +29,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "define-custom-element-decorator": "^0.0.9",
-    "lit": "^2.7.5"
+    "@vandeurenglenn/lite": "^0.2.36",
+    "lit": "^3.1.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.13.0",
+    "tslib": "^2.6.2"
   }
 }

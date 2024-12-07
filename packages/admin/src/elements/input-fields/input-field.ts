@@ -1,39 +1,46 @@
-import { LitElement, PropertyValueMap, html } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
-import '@material/web/field/outlined-field.js'
+import {
+  LiteElement,
+  customElement,
+  property,
+  query,
+  html,
+} from '@vandeurenglenn/lite';
+import '@material/web/field/outlined-field.js';
 
-import '@vandeurenglenn/lit-elements/typography.js'
+import '@vandeurenglenn/lite-elements/typography.js';
+import '@lit-shop/translate/string.js';
+import { StyleList, css } from '@vandeurenglenn/lite/element';
 
 @customElement('input-field')
-export class InputField extends LitElement {
+export class InputField extends LiteElement {
   @query('input')
-  input
-
-  @property({type: String})
-  name
+  accessor input;
 
   @property({ type: String })
-  value
+  accessor name;
+
+  @property({ type: String })
+  accessor value;
 
   @property({ type: Boolean, attribute: 'is-check-box', reflect: true })
-  isCheckbox: boolean
+  accessor isCheckbox: boolean;
 
-  protected willUpdate(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
-    if (_changedProperties.has('value')) {
-      this.isCheckbox = this.value === 'false' || this.value === 'true'
+  onChange(propertyKey: string, value: any) {
+    if (propertyKey === 'value') {
+      this.isCheckbox = this.value === 'false' || this.value === 'true';
     }
   }
 
-  #oninput = () => {
-    this.value = this.input.value
-  }
+  private _oninput = () => {
+    this.value = this.input.value;
+  };
 
   get event() {
-    return this.getAttribute('event') || 'event.offers'
+    return this.getAttribute('event') || 'event.offers';
   }
 
-  render() {
-    return html`<style>
+  static styles?: StyleList = [
+    css`
       :host {
         display: flex;
         flex-direction: column;
@@ -45,11 +52,10 @@ export class InputField extends LitElement {
         flex-direction: row;
         align-items: center;
       }
-      
+
       input {
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
-                    0 1px 5px 0 rgba(0, 0, 0, 0.12),
-                    0 3px 1px -2px rgba(0, 0, 0, 0.2);
+          0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
         border: 1px solid #38464e;
 
         padding: 12px 24px;
@@ -62,20 +68,29 @@ export class InputField extends LitElement {
       input {
         margin-top: 12px;
       }
-    </style>
-    <custom-typography type="label" size="large">
-      <translated-string>${this.name}</translated-string>
-    </custom-typography>
-    
-    ${this.isCheckbox ?
-      html`
-        <flex-it></flex-it>
-        <custom-toggle-button>
-          <custom-icon>check_box</custom-icon>
-          <custom-icon>check_box_outline_blank</custom-icon>
-        </custom-toggle-button>` :
-      html`<input type="text" value=${this.value} name=${this.name} @input=${this.#oninput}>`}
-    
-    `
+    `,
+  ];
+
+  render() {
+    return this.name
+      ? html`
+          <custom-typography type="label" size="large">
+            <translated-string>${this.name}</translated-string>
+          </custom-typography>
+
+          ${this.isCheckbox
+            ? html` <flex-it></flex-it>
+                <custom-toggle-button
+                  togglers='["check_box", "check_box_outline_blank"]'
+                >
+                </custom-toggle-button>`
+            : html`<input
+                type="text"
+                value=${this.value}
+                name=${this.name}
+                @input=${this._oninput}
+              />`}
+        `
+      : html``;
   }
 }

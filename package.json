@@ -9,11 +9,16 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "@vandeurenglenn/flex-elements"
+    ]
+  },
   "devDependencies": {
-    "chrome-launcher": "^1.0.0",
-    "lighthouse": "^11.0.0"
+    "chrome-launcher": "^1.1.1",
+    "lighthouse": "^11.7.0"
   }
 }

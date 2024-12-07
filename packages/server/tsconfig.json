@@ -1,23 +1,18 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "module": "ESNext",
+    "module": "NodeNext",
     "target": "ESNext",
     "outDir": "./www",
-    "moduleResolution":"nodenext",
+    "moduleResolution": "nodenext",
     "useDefineForClassFields": false,
-    "allowSyntheticDefaultImports": true,    
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "types": [
-      "node",
-      "koa"
-    ]
+    "types": ["node", "koa"]
   },
-  "include": [
-    "./src/**/*"
-  ],
+  "include": ["./src/**/*"],
   "exclude": ["./node_modules"]
 }

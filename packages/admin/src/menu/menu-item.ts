@@ -1,37 +1,39 @@
-import { LitElement, html, css, nothing } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js'
+import {
+  customElement,
+  property,
+  query,
+  html,
+  css,
+} from '@vandeurenglenn/lite';
 
-import {CustomDrawerItem} from '@vandeurenglenn/lit-elements/drawer-item.js'
+import { CustomDrawerItem } from '@vandeurenglenn/lite-elements/drawer-item.js';
+import { CustomSelector } from '@vandeurenglenn/lite-elements/selector';
+import '@lit-shop/translate/string.js';
 
 @customElement('menu-item')
 export class MenuItem extends CustomDrawerItem {
   @property({ type: String })
-  headline: string
-  
+  accessor headline: string;
+
   @property({ type: String, reflect: true })
-  route: string
+  accessor route: string;
 
   @property({ type: Boolean })
-  noninteractive: boolean = false
+  accessor noninteractive: boolean = false;
 
   @query('a')
-  private _anchor: HTMLAnchorElement
+  accessor _anchor: HTMLAnchorElement;
 
   async connectedCallback(): Promise<void> {
-    super.connectedCallback()
-    await this.updateComplete
-    if (this.noninteractive) return
+    if (this.noninteractive) return;
 
-    if (!this.route) this.route = this.headline
+    if (!this.route) this.route = this.headline;
 
-    this._anchor.href = `#!/${this.route}`
+    this._anchor.href = `#!/${this.route}`;
   }
 
   static styles = [
-
-    super.styles,
     css`
-
       a {
         text-transform: capitalize;
         cursor: pointer;
@@ -44,26 +46,20 @@ export class MenuItem extends CustomDrawerItem {
         width: 100%;
         text-decoration: none;
       }
-
-
-
-      :host([selected]) {
-        background: #eee;
-        color: #616161;
-        --svg-icon-color: #616161;
-      }
-    `
-  ]
+    `,
+    ...CustomSelector.styles,
+    ...super.styles,
+  ];
 
   render() {
-    return this.headline ? html`
-      <a>
-          <slot name="start" slot="icon"></slot>
-          <slot name="middle">
+    return html`
+      ${this.headline
+        ? html`<a>
+            <slot name="start" slot="icon"></slot>
             <translated-string>${this.headline}</translated-string>
-          </slot>
-          <slot name="end" slot="end"></slot>
-      </a>
-    ` : nothing
+            <slot name="end" slot="end"></slot>
+          </a>`
+        : ''}
+    `;
   }
 }

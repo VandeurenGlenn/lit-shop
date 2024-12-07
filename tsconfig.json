@@ -13,5 +13,15 @@
       "node",
       "@vandeurenglenn/lite-elements/elements.js"
     ]
-  }
+  },
+  "include": [
+    "*",
+    "@vandeurenglenn/flex-elements",
+    "../../node_modules/@vandeurenglenn/flex-elements",
+    "node_modules/@vandeurenglenn/flex-elements",
+    "@vandeurenglenn/lite-elements",
+    "../../node_modules/@vandeurenglenn/lite-elements",
+    "node_modules/@vandeurenglenn/lite-elements"
+  ],
+  "exclude": ["./node_modules"]
 }

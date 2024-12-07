@@ -26,6 +26,9 @@
     },
     "./imgur/types": {
       "types": "./exports/imgur/types.d.ts"
+    },
+    "./imgur/types.js": {
+      "types": "./exports/imgur/types.d.ts"
     }
   },
   "scripts": {

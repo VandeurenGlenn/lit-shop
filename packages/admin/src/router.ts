@@ -11,8 +11,8 @@ export declare type Route = {
 
 /**
  * @example
- * 
- *  
+ *
+ *
     'catalog/offer': {
       tag: 'catalog-offer',
       options: {
@@ -20,9 +20,9 @@ export declare type Route = {
       }
 
     }
- * 
+ *
  */
-export declare type Routes = {[key: string]: Route}
+export declare type Routes = { [key: string]: Route }
 
 class Selectable extends HTMLElement {
   constructor(parameters) {
@@ -34,15 +34,13 @@ class Selectable extends HTMLElement {
    * url('/path/path/path?selected=selection')
    * const paths = ['path', 'path', 'path']
    * const selection = url.searchParams.get('selected')
-   * 
+   *
    * select(paths, selection)
-   * 
+   *
    * @param paths []string
    * @param selection string
    */
-  select(paths: string[], selection: string, route: string, routeInfo?: Route) {
-
-  }
+  select(paths: string[], selection: string, route: string, routeInfo?: Route) {}
 }
 
 export default class Router {
@@ -67,11 +65,14 @@ export default class Router {
     '/media/videos/library': {
       tag: 'videos-library'
     },
+    '/media': {
+      tag: 'media-section'
+    },
     '/catalog/products': {
       tag: 'catalog-products'
     },
     '/catalog/categories': {
-      tag: 'categories-section'
+      tag: 'catalog-categories'
     },
     '/catalog/offers': {
       tag: 'catalog-offers'
@@ -80,7 +81,13 @@ export default class Router {
       tag: 'catalog-product'
     },
     '/catalog/offer': {
-      tag: 'catalog-offer',
+      tag: 'catalog-offer'
+    },
+    '/catalog/add-offer': {
+      tag: 'catalog-add-offer'
+    },
+    '/catalog': {
+      tag: 'catalog-section'
     },
     '/orders/order': {
       tag: 'top-order'
@@ -95,25 +102,23 @@ export default class Router {
       tag: 'add-offer'
     },
     '/settings': {
-      tag: 'settings-section',
-      import: 'settings'
+      tag: 'settings-section'
     }
   }
-  
+
   constructor(host: Selectable) {
     this.host = host
 
     globalThis.onhashchange = () => {
       const hash = location.hash
       const url = new URL(hash.split('#!/')[1], location.origin)
-      
+
       // for (const e of  url.searchParams.entries()) {
       //   console.log(e);
       // }
       const routeInfo = Router.routes[url.pathname]
       const paths = url.pathname.split('/')
       paths.shift()
-      
 
       const selection = url.searchParams.get('selected')
       const selected = paths.join('/')
@@ -124,7 +129,4 @@ export default class Router {
     // @ts-ignore
     onhashchange()
   }
-
-
-  
 }

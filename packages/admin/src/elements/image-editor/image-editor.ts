@@ -1,29 +1,23 @@
-
-import { customElement, property } from 'lit/decorators.js'
-import { css, html } from '@vandeurenglenn/lit-elements/helpers.js';
+import { customElement, LiteElement, css, html, property } from '@vandeurenglenn/lite'
 
 import Cropper from './../../../../../node_modules/cropperjs/dist/cropper.esm.js'
 
 export declare type ImageEditorAction = 'done' | 'cancel'
 @customElement('image-editor')
-export class ImageEditor extends HTMLElement {
-
+export class ImageEditor extends LiteElement {
   cropper: Cropper
-  
+
+  @property({ type: Boolean, reflect: true }) accessor open
+
   set image(value) {
     this.cropper.replace(value)
-  }
-
-  set open(value) {
-    if (value) this.setAttribute('open', '')
-    else this.removeAttribute('open')
   }
 
   toDataURL() {
     return this.cropper.getCroppedCanvas().toDataURL()
   }
 
-  show(image: string): Promise<{action: ImageEditorAction, image?: string}> {
+  show(image: string): Promise<{ action: ImageEditorAction; image?: string }> {
     if (image) this.image = image
     this.open = true
     return new Promise((resolve, reject) => {
@@ -32,28 +26,16 @@ export class ImageEditor extends HTMLElement {
         const action = target.getAttribute('action') as ImageEditorAction
         if (action) {
           let image
-          if (action === 'done') image = this.toDataURL()
           this.open = false
-          resolve({action, image})
+          if (action === 'done') image = this.toDataURL()
+          resolve({ action, image })
         }
       }
       this.shadowRoot.querySelector('.actions').addEventListener('click', onclick)
     })
   }
 
-  constructor() {
-    super()
-    this.attachShadow({mode: 'open'})
-    this.shadowRoot.innerHTML = this.render()
-
-    const sheets = []
-    for (const style of ImageEditor.styles) {
-      const sheet = new CSSStyleSheet()
-      sheet.replaceSync(style)
-      sheets.push(sheet)
-    }
-    this.shadowRoot.adoptedStyleSheets = sheets
-
+  connectedCallback() {
     this.cropper = new Cropper(this.shadowRoot.querySelector('img'), {
       ready: function (event) {
         // this.cropper.zoomTo(1)
@@ -64,13 +46,12 @@ export class ImageEditor extends HTMLElement {
       zoom: function (event) {
         // Keep the image in its natural size
         if (event.detail.oldRatio === 1) {
-          event.preventDefault();
+          event.preventDefault()
         }
       }
     })
   }
 
-  
   static styles = [
     css`
       :host {
@@ -94,7 +75,8 @@ export class ImageEditor extends HTMLElement {
         pointer-events: none;
       }
 
-      :host([open]), :host([open]) ::slotted(*) {
+      :host([open]),
+      :host([open]) ::slotted(*) {
         pointer-events: auto;
         opacity: 1;
       }
@@ -117,7 +99,7 @@ export class ImageEditor extends HTMLElement {
 
       img {
         display: block;
-      
+
         /* This rule is very important, please don't ignore this */
         max-width: 100%;
       }
@@ -131,26 +113,36 @@ export class ImageEditor extends HTMLElement {
         padding: 12px 12px;
       }
     `
-  ];
+  ]
 
   render() {
     return html`
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.css">
-    <span class="scrim"></span>
-    <flex-container padding="0">
-      <img id="cropper">
-
-      
-    </flex-container>
-    <flex-row class="actions">
-        <custom-button label="cancel" type="elevated" action="close">
-          <custom-icon slot="icon">close</custom-icon>
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.css" />
+      <span class="scrim"></span>
+      <flex-container padding="0">
+        <img id="cropper" />
+      </flex-container>
+      <flex-row class="actions">
+        <custom-button
+          label="cancel"
+          type="elevated"
+          action="close">
+          <custom-icon
+            slot="icon"
+            icon="close"></custom-icon>
         </custom-button>
         <flex-it></flex-it>
-        <custom-button label="done" type="tonal" action="done">
-          <custom-icon slot="icon">done</custom-icon>
+        <custom-button
+          label="done"
+          type="tonal"
+          action="done">
+          <custom-icon
+            slot="icon"
+            icon="done"></custom-icon>
         </custom-button>
       </flex-row>
-    `;
+    `
   }
 }
