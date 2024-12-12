@@ -3,13 +3,12 @@ import { map } from 'lit/directives/map.js'
 import '@material/web/list/list.js'
 import '@vandeurenglenn/lite-elements/list.js'
 import '@vandeurenglenn/lite-elements/list-item.js'
-import '../../elements/items/offer-item.js'
-import { Offers, OffersContext } from '../../context/offers.js'
+import '../../elements/items/product-item.js'
 
 @customElement('catalog-products')
 export class CatalogProducts extends LiteElement {
   @property({ type: Object, consumes: 'products' })
-  accessor products: Offers
+  accessor products
 
   constructor() {
     super()
@@ -29,7 +28,7 @@ export class CatalogProducts extends LiteElement {
       console.log(data)
       const node = this.shadowRoot.querySelector(`[data-route="${data}"]`)
       console.log(node)
-      const clone = document.createElement('offer-item')
+      const clone = document.createElement('product-item')
       console.log(target)
 
       console.log(target.index === node.index)
@@ -44,11 +43,11 @@ export class CatalogProducts extends LiteElement {
       clone.dataset.route = node.dataset.route
 
       console.log(event)
-      const items = Array.from(this.querySelectorAll('offer-item'))
+      const items = Array.from(this.querySelectorAll('product-item'))
 
       items.forEach(async (item, i) => {
         item.index = i
-        await firebase.database().ref(`offers/${item.key}/index`).set(i)
+        await firebase.database().ref(`products/${item.key}/index`).set(i)
       })
       this.requestRender()
 
@@ -63,17 +62,17 @@ export class CatalogProducts extends LiteElement {
     const target = e.composedPath()[0]
     console.log(e)
 
-    if (target.localName === 'offer-item') {
+    if (target.localName === 'product-item') {
       this.selected = target.dataset.route
-      this.offer = this.offers[this.selected]
-      globalThis.adminGo('offer', this.selected)
+      this.product = this.products[this.selected]
+      globalThis.adminGo('product', this.selected)
     }
   }
 
   _onFabClick(event) {
     event.preventDefault()
     event.stopImmediatePropagation()
-    location.hash = '#!/catalog/add-offer'
+    location.hash = '#!/catalog/add-product'
   }
 
   static styles = [
@@ -157,13 +156,13 @@ export class CatalogProducts extends LiteElement {
         ${this.products
           ? map(
               Object.entries(this.products).sort((a, b) => a[1].index - b[1].index),
-              ([key, offer]) => html`
-                <offer-item
-                  .name=${offer.name}
+              ([key, product]) => html`
+                <product-item
+                  .name=${product.name}
                   .key=${key}
-                  .index=${offer.index}
-                  .public=${offer.public}
-                  data-route=${key}></offer-item>
+                  .index=${product.index}
+                  .public=${product.public}
+                  data-route=${key}></product-item>
               `
             )
           : ''}

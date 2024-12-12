@@ -7,7 +7,11 @@ import {
   signInWithEmailAndPassword as _signInWithEmailAndPassword,
   isSignInWithEmailLink as _isSignInWithEmailLink,
   signInWithEmailLink as _signInWithEmailLink,
-  updatePassword as _updatePassword
+  updatePassword as _updatePassword,
+  User,
+  signInWithPopup as _signInWithPopup,
+  GoogleAuthProvider,
+  getRedirectResult
 } from 'firebase/auth'
 import {
   get as _get,
@@ -25,15 +29,21 @@ import {
   onChildChanged as _onChildChanged
 } from 'firebase/database'
 import { getStorage, ref as fileref, uploadBytes as _uploadBytes, getDownloadURL } from 'firebase/storage'
+
 const firebaseConfig = {
-  apiKey: 'AIzaSyASfmIWBP0bBdwd3uIWT9cxkaTV6DsncZE',
-  authDomain: 'poho-app-8dce1.firebaseapp.com',
-  projectId: 'poho-app',
-  storageBucket: 'poho-app.appspot.com',
-  messagingSenderId: '878719433981',
-  appId: '1:878719433981:web:8bbc0d0bb355da551b9294',
-  measurementId: 'G-7C3T5W3P3D',
-  databaseURL: 'https://poho-app-default-rtdb.europe-west1.firebasedatabase.app/'
+  apiKey: 'AIzaSyAUTqcR0LQMOP1wQk3yh4x4QIaMAe6KSuQ',
+  authDomain: 'hello-new-me.firebaseapp.com',
+  databaseURL: 'https://hello-new-me-default-rtdb.europe-west1.firebasedatabase.app',
+  projectId: 'hello-new-me',
+  storageBucket: 'hello-new-me.firebasestorage.app',
+  messagingSenderId: '108028336132',
+  appId: '1:108028336132:web:d49e8ec6020408c77cfd51',
+  measurementId: 'G-3SJ2QVZH3T'
+}
+
+const actionCodeSettings = {
+  url: 'https://hellonewme.be/index.html',
+  handleCodeInApp: true
 }
 
 export type FirebaseDatabaseFormat = object | any[] | number | string | boolean
@@ -61,7 +71,28 @@ const remove = async (path: string): Promise<void> => _remove(ref(database, path
 
 const update = async (path: string, value: any): Promise<void> => _update(ref(database, path), value)
 
-const signInWithEmailAndPassword = (email, password) => _signInWithEmailAndPassword(auth, email, password)
+export const signInWithEmailAndPassword = (email, password) => _signInWithEmailAndPassword(auth, email, password)
+
+export const signinWithGoogle = async () => {
+  const provider = new GoogleAuthProvider()
+  provider.addScope('email')
+  provider.addScope('profile')
+
+  const result = await _signInWithPopup(auth, provider)
+
+  if (result) {
+    // This is the signed-in user
+    const user = result.user
+    console.log({ user })
+
+    // This gives you a Google Access Token.
+    const credential = GoogleAuthProvider.credentialFromResult(result)
+    const token = credential.accessToken
+
+    return user
+  }
+  return undefined
+}
 
 const login = async () => {}
 
@@ -73,9 +104,32 @@ let userDefaultPage
 
 let isUserReady
 
-const userReady = new Promise((resolve) => (isUserReady = resolve))
+let userReady: Promise<User>
 
-const auth = await getAuth(app)
+const createUserReady = async () => {
+  isUserReady = undefined
+  userReady = new Promise((resolve) => (isUserReady = resolve))
+}
+export const auth = await getAuth(app)
+
+createUserReady()
+
+auth.onAuthStateChanged(async (user) => {
+  console.log('auth state changed', user)
+
+  if (user) {
+    userDetails = user
+    userRoles = await get(`users/${user.uid}/roles`)
+    userDefaultPage = await get(`users/${user.uid}/defaultPage`)
+    isUserReady(user)
+  } else {
+    isUserReady(undefined)
+    createUserReady()
+    userDetails = undefined
+    userRoles = undefined
+    userDefaultPage = undefined
+  }
+})
 
 const onChildAdded = (target, cb) => {
   _onChildAdded(ref(database, target), cb)
@@ -86,11 +140,6 @@ const onChildRemoved = (target, cb) => {
 
 const onChildChanged = (target, cb) => {
   _onChildChanged(ref(database, target), cb)
-}
-
-const actionCodeSettings = {
-  url: 'https://pohoapp.web.app/index.html',
-  handleCodeInApp: true
 }
 
 const sendSignInLinkToEmail = (email) => _sendSignInLinkToEmail(auth, email, actionCodeSettings)

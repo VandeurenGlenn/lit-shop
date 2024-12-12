@@ -11,20 +11,21 @@ import { routes as adminRoutes } from './admin/routes.js'
 import { constants } from 'zlib'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAgSXxNo6LSsBHxa4El3MWbPjqfDgcD0h0',
-  authDomain: 'topveldwinkel.firebaseapp.com',
-  databaseURL: 'https://topveldwinkel.firebaseio.com',
-  projectId: 'topveldwinkel',
-  storageBucket: 'topveldwinkel.appspot.com',
-  messagingSenderId: '467877680173',
-  appId: '1:467877680173:web:1781bc21aadaef72'
+  apiKey: 'AIzaSyAUTqcR0LQMOP1wQk3yh4x4QIaMAe6KSuQ',
+  authDomain: 'hello-new-me.firebaseapp.com',
+  databaseURL: 'https://hello-new-me-default-rtdb.europe-west1.firebasedatabase.app',
+  projectId: 'hello-new-me',
+  storageBucket: 'hello-new-me.firebasestorage.app',
+  messagingSenderId: '108028336132',
+  appId: '1:108028336132:web:d49e8ec6020408c77cfd51',
+  measurementId: 'G-3SJ2QVZH3T'
 }
 
 const app = initializeApp(firebaseConfig)
 
 const database = getDatabase(app)
 
-const offersRef = ref(database, '/offers')
+const productsRef = ref(database, '/products')
 
 const categoriesRef = ref(database, '/categories')
 
@@ -32,27 +33,28 @@ const onValue = (ref, callback) => {
   _onValue(ref, (snapshot) => callback)
 }
 
-const transformOffers = (offers) => {
-  for (const key of Object.keys(offers)) {
-    offers[key].key = key
+const transformProducts = (products) => {
+  for (const key of Object.keys(products)) {
+    products[key].key = key
   }
-  return offers
+  return products
 }
 
 const CACHE_TIME = 30000
 
 const cache = new Map()
 
-const getOffers = async () => {
-  if (cache.has('offers') && cache.get('offers').timestamp + CACHE_TIME > new Date().getTime()) {
+const getProducts = async () => {
+  if (cache.has('products') && cache.get('products').timestamp + CACHE_TIME > new Date().getTime()) {
     console.log('from cache')
 
-    return cache.get('offers').value
+    return cache.get('products').value
   }
-  const items = await (await get(offersRef)).val()
+  const items = await (await get(productsRef)).val()
 
-  cache.set('offers', {
-    value: transformOffers(items),
+  if (!items) return []
+  cache.set('products', {
+    value: transformProducts(items),
     timestamp: new Date().getTime()
   })
   console.log('fresh')
@@ -69,7 +71,7 @@ const getCategories = async () => {
   const items = (await (await get(categoriesRef)).val()) || []
 
   cache.set('categories', {
-    value: transformOffers(items),
+    value: transformProducts(items),
     timestamp: new Date().getTime()
   })
   console.log('fresh')
@@ -93,12 +95,12 @@ router.get('/api/categories', async (ctx) => {
   ctx.body = await getCategories()
 })
 
-router.get('/api/offers', async (ctx) => {
-  ctx.body = await getOffers()
+router.get('/api/products', async (ctx) => {
+  ctx.body = await getProducts()
 })
 
 router.get('/api/admin/images', async (ctx) => {
-  ctx.body = await getOffers()
+  ctx.body = await getProducts()
 })
 
 const routes = router.routes()

@@ -15,11 +15,12 @@ import './menu/menu.js'
 import template from './shell.html.js'
 import styles from './shell.css.js'
 
+import { auth } from './firebase.js'
+
 globalThis.translate = translate
 globalThis.pubsub = globalThis.pubsub || new PubSub()
 
 declare global {
-  var firebase
   var litShop: {
     contextProviders?: { [index: string]: any }
   }
@@ -40,9 +41,9 @@ export class AdminShell extends LiteElement {
 
   @property({ provides: true }) accessor image
 
-  @property({ provides: true }) accessor offers
+  @property({ provides: true }) accessor products
 
-  @property({ provides: true }) accessor offer
+  @property({ provides: true }) accessor product
 
   @property({ provides: true }) accessor categories
 
@@ -79,33 +80,25 @@ export class AdminShell extends LiteElement {
     }
   }
 
-  connectedCallback() {
+  async firstRender(): Promise<void> {
     const setupApi = async () => {
       const importee = await import('./api.js')
       const Api = importee.default
       globalThis.api = new Api()
     }
 
-    ;(async () => {
-      firebaseController.auth.onAuthStateChanged(async (user) => {
-        this.user = user
-        if (!this.user) await this.#login()
-        else {
-          const token = firebaseController.auth.currentUser.getIdToken()
-          if (!globalThis.api) {
-            await setupApi()
-            this.router = new Router(this)
+    auth.onAuthStateChanged(async (user) => {
+      console.log(user)
 
-            globalThis.litShop = globalThis.litShop || {}
-            litShop.contextProviders = litShop.contextProviders || {
-              images: this,
-              albums: this
-            }
-          }
-        }
-      })
-    })()
+      this.user = user
+      if (!this.user) await this.#login()
+      else {
+        await setupApi()
+        this.router = new Router(this)
+      }
+    })
   }
+
   async #login() {
     this.loading = false
     return new Promise(async (resolve, reject) => {
@@ -163,22 +156,22 @@ export class AdminShell extends LiteElement {
             })()
           )
           break
-        case 'offers':
+        case 'products':
           promises.push(
             (async () => {
-              this.offers = await (await fetch('/api/offers')).json()
+              this.products = await (await fetch('/api/products')).json()
             })()
           )
           break
-        case 'offer':
-          // load offers only when undefined
+        case 'product':
+          // load products only when undefined
           promises.push(
             (async () => {
               this.images = await api.getImages()
             })(),
             (async () => {
-              if (!this.offers) this.offers = await (await fetch('/api/offers')).json()
-              this.offer = this.offers[selection]
+              if (!this.products) this.products = await (await fetch('/api/products')).json()
+              this.product = this.products[selection]
             })()
           )
           break

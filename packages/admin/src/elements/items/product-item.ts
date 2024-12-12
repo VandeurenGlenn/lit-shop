@@ -1,45 +1,39 @@
-import {
-  customElement,
-  property,
-  html,
-  css,
-  LiteElement,
-} from '@vandeurenglenn/lite';
-import '@material/web/icon/icon.js';
-import '@material/web/iconbutton/filled-icon-button.js';
+import { customElement, property, html, css, LiteElement } from '@vandeurenglenn/lite'
+import '@material/web/icon/icon.js'
+import '@material/web/iconbutton/filled-icon-button.js'
 
-@customElement('offer-item')
-export class OfferItem extends LiteElement {
+@customElement('product-item')
+export class ProductItem extends LiteElement {
   @property({ type: Boolean, reflect: true })
-  accessor draggable: boolean = true;
+  accessor draggable: boolean = true
 
   @property({ type: String, reflect: true })
-  accessor key: string;
+  accessor key: string
 
   @property({ type: String })
-  accessor name: string;
+  accessor name: string
 
   @property({ type: String, reflect: true })
-  accessor public: string;
+  accessor public: string
 
   async connectedCallback() {
-    this.ondragstart = this.#ondragstart.bind(this);
+    this.ondragstart = this.#ondragstart.bind(this)
   }
 
   #ondragstart(event) {
-    event.dataTransfer.setData('text', this.key);
+    event.dataTransfer.setData('text', this.key)
   }
 
   private _publicClicked(event) {
-    console.log('click');
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-    const bool = this.public === 'true';
-    this.public = String(!bool);
-    console.log(this.public);
-    console.log(this.key);
+    console.log('click')
+    event.stopImmediatePropagation()
+    event.stopPropagation()
+    const bool = this.public === 'true'
+    this.public = String(!bool)
+    console.log(this.public)
+    console.log(this.key)
 
-    firebase.database().ref(`offers/${this.key}/public`).set(this.public);
+    firebase.database().ref(`products/${this.key}/public`).set(this.public)
   }
 
   static styles = [
@@ -73,20 +67,19 @@ export class OfferItem extends LiteElement {
         width: 100%;
         min-width: 0;
       }
-    `,
-  ];
+    `
+  ]
 
   render() {
     return html`
-      <a href="#!/catalog/offer?selected=${this.key}">
+      <a href="#!/catalog/product?selected=${this.key}">
         <span class="body">${this.name}</span>
         <custom-icon
           slot="end"
           ?public=${this.public === 'true'}
           @click=${this._publicClicked}
-          icon="public"
-        ></custom-icon>
+          icon="public"></custom-icon>
       </a>
-    `;
+    `
   }
 }

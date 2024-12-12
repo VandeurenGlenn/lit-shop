@@ -29,12 +29,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@vandeurenglenn/lite": "^0.2.36",
-    "lit": "^3.1.2"
+    "@vandeurenglenn/lite": "^0.2.52",
+    "lit": "^3.2.1"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^11.1.6",
-    "rollup": "^4.13.0",
-    "tslib": "^2.6.2"
+    "@rollup/plugin-typescript": "^12.1.1",
+    "rollup": "^4.28.1",
+    "tslib": "^2.8.1"
   }
 }

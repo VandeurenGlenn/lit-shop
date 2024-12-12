@@ -13,17 +13,17 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "firebase-admin": "^12.0.0",
+    "firebase-admin": "^13.0.1",
     "http-proxy": "^1.18.1",
-    "koa": "^2.15.2",
+    "koa": "^2.15.3",
     "koa-better-http-proxy": "^0.2.10",
     "koa-compress": "^5.1.1",
     "koa-proxy": "^1.0.0-alpha.3",
-    "koa-router": "^12.0.1",
+    "koa-router": "^13.0.1",
     "koa-static": "^5.0.0"
   },
   "devDependencies": {
-    "@types/http-proxy": "^1.17.14",
+    "@types/http-proxy": "^1.17.15",
     "@types/koa": "^2.15.0",
     "@types/mime-types": "^2.1.4",
     "mime-types": "^2.1.35"

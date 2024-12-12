@@ -27,6 +27,7 @@ export default html`
       <span name="save">@symbol-save</span>
       <span name="done">@symbol-check</span>
       <span name="mail">@symbol-mail</span>
+      <span name="link">@symbol-link</span>
       <span name="arrow_back">@symbol-arrow_back</span>
       <span name="keyboard_arrow_right">@symbol-keyboard_arrow_right</span>
       <span name="keyboard_arrow_down">@symbol-keyboard_arrow_down</span>
@@ -49,10 +50,6 @@ export default html`
         <menu-item
           headline="categories"
           route="catalog/categories"></menu-item>
-
-        <menu-item
-          headline="offers"
-          route="catalog/offers"></menu-item>
 
         <menu-item
           headline="products"

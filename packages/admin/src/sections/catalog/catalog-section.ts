@@ -20,11 +20,10 @@ export class CatalogSection extends LiteElement {
   render() {
     return html`
       <custom-pages attr-for-selected="route">
-        <catalog-offers route="offers"></catalog-offers>
-        <catalog-offer route="offer"></catalog-offer>
-        <catalog-add-offer route="add-offer"></catalog-add-offer>
-        <catalog-categories route="categories"></catalog-categories>
         <catalog-products route="products"></catalog-products>
+        <catalog-product route="product"></catalog-product>
+        <catalog-add-product route="add-product"></catalog-add-product>
+        <catalog-categories route="categories"></catalog-categories>
       </custom-pages>
     `
   }

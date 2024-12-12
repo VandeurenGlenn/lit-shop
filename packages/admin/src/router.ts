@@ -13,8 +13,8 @@ export declare type Route = {
  * @example
  *
  *
-    'catalog/offer': {
-      tag: 'catalog-offer',
+    'catalog/product': {
+      tag: 'catalog-product',
       options: {
         hideHeader: true
       }
@@ -68,23 +68,18 @@ export default class Router {
     '/media': {
       tag: 'media-section'
     },
+
+    '/catalog/add-product': {
+      tag: 'catalog-add-product'
+    },
     '/catalog/products': {
       tag: 'catalog-products'
     },
     '/catalog/categories': {
       tag: 'catalog-categories'
     },
-    '/catalog/offers': {
-      tag: 'catalog-offers'
-    },
     '/catalog/product': {
       tag: 'catalog-product'
-    },
-    '/catalog/offer': {
-      tag: 'catalog-offer'
-    },
-    '/catalog/add-offer': {
-      tag: 'catalog-add-offer'
     },
     '/catalog': {
       tag: 'catalog-section'
@@ -94,12 +89,6 @@ export default class Router {
     },
     '/collections/collection': {
       tag: 'top-collection'
-    },
-    '/catalog/products/add-product': {
-      tag: 'add-product'
-    },
-    '/catalog/offers/add-offer': {
-      tag: 'add-offer'
     },
     '/settings': {
       tag: 'settings-section'
@@ -125,7 +114,7 @@ export default class Router {
       // if (history.state !== selected) history.pushState({selected}, selected, `#!/${selection ? `${selected}?selected=${selection}` : selected}`);
       this.host.select(paths, selection, routeInfo)
     }
-    if (!location.hash) location.hash = '#!/catalog/offers'
+    if (!location.hash) location.hash = '#!/catalog/products'
     // @ts-ignore
     onhashchange()
   }

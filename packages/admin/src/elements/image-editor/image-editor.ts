@@ -1,6 +1,7 @@
 import { customElement, LiteElement, css, html, property } from '@vandeurenglenn/lite'
 
 import Cropper from './../../../../../node_modules/cropperjs/dist/cropper.esm.js'
+import '@vandeurenglenn/flex-elements/container.js'
 
 export declare type ImageEditorAction = 'done' | 'cancel'
 @customElement('image-editor')
@@ -39,8 +40,7 @@ export class ImageEditor extends LiteElement {
     this.cropper = new Cropper(this.shadowRoot.querySelector('img'), {
       ready: function (event) {
         // this.cropper.zoomTo(1)
-
-        this.cropper.zoom(-0.05)
+        // this.cropper.zoom(-0.05)
       },
 
       zoom: function (event) {
@@ -95,6 +95,7 @@ export class ImageEditor extends LiteElement {
         border-top-left-radius: var(--md-sys-shape-corner-extra-large);
         border-top-right-radius: var(--md-sys-shape-corner-extra-large);
         max-height: 80%;
+        padding: 0;
       }
 
       img {

@@ -47,8 +47,10 @@ export class ImagesLibrary extends LiteElement {
     }
   }
 
-  async addImage() {
+  addImage = async () => {
     const { action, fields, image } = await this.#dialog.addImage()
+    console.log(action, image)
+
     if (action === 'submit') {
       this.#dialog.busy('uploading image')
       let result

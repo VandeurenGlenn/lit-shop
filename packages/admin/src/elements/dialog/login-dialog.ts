@@ -9,9 +9,9 @@ import '@vandeurenglenn/lite-elements/typography.js'
 import '@vandeurenglenn/lite-elements/pages.js'
 import '@vandeurenglenn/lite-elements/icon.js'
 import '@vandeurenglenn/lite-elements/button.js'
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth'
+import { signinWithGoogle, signInWithEmailAndPassword } from './../../firebase.js'
 import { OutlinedTextField } from '@material/web/textfield/internal/outlined-text-field.js'
-import { controller as firebaseController } from '@lit-shop/firebase-controller'
+import { TemplateResult } from 'lit'
 
 @customElement('login-dialog')
 export class LoginDialog extends LiteElement {
@@ -20,12 +20,14 @@ export class LoginDialog extends LiteElement {
 
   @property({ type: String })
   accessor selected: string = 'signin'
+
   @query('md-outlined-textfield[type="email"]') accessor emailInput: OutlinedTextField
+
   connectedCallback() {
     this.shadowRoot.addEventListener('click', this.handleClick.bind(this))
   }
 
-  handleClick = (event) => {
+  handleClick = async (event) => {
     const target = event.target as HTMLElement
     let selected
     if (target.tagName === 'CUSTOM-BUTTON' || target.tagName === 'CUSTOM-ICON-BUTTON') {
@@ -37,7 +39,7 @@ export class LoginDialog extends LiteElement {
       const email = this.shadowRoot.querySelector('md-outlined-text-field[type="email"]').value
       const password = this.shadowRoot.querySelector('md-outlined-text-field[type="password"]').value
 
-      signInWithEmailAndPassword(firebaseController.auth, email, password)
+      signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user
@@ -50,37 +52,19 @@ export class LoginDialog extends LiteElement {
           const errorMessage = error.message
         })
     } else if (selected === 'signinWithGoogle') {
-      const provider = new GoogleAuthProvider()
-      // provider.addScope('addresses.read')
-      // provider.addScope('phonenumbers.read')
-      provider.addScope('email')
-      provider.addScope('profile')
-
-      signInWithPopup(firebaseController.auth, provider)
-        .then((result) => {
-          // This gives you a Google Access Token. You can use it to access the Google API.
-          // const credential = GoogleAuthProvider.credentialFromResult(result);
-          // const token = credential.accessToken;
-          // The signed-in user info.
-          const user = result.user
-          this.#dialog.open = false
-          this.selected = 'signin'
-          // IdP data available using getAdditionalUserInfo(result)
-          // ...
-        })
-        .catch((error) => {
-          // Handle Errors here.
-          const errorCode = error.code
-          const errorMessage = error.message
-          // The email of the user's account used.
-          const email = error.customData.email
-          // The AuthCredential type that was used.
-          const credential = GoogleAuthProvider.credentialFromError(error)
-          // ...
-        })
+      try {
+        const user = await signinWithGoogle()
+        this.#dialog.open = false
+        this.selected = 'signin'
+      } catch (error) {
+        alert(error.message)
+      }
+    } else if (selected === 'signinWithMailLink') {
+      this.selected = 'signin'
     } else if (selected === 'mail') {
       this.selected = 'mail'
-      this.#pages.selected = 'mail'
+    } else if (selected === 'link') {
+      this.selected = 'link'
     }
   }
 
@@ -88,12 +72,8 @@ export class LoginDialog extends LiteElement {
     return this.shadowRoot.querySelector('md-outlined-textfield[type="password"]') as OutlinedTextField
   }
 
-  get #pages() {
-    return this.shadowRoot.querySelector('custom-pages')
-  }
-
   get #dialog() {
-    return this.shadowRoot.querySelector('md-dialog')
+    return this.shadowRoot.querySelector('custom-dialog')
   }
 
   static styles = [
@@ -104,62 +84,95 @@ export class LoginDialog extends LiteElement {
 
       flex-column {
         align-items: center;
-        min-height: 120px;
+      }
+      custom-button {
+        min-width: 200px;
+        width: calc(100% - 2px);
       }
 
       custom-pages {
         display: flex;
-        min-height: 120px;
+        min-height: 140px;
+        margin-top: 24px;
+        margin-bottom: 12px;
+        overflow: auto;
       }
     `
   ]
 
+  #renderSignin() {
+    return html`
+      <flex-column center-center>
+        <custom-button
+          route="signinWithGoogle"
+          label="with google">
+          <img
+            slot="icon"
+            src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" />
+        </custom-button>
+
+        <custom-button
+          route="link"
+          label="with link">
+          <custom-icon
+            slot="icon"
+            icon="link"></custom-icon>
+        </custom-button>
+
+        <custom-button
+          route="mail"
+          label="with mail">
+          <custom-icon
+            slot="icon"
+            icon="mail"></custom-icon>
+        </custom-button>
+      </flex-column>
+    `
+  }
+
+  #renderMailSignin() {
+    return html`
+      <md-outlined-text-field
+        type="email"
+        placeholder="email"></md-outlined-text-field>
+      <md-outlined-text-field
+        type="password"
+        placeholder="password"></md-outlined-text-field>
+    `
+  }
+
+  #renderMailLinkSignin() {
+    return html`
+      <md-outlined-text-field
+        type="email"
+        placeholder="email"></md-outlined-text-field>
+    `
+  }
+
   render() {
+    let content: TemplateResult<1>
+    if (this.selected === 'signin') {
+      content = this.#renderSignin()
+    } else if (this.selected === 'mail') {
+      content = this.#renderMailSignin()
+    } else if (this.selected === 'link') {
+      content = this.#renderMailLinkSignin()
+    }
     return html`
       <custom-dialog
         .open=${this.open}
         title="signin">
-        <custom-typography slot="header">signin</custom-typography>
+        <flex-row slot="header">
+          <custom-typography>Signin</custom-typography>
+        </flex-row>
 
-        <custom-pages attr-for-selected="route">
-          <flex-column
-            route="signin"
-            center-center>
-            <custom-button
-              route="signinWithGoogle"
-              label="sign in with google">
-              <img
-                slot="icon"
-                src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" />
-              <custom-typography>sign in with google</custom-typography>
-            </custom-button>
-
-            <custom-button
-              route="mail"
-              label="sign in with mail">
-              <custom-icon
-                slot="icon"
-                icon="mail"></custom-icon>
-              <custom-typography>sign in with mail</custom-typography>
-            </custom-button>
-          </flex-column>
-
-          <flex-column route="mail">
-            <md-outlined-text-field
-              type="email"
-              placeholder="email"></md-outlined-text-field>
-            <md-outlined-text-field
-              type="password"
-              placeholder="password"></md-outlined-text-field>
-          </flex-column>
-        </custom-pages>
-
-        ${this.selected === 'mail'
+        ${content}
+        ${this.selected === 'mail' || this.selected === 'link'
           ? html` <span slot="actions">
               <custom-icon-button
                 icon="done"
                 slot="actions"
-                route="signinWithEmail"
+                route=${this.selected === 'mail' ? 'signinWithEmail' : 'signinWithMailLink'}
                 dialog-action="signin">
               </custom-icon-button>
             </span>`

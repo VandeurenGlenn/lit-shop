@@ -117,7 +117,6 @@ class Imgur {
             method: 'GET',
             headers: headers
         };
-        console.log(headers.get('Authorization'));
         try {
             const response = await fetch(`https://api.imgur.com/3/image/${id}`, requestOptions);
             return (await response.json()).data;

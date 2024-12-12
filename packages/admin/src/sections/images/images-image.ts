@@ -108,7 +108,6 @@ export default class ImagesImage extends LiteElement {
       }
 
       img {
-        width: 100%;
         max-height: 640px;
       }
     `
