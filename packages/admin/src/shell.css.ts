@@ -1,4 +1,4 @@
-import { css } from '@vandeurenglenn/lite';
+import { css } from '@vandeurenglenn/lite'
 
 export default css`
   :host {
@@ -47,4 +47,10 @@ export default css`
   md-list {
     height: 100%;
   }
-`;
+
+  .drawer-content-title {
+    display: flex;
+    box-sizing: border-box;
+    padding-top: 16px;
+  }
+`

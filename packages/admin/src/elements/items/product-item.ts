@@ -4,11 +4,11 @@ import '@material/web/iconbutton/filled-icon-button.js'
 
 @customElement('product-item')
 export class ProductItem extends LiteElement {
-  @property({ type: Boolean, reflect: true })
-  accessor draggable: boolean = true
-
   @property({ type: String, reflect: true })
   accessor key: string
+
+  @property({ type: String, reflect: true })
+  accessor draggable
 
   @property({ type: String })
   accessor name: string
@@ -18,9 +18,11 @@ export class ProductItem extends LiteElement {
 
   async connectedCallback() {
     this.ondragstart = this.#ondragstart.bind(this)
+    this.draggable = 'true'
   }
 
   #ondragstart(event) {
+    event.dataTransfer.dropEffect = 'move'
     event.dataTransfer.setData('text', this.key)
   }
 
@@ -33,16 +35,17 @@ export class ProductItem extends LiteElement {
     console.log(this.public)
     console.log(this.key)
 
-    firebase.database().ref(`products/${this.key}/public`).set(this.public)
+    firebase.update(`products/${this.key}`, { public: this.public })
   }
 
   static styles = [
     css`
       :host {
         display: block;
-        pointer-events: auto;
+        pointer-events: auto !important;
         background: var(--md-sys-color-surface-variant);
         padding: 12px 24px;
+        width: 100%;
         box-sizing: border-box;
         border-radius: var(--md-sys-shape-corner-large);
       }

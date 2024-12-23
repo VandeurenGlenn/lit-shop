@@ -156,6 +156,7 @@ const _firebase = {
   get,
   push,
   set,
+  database,
   userDetails,
   userRoles,
   userDefaultPage,

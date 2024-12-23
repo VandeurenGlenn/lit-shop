@@ -1,10 +1,8 @@
-import { product, productContext } from '../../context/product.js'
-import { consume } from '@lit-labs/context'
-import { controller as firebaseController } from '@lit-shop/firebase-controller'
-
 import '@vandeurenglenn/custom-date'
 import '../../elements/input-fields/input-field.js'
 import '../../elements/input-fields/input-fields.js'
+import '../../elements/input-fields/size-fields.js'
+import '../../elements/input-fields/size-field.js'
 import '@vandeurenglenn/lite-elements/dropdown-menu.js'
 import '@vandeurenglenn/lite-elements/icon'
 import '@vandeurenglenn/lite-elements/list-item.js'
@@ -13,14 +11,18 @@ import '@vandeurenglenn/lite-elements/pages.js'
 import '../../elements/time/time-ago.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@material/web/fab/fab.js'
-import '../../elements/dialog/image-selector-dialog.js'
+import '../../elements/dialog/images-dialog.js'
 import '../../elements/image-editor/image-editor.js'
+import '../../elements/product/product-image.js'
+import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 
 import { map } from 'lit/directives/map.js'
 import { CustomPages } from '../../types.js'
 import { ref, set } from 'firebase/database'
 import { LiteElement, customElement, property, query, html } from '@vandeurenglenn/lite'
 import { StyleList, css } from '@vandeurenglenn/lite/element'
+import { Product } from '@lit-shop/types'
+import firebase from '../../firebase.js'
 
 @customElement('catalog-product')
 export default class CatalogProduct extends LiteElement {
@@ -33,16 +35,33 @@ export default class CatalogProduct extends LiteElement {
   @property({ type: Array })
   accessor fields: [string, string | number | boolean | string[]][]
 
+  @property({ type: Array, consumes: 'categories' })
+  accessor categories
+
   // @ts-ignore
   @property({ type: Object, consumes: 'product' })
-  accessor product: product
+  accessor product
 
-  get #dialog() {
-    return this.shadowRoot.querySelector('image-selector-dialog')
-  }
+  @property({ type: String, value: 'general' })
+  accessor selected = 'general'
+
+  @property({ type: Array })
+  accessor sizeFields: [string, string | number | boolean | string[]][]
+
+  @property({ type: Array, consumes: 'images' })
+  accessor images
+
+  @property({ type: Array })
+  accessor imagesToRender
 
   addImage = async () => {
-    const { action, fields, image } = await this.#dialog.addImage()
+    console.log('add image')
+    const dialog = document.createElement('images-dialog')
+    dialog.hasLibrary = true
+    document.body.appendChild(dialog)
+
+    const { action, fields, image } = await dialog.addImage()
+
     console.log(action, image)
 
     if (action === 'submit') {
@@ -53,9 +72,11 @@ export default class CatalogProduct extends LiteElement {
             async (image) =>
               await api.addImage({
                 type: 'base64',
-                title: image.name,
+                title: image.name.toString(),
                 description: fields.description,
-                image: image.data.replace('data:image/png;base64,', '')
+                image: image.data
+                  .replace('data:image/png;base64,', '')
+                  .replace('data:image/jpeg;base64,', '')
               })
           )
         )
@@ -70,7 +91,9 @@ export default class CatalogProduct extends LiteElement {
         ]
       } else if (image.type === 'library') {
         console.log('from lib')
-        result = [await api.getImage(image.data)]
+        const images = this.product.images || []
+        images.push(image.data)
+        this.product.images = images
       } else {
         result = [
           await api.addImage({
@@ -90,31 +113,87 @@ export default class CatalogProduct extends LiteElement {
         // this.album.images.push(item)
       }
       this._save()
-
+      document.body.removeChild(dialog)
       this.requestRender()
     }
   }
 
+  _onFabClick = () => {
+    if (this.selected === 'images') {
+      this.addImage()
+    } else if (this.selected === 'sizes') {
+      this.shadowRoot.querySelector('size-fields').addSize()
+    } else {
+      this.shadowRoot.querySelector('input-fields').addField()
+    }
+  }
+
   onChange(propertyKey) {
+    console.log(propertyKey, this[propertyKey])
+
     if (propertyKey === 'product') {
+      this.product.category = {
+        value: this.product.category,
+        type: 'select',
+        options: this.categories
+      }
+      console.log(this.product)
+
       this.fields = Object.entries(this.product).filter(
         (entry) =>
           entry[0] !== 'key' &&
           entry[0] !== 'sku' &&
           entry[0] !== 'timestamp' &&
           entry[0] !== 'index' &&
-          entry[0] !== 'public' &&
+          entry[0] !== 'sizes' &&
           entry[0] !== 'images'
       )
+
+      this.sizeFields = this.product.sizes
+      console.log(this.sizeFields)
+    }
+    if (
+      (propertyKey === 'selected' && this.images) ||
+      (propertyKey === 'images' && this.selected === 'images')
+    ) {
+      if (this.product.images) {
+        this.imagesToRender = this.images.filter((image) => this.product.images.includes(image.key))
+      }
     }
   }
   _save = async () => {
-    const _ref = ref(firebaseController.database, `products/${this.product.key}`)
     try {
-      await set(_ref, this.product)
+      await firebase.update(`products/${this.product.key}`, this.product)
+      if (this.product.images) {
+        this.imagesToRender = this.images.filter((image) => this.product.images.includes(image.key))
+      }
     } catch (error) {
       console.error(error)
     }
+  }
+
+  _delete = async () => {
+    try {
+      await firebase.remove(`products/${this.product.key}`)
+      location.hash = '/#!/catalog/products'
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  onSelected = (event) => {
+    if (this.selected === 'general') {
+      const values = this.shadowRoot.querySelector('input-fields').getValues()
+      this.product = { ...this.product, ...values }
+    } else if (this.selected === 'sizes') {
+      const values = this.shadowRoot.querySelector('size-fields').getValues()
+      this.product.sizes = values
+    } else if (this.selected === 'images') {
+      const images = Array.from(this.shadowRoot.querySelectorAll('product-image')) as ProductImage[]
+      this.product.images = images.map((image) => image.image.key)
+    }
+
+    this.selected = event.detail
   }
 
   static styles?: StyleList = [
@@ -138,9 +217,6 @@ export default class CatalogProduct extends LiteElement {
         padding: 24px;
         width: 100%;
         max-width: 640px;
-      }
-      [icon='add'] {
-        margin-top: 24px;
       }
       .wrapper {
         display: flex;
@@ -184,17 +260,52 @@ export default class CatalogProduct extends LiteElement {
         pointer-events: none;
       }
 
-      .top-bar {
-        /* padding: 24px 0 48px 0; */
-      }
-
       md-fab {
         position: absolute;
         bottom: 24px;
         right: 24px;
       }
+
+      flex-container {
+        height: 100%;
+      }
     `
   ]
+
+  renderSelected() {
+    if (this.selected === 'images') {
+      return html`
+        <flex-wrap-evenly>
+          ${map(
+            this.imagesToRender,
+            (image) =>
+              html`
+                <product-image
+                  .image=${image}
+                  .productKey=${this.product.key}></product-image>
+              `
+          )}
+        </flex-wrap-evenly>
+      `
+    }
+    if (this.selected === 'sizes') {
+      return html`
+        <flex-container>
+          <flex-container class="wrapper">
+            <size-fields .fields=${this.product.sizes}></size-fields>
+          </flex-container>
+        </flex-container>
+      `
+    }
+
+    return html`
+      <flex-container>
+        <flex-container class="wrapper">
+          <input-fields .fields="${this.fields}"></input-fields>
+        </flex-container>
+      </flex-container>
+    `
+  }
 
   render() {
     return this.product
@@ -203,9 +314,10 @@ export default class CatalogProduct extends LiteElement {
           <flex-row class="action-bar">
             <custom-selector
               attr-for-selected="label"
-              @selected=${({ detail }) => this.pages.select(detail)}
+              @selected=${this.onSelected}
               default-selected="general">
               <custom-button label="general">general</custom-button>
+              <custom-button label="sizes">sizes</custom-button>
               <custom-button label="images">images</custom-button>
             </custom-selector>
 
@@ -215,8 +327,12 @@ export default class CatalogProduct extends LiteElement {
               right
               class="action-menu">
               <custom-list-item @click=${this._save}>
-                <span slot="start"> <custom-icon>save</custom-icon></span>
+                <span slot="start"> <custom-icon icon="save"></custom-icon></span>
                 <span slot="end"> save </span>
+              </custom-list-item>
+              <custom-list-item @click=${this._delete}>
+                <span slot="start"> <custom-icon icon="delete"></custom-icon></span>
+                <span slot="end"> delete </span>
               </custom-list-item>
 
               <custom-list-item non-interactive>
@@ -228,41 +344,12 @@ export default class CatalogProduct extends LiteElement {
             </custom-dropdown-menu>
           </flex-row>
 
-          <custom-pages
-            attr-for-selected="route"
-            default-selected="general">
-            <section route="general">
-              <flex-container>
-                <flex-row class="top-bar">
-                  <custom-typography>sku:</custom-typography>
-                  <flex-it></flex-it>
-                  ${this.product?.sku ? this.product.sku : this.product.key}
-                </flex-row>
-                <input-field
-                  name="public"
-                  value=${this.product.public}
-                  is-check-box></input-field>
-                <input-fields .fields=${this.fields}></input-fields>
-              </flex-container>
-            </section>
-
-            <section route="images">
-              <flex-container>
-                <flex-wrap-center>
-                  ${map(
-                    this.product?.images,
-                    (image) => html` <img src=${`${location.origin}/api/image?image=${image}`} /> `
-                  )}
-                </flex-wrap-center>
-              </flex-container>
-              <md-fab
-                variant="primary"
-                label="add image"
-                @click=${this.addImage}>
-                <custom-icon slot="icon">add_a_photo</custom-icon>
-              </md-fab>
-            </section>
-          </custom-pages>
+          ${this.renderSelected()}
+          <md-fab @click=${this._onFabClick}>
+            <custom-icon
+              icon="add"
+              slot="icon"></custom-icon>
+          </md-fab>
         `
       : html``
   }

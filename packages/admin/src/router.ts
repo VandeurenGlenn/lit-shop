@@ -68,7 +68,12 @@ export default class Router {
     '/media': {
       tag: 'media-section'
     },
-
+    '/orders': {
+      tag: 'orders-section'
+    },
+    '/stock': {
+      tag: 'stock-section'
+    },
     '/catalog/add-product': {
       tag: 'catalog-add-product'
     },
@@ -83,12 +88,6 @@ export default class Router {
     },
     '/catalog': {
       tag: 'catalog-section'
-    },
-    '/orders/order': {
-      tag: 'top-order'
-    },
-    '/collections/collection': {
-      tag: 'top-collection'
     },
     '/settings': {
       tag: 'settings-section'

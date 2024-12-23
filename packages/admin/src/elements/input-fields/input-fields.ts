@@ -1,52 +1,58 @@
-import {
-  LiteElement,
-  html,
-  css,
-  customElement,
-  property,
-} from '@vandeurenglenn/lite';
-import '@vandeurenglenn/flex-elements/row.js';
-import './input-field.js';
+import { LiteElement, html, css, customElement, property } from '@vandeurenglenn/lite'
+import '@vandeurenglenn/flex-elements/row.js'
+import './input-field.js'
+import { InputField } from './input-field.js'
 
 @customElement('input-fields')
 export class InputFields extends LiteElement {
   @property({ type: Array })
-  accessor fields;
+  accessor fields
 
-  addField = async () => {
-    const name = await prompt('please enter field name');
+  async addField() {
+    const name = await prompt('please enter field name')
     if (name) {
-      this.fields.push([name, '']);
-      this.requestRender();
+      this.fields.push([name, ''])
+      this.requestRender()
     }
-  };
+  }
 
   static styles = [
     css`
       :host {
         width: 100%;
       }
-    `,
-  ];
+    `
+  ]
+
+  getValues() {
+    const fields = Array.from(this.shadowRoot.querySelectorAll('input-field')) as InputField[]
+    const values = {}
+    for (const field of fields) {
+      values[field.name] = field.value
+    }
+    return values
+  }
 
   render() {
     return html`
       ${this.fields
         ? this.fields.map(
             (field) => html`
-              <input-field .name=${field[0]} .value=${field[1]}></input-field>
+              <input-field
+                .name=${field[0]}
+                .value=${field[1]}></input-field>
             `
           )
         : ''}
 
-      <flex-row class="wrapper" center-center>
+      <flex-row
+        class="wrapper"
+        center-center>
         <custom-icon-button
           icon="add"
           title="add info field"
-          @click=${this.addField}
-        ></custom-icon-button>
+          @click=${() => this.addField()}></custom-icon-button>
       </flex-row>
-      <flex-it></flex-it>
-    `;
+    `
   }
 }

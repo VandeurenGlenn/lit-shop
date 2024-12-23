@@ -71,7 +71,8 @@ export class ImageEditor extends LiteElement {
         width: calc(100% - 16px);
       }
 
-      ::slotted(*) {
+      ::slotted(*),
+      * {
         pointer-events: none;
       }
 

@@ -9,8 +9,11 @@ import { cp, readdir } from 'fs/promises'
 import { join } from 'path'
 import materialSymbols from 'rollup-plugin-material-symbols'
 import terser from '@rollup/plugin-terser'
+import { generateSW } from 'rollup-plugin-workbox'
 
-cp('../../node_modules/@vandeurenglenn/lite-elements/exports/themes', 'www/themes', { recursive: true })
+cp('../../node_modules/@vandeurenglenn/lite-elements/exports/themes', 'www/themes', {
+  recursive: true
+})
 try {
   execSync('rm -rf ./www/*.js')
 } catch {
@@ -28,14 +31,16 @@ try {
   console.log('Service worker registration failed, error:', error);
 }`
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 const prepareAndCopy = async () => {
   // execSync(`rm www/${target}/*.js`);
   let index = await readFileSync(`src/index.html`)
   index = index.toString()
-  // let isProduction = execSync('set production');
-  // console.log(isProduction.toString());
-  // isProduction = Boolean(isProduction.toString().split('=')[1] === 'true \r\n');
-  // index = index.replace('// @build:sw', isProduction ? sw : '');
+  if (isProduction) {
+    index = index.replace('// @build:sw', sw)
+    await cp('src/manifest.json', 'www/manifest.json')
+  }
   await writeFileSync(`www/index.html`, index)
 }
 
@@ -48,6 +53,22 @@ for (const dir of dirs) {
   input = [...(await readdir(dir)).map((file) => join(dir, file)), ...input]
 }
 
+const plugins = [json(), resolve(), typescript(), materialSymbols({ placeholderPrefix: 'symbol' })]
+
+if (isProduction) {
+  plugins.push(terser())
+  plugins.push(
+    generateSW({
+      swDest: 'www/service-worker.js',
+      globDirectory: 'www',
+      globPatterns: ['**/*.{html,js,css}'],
+      cleanupOutdatedCaches: true,
+      clientsClaim: true,
+      skipWaiting: true
+    })
+  )
+}
+
 export default [
   {
     input: ['src/shell.ts', 'src/api.ts', ...input],
@@ -56,17 +77,6 @@ export default [
       dir: 'www',
       format: 'es'
     },
-    plugins: [
-      json(),
-      resolve(),
-      typescript(),
-      // cjs(),
-      // builtins(),
-      materialSymbols({
-        elements: ['md-icon'],
-        placeholderPrefix: 'symbol'
-      })
-      // terser({ keep_classnames: true })
-    ]
+    plugins
   }
 ]

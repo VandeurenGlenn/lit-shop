@@ -6,6 +6,10 @@ import '@vandeurenglenn/lite-elements/drawer-layout.js'
 import '@vandeurenglenn/lite-elements/icon-button.js'
 import '@vandeurenglenn/lite-elements/icon.js'
 import '@vandeurenglenn/lite-elements/icon-set.js'
+import '@vandeurenglenn/lite-elements/typography.js'
+import '@vandeurenglenn/lite-elements/divider.js'
+import '@lit-shop/translate/string.js'
+import './menu/menu-item.js'
 export default html`
   <image-editor></image-editor>
   <custom-icon-set>
@@ -28,9 +32,19 @@ export default html`
       <span name="done">@symbol-check</span>
       <span name="mail">@symbol-mail</span>
       <span name="link">@symbol-link</span>
+      <span name="settings">@symbol-settings</span>
       <span name="arrow_back">@symbol-arrow_back</span>
+      <span name="arrow_forward">@symbol-arrow_forward</span>
       <span name="keyboard_arrow_right">@symbol-keyboard_arrow_right</span>
       <span name="keyboard_arrow_down">@symbol-keyboard_arrow_down</span>
+      <span name="photo_library">@symbol-photo_library</span>
+      <span name="photo_camera">@symbol-photo_camera</span>
+      <span name="photo_camera_back">@symbol-photo_camera_back</span>
+      <span name="photo_camera_front">@symbol-photo_camera_front</span>
+      <span name="orders">@symbol-orders</span>
+      <span name="category">@symbol-category</span>
+      <span name="inventory">@symbol-inventory</span>
+      <span name="inventory_2">@symbol-inventory_2</span>
     </template>
   </custom-icon-set>
   <custom-drawer-layout appBarType="small">
@@ -38,50 +52,59 @@ export default html`
       name="title"
       slot="top-app-bar-title"></translate-string>
 
-    <top-menu
+    <custom-selector
       slot="drawer-content"
-      attr-for-selected="data-route"
-      selected="">
-      <menu-item headline="orders"></menu-item>
-
-      <menu-item headline="collections"></menu-item>
-
-      <sub-menu headline="catalog">
-        <menu-item
-          headline="categories"
-          route="catalog/categories"></menu-item>
-
-        <menu-item
-          headline="products"
-          route="catalog/products"></menu-item>
-      </sub-menu>
-
-      <sub-menu headline="media">
-        <sub-menu headline="images">
-          <menu-item
-            headline="albums"
-            route="media/images/albums"></menu-item>
-          <menu-item
-            headline="library"
-            route="media/images/library"></menu-item>
-        </sub-menu>
-
-        <sub-menu headline="videos">
-          <menu-item
-            headline="albums"
-            route="media/videos/albums"></menu-item>
-          <menu-item
-            headline="library"
-            route="media/videos/library"></menu-item>
-        </sub-menu>
-      </sub-menu>
-
-      <flex-it flex="1"></flex-it>
+      attr-for-selected="route">
+      <menu-item
+        route="orders"
+        headline="orders">
+        <custom-icon
+          icon="orders"
+          slot="end"></custom-icon
+      ></menu-item>
 
       <menu-item
-        headline="settings"
-        route="settings"></menu-item>
-    </top-menu>
+        route="stock"
+        headline="stock">
+        <custom-icon
+          icon="inventory"
+          slot="end"></custom-icon>
+      </menu-item>
+
+      <menu-item
+        route="catalog/products"
+        headline="products"
+        ><custom-icon
+          icon="inventory_2"
+          slot="end"></custom-icon
+      ></menu-item>
+
+      <menu-item
+        route="catalog/categories"
+        headline="categories">
+        <custom-icon
+          icon="category"
+          slot="end"></custom-icon
+      ></menu-item>
+
+      <menu-item
+        route="media/images/library"
+        headline="images">
+        <custom-icon
+          icon="photo_library"
+          slot="end"></custom-icon>
+      </menu-item>
+
+      <custom-divider></custom-divider>
+      <menu-item
+        route="settings"
+        headline="settings">
+        <custom-icon
+          icon="settings"
+          slot="end"></custom-icon
+      ></menu-item>
+    </custom-selector>
+
     <slot></slot>
   </custom-drawer-layout>
   <image-editor></image-editor>

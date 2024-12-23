@@ -87,7 +87,8 @@ export class CatalogCategories extends LiteElement {
   }
 
   _remove = (target) => {
-    const dialog = document.querySelector('po-ho-shell').shadowRoot.querySelector('md-dialog')
+    const dialog = document.createElement('md-dialog')
+    document.body.appendChild(dialog)
     dialog.innerHTML = `
     <div slot="headline">
       Deleting category
@@ -110,6 +111,7 @@ export class CatalogCategories extends LiteElement {
         }
       }
       dialog.removeEventListener('close', handleClose)
+      dialog.remove()
     }
     dialog.addEventListener('close', handleClose)
     dialog.open = true

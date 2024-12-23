@@ -53,7 +53,6 @@ export class ImageSelectorDialog extends LiteElement {
     css`
       :host {
         display: block;
-        z-inex: 10001;
       }
 
       h5 {
@@ -173,7 +172,9 @@ export class ImageSelectorDialog extends LiteElement {
 
     const img = document.createElement('img')
     img.src = this.#image.data as string
-    this.shadowRoot.querySelector('flex-container').replaceChild(img.cloneNode(true), this.#cameraPreview)
+    this.shadowRoot
+      .querySelector('flex-container')
+      .replaceChild(img.cloneNode(true), this.#cameraPreview)
   }
 
   readAsDataURL(file) {
@@ -248,38 +249,40 @@ export class ImageSelectorDialog extends LiteElement {
 
   #addImageTemplate() {
     return html`
+      <custom-tabs
+        slot="header"
+        attr-for-selected="route"
+        @selected=${this.#onSelected}>
+        ${this.hasLibrary
+          ? html`
+              <custom-tab route="library">
+                <md-icon>photo_library</md-icon>
+                <span>library</span>
+              </custom-tab>
+            `
+          : ''}
+        <custom-tab route="url">
+          <md-icon>link</md-icon>
+          <span>url</span>
+        </custom-tab>
+        <flex-it flex="1"></flex-it>
+
+        <custom-tab route="camera">
+          <md-icon>camera</md-icon>
+          <span>camera</span>
+        </custom-tab>
+        <flex-it flex="1"></flex-it>
+
+        <custom-tab route="file">
+          <md-icon>upload</md-icon>
+          <span>file</span>
+        </custom-tab>
+        <flex-it flex="2"></flex-it>
+      </custom-tabs>
+
       <form
         id="form-content"
         method="dialog">
-        <custom-tabs
-          attr-for-selected="route"
-          @selected=${this.#onSelected}>
-          ${this.hasLibrary
-            ? html`
-                <custom-tab route="library">
-                  <md-icon>photo_library</md-icon>
-                  <span>library</span>
-                </custom-tab>
-              `
-            : ''}
-          <custom-tab route="url">
-            <md-icon>link</md-icon>
-            <span>url</span>
-          </custom-tab>
-          <flex-it flex="1"></flex-it>
-
-          <custom-tab route="camera">
-            <md-icon>camera</md-icon>
-            <span>camera</span>
-          </custom-tab>
-          <flex-it flex="1"></flex-it>
-
-          <custom-tab route="file">
-            <md-icon>upload</md-icon>
-            <span>file</span>
-          </custom-tab>
-          <flex-it flex="2"></flex-it>
-        </custom-tabs>
         <custom-pages
           attr-for-selected="route"
           selected="url">
@@ -292,7 +295,10 @@ export class ImageSelectorDialog extends LiteElement {
                       (image: imgurBaseImage) => html`
                         <img
                           @click=${(event) => this.#onlibclick(event, image.firebaseKey)}
-                          src=${`${location.origin}/api/image?image=${image.link.replace('.png', 'b.png')}`} />
+                          src=${`${location.origin}/api/image?image=${image.link.replace(
+                            '.png',
+                            'b.png'
+                          )}`} />
                       `
                     )}
                   </flex-wrap-around>
@@ -373,7 +379,9 @@ export class ImageSelectorDialog extends LiteElement {
   #onAction = (): Promise<actionResult> =>
     new Promise((resolve, reject) => {
       const action = (event) => {
-        const inputFields = Array.from(this.shadowRoot.querySelectorAll('[input-field]')) as MdFilledTextField[]
+        const inputFields = Array.from(
+          this.shadowRoot.querySelectorAll('[input-field]')
+        ) as MdFilledTextField[]
         const fields = {}
 
         for (const field of inputFields) {

@@ -35,7 +35,16 @@ export class TopMenu extends CustomSelector {
     }
   }
 
-  static styles = [...super.styles]
+  static styles = [
+    ...super.styles,
+    css`
+      :host {
+        padding: 0 16px;
+        box-sizing: border-box;
+        overflow-y: initial;
+      }
+    `
+  ]
 
   render() {
     return html`<slot></slot>`

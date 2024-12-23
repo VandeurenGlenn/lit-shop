@@ -9,13 +9,12 @@ import { translate } from '@lit-shop/translate'
 import PubSub from '@vandeurenglenn/little-pubsub'
 
 import '@vandeurenglenn/lite-elements/pages.js'
-import './menu/sub-menu.js'
-import './menu/menu.js'
 
 import template from './shell.html.js'
 import styles from './shell.css.js'
 
 import { auth } from './firebase.js'
+import { set } from 'firebase/database'
 
 globalThis.translate = translate
 globalThis.pubsub = globalThis.pubsub || new PubSub()
@@ -32,6 +31,7 @@ declare global {
 @customElement('admin-shell')
 export class AdminShell extends LiteElement {
   router
+  #propertyProviders = []
 
   @property({ provides: true }) accessor albums = []
 
@@ -41,11 +41,15 @@ export class AdminShell extends LiteElement {
 
   @property({ provides: true }) accessor image
 
-  @property({ provides: true }) accessor products
+  @property({ provides: true, type: Array }) accessor products: []
 
   @property({ provides: true }) accessor product
 
-  @property({ provides: true }) accessor categories
+  @property({ provides: true }) accessor categories = []
+
+  @property({ provides: true }) accessor stats
+
+  @property({ provides: true }) accessor imgurBaseImages
 
   @property({ type: Boolean, reflect: true }) accessor loading
 
@@ -110,6 +114,117 @@ export class AdminShell extends LiteElement {
     })
   }
 
+  /**
+   * collection of the views and there desired providers
+   */
+  propertyProviders = {
+    products: ['products', 'categories'],
+    'add-product': ['products', 'categories'],
+    'catalog-products': ['products', 'categories'],
+    'catalog-product': ['products', 'categories'],
+    // sales: [
+    //   'products',
+    //   'categories',
+    //   {
+    //     name: 'payconiqTransactions',
+    //     type: 'array',
+    //     events: { onChildChanged: (val) => this.salesView.payconiqPaymentChange(val) }
+    //   },
+    //   { name: 'promo', type: 'object' },
+    //   'members',
+    //   'tabs'
+    // ],
+
+    images: ['images'],
+    stock: ['products', 'categories'],
+    categories: ['categories'],
+    members: ['members', { name: 'attendance', type: 'object' }],
+    planning: [{ name: 'planning', type: 'object' }],
+    calendar: [
+      'members',
+      { name: 'planning', type: 'object' },
+      { name: 'calendar', type: 'object' }
+    ],
+    files: ['members', { name: 'files', type: 'object' }],
+    'add-event': ['events', 'categories', 'products']
+  }
+
+  setupPropertyProvider(propertyProvider, type = 'array', events?) {
+    return new Promise(async (resolve, reject) => {
+      this.#propertyProviders.push(propertyProvider)
+
+      if (!this[propertyProvider]) this[propertyProvider] = type === 'object' ? {} : []
+
+      const deleteOrReplace = async (propertyProvider, snap, task = 'replace') => {
+        const val = await snap.val()
+        if (type === 'array') {
+          if (typeof val === 'object' && !Array.isArray(val)) val.key = snap.key
+          let i = -1
+
+          for (const item of this[propertyProvider]) {
+            i += 1
+            if (item.key === snap.key) break
+          }
+
+          if (task === 'replace') this[propertyProvider].splice(i, 1, val)
+          else this[propertyProvider].splice(i, 1)
+          this[propertyProvider] = [...this[propertyProvider]]
+        } else if (type === 'object') {
+          if (task === 'replace') this[propertyProvider][snap.key] = val
+          else delete this[propertyProvider][snap.key]
+          this[propertyProvider] = { ...this[propertyProvider] }
+        }
+
+        if (task === 'replace') events?.onChildChanged?.(val)
+        else events?.onChildRemoved?.(val)
+      }
+
+      firebase.onChildAdded(propertyProvider, async (snap) => {
+        const val = await snap.val()
+
+        if (type === 'array') {
+          if (typeof val === 'object' && !Array.isArray(val)) val.key = snap.key
+          if (!this[propertyProvider]) {
+            this[propertyProvider] = [val]
+          } else if (!this[propertyProvider].includes(val)) {
+            this[propertyProvider].push(val)
+          }
+          this[propertyProvider] = [...this[propertyProvider]]
+        } else if (type === 'object') {
+          if (!this[propertyProvider]) this[propertyProvider] = {}
+          this[propertyProvider][snap.key] = val
+          this[propertyProvider] = { ...this[propertyProvider] }
+        }
+        events?.onChildAdded?.(val)
+        resolve(this[propertyProvider])
+      })
+
+      setTimeout(async () => {
+        resolve(true)
+      }, 1000)
+
+      firebase.onChildChanged(propertyProvider, (snap) =>
+        deleteOrReplace(propertyProvider, snap, 'replace')
+      )
+      firebase.onChildRemoved(propertyProvider, (snap) =>
+        deleteOrReplace(propertyProvider, snap, 'delete')
+      )
+    })
+  }
+
+  handlePropertyProvider(propertyProvider) {
+    if (this.propertyProviders[propertyProvider]) {
+      for (const input of this.propertyProviders[propertyProvider]) {
+        let propertyKey
+        if (typeof input === 'object') propertyKey = input.name
+        else propertyKey = input
+
+        if (!this.#propertyProviders.includes(propertyKey))
+          return this.setupPropertyProvider(propertyKey, input?.type, input?.events)
+      }
+    }
+  }
+
   async select(paths, selection, routeInfo) {
     this.loading = true
     console.log(paths, selection)
@@ -120,15 +235,23 @@ export class AdminShell extends LiteElement {
     // if (paths.includes('catalog') && !customElements.get('catalog-section')) await import('./catalog.js')
     // if (paths.includes('media') && !customElements.get('media-section')) await import('./media.js')
     // const routeInfo = Router.routes[route]
-    if (paths[0] === 'catalog' || paths[0] === 'categories' || paths[0] === 'settings' || paths[0] === 'media') {
+    if (
+      paths[0] === 'catalog' ||
+      paths[0] === 'categories' ||
+      paths[0] === 'settings' ||
+      paths[0] === 'media'
+    ) {
       if (!customElements.get(`${paths[0]}-section`)) await import(`./${paths[0]}-section.js`)
     }
-    if (!customElements.get(routeInfo.tag)) await import(`./${routeInfo.import || routeInfo.tag}.js`)
-    this.shadowRoot.querySelector('top-menu').select(route)
+    if (!customElements.get(routeInfo.tag))
+      await import(`./${routeInfo.import || routeInfo.tag}.js`)
+    this.shadowRoot.querySelector('custom-selector').select(route)
     this.pages.select(paths[0], selection)
     console.log({ routeInfo })
 
     let previous = this.pages.querySelector(`[route="${paths[0]}"]`)
+    console.log(previous)
+
     paths.shift()
     // if (routeInfo.hideHeader) this.#hideHeader()
     // else this.#showHeader()
@@ -138,40 +261,67 @@ export class AdminShell extends LiteElement {
     // console.log(paths && i === paths.length - 1 );
     console.log({ paths })
 
+    const promises = []
+    console.log({ route })
+
+    if (paths.length === 0) {
+      switch (route) {
+        case 'settings':
+          promises.push(this.handlePropertyProvider('categories'))
+          break
+        case 'media':
+          promises.push(this.handlePropertyProvider('albums'))
+          break
+        case 'catalog':
+        case 'stock':
+        case 'orders':
+          promises.push(
+            this.handlePropertyProvider('products'),
+            this.handlePropertyProvider('images')
+          )
+          break
+      }
+      await Promise.all(promises)
+      this.loading = false
+      return
+    }
     for (let i = 0; i < paths.length; i++) {
       let el = previous.querySelector(`[route="${paths[i]}"]`)
 
-      if (!el && previous.shadowRoot) el = previous.shadowRoot.querySelector(`[route="${paths[i]}"]`)
+      if (!el && previous.shadowRoot)
+        el = previous.shadowRoot.querySelector(`[route="${paths[i]}"]`)
       console.log(el)
 
       const route = el.getAttribute('route')
       console.log({ route })
-      const promises = []
       // TODO: once all updates are handed local atleast cache for a minute
       switch (route) {
-        case 'categories':
+        case 'add-product':
           promises.push(
-            (async () => {
-              this.categories = await (await fetch('/api/categories')).json()
-            })()
+            this.handlePropertyProvider('images'),
+            this.handlePropertyProvider('categories'),
+            this.handlePropertyProvider('stats')
           )
           break
+        case 'categories':
+          promises.push(this.handlePropertyProvider('categories'))
+          break
         case 'products':
+        case 'stock':
+        case 'orders':
           promises.push(
-            (async () => {
-              this.products = await (await fetch('/api/products')).json()
-            })()
+            this.handlePropertyProvider('images'),
+            this.handlePropertyProvider('products')
           )
           break
         case 'product':
           // load products only when undefined
           promises.push(
+            this.handlePropertyProvider('categories'),
+            this.handlePropertyProvider('images'),
             (async () => {
-              this.images = await api.getImages()
-            })(),
-            (async () => {
-              if (!this.products) this.products = await (await fetch('/api/products')).json()
-              this.product = this.products[selection]
+              await this.handlePropertyProvider('products')
+              this.product = this.products.find((product) => product.key === selection)
             })()
           )
           break
@@ -192,7 +342,7 @@ export class AdminShell extends LiteElement {
         case 'library':
           promises.push(
             (async () => {
-              this.images = await api.getImages()
+              this.imgurBaseImages = await api.getImages()
             })()
           )
           break
@@ -206,17 +356,18 @@ export class AdminShell extends LiteElement {
           break
       }
 
-      Promise.all(promises).then(() => (this.loading = false))
-
       if (selection && i === paths.length - 1) el.selection = selection
 
       previous.select(paths[i], selection)
 
       previous = el
     }
+
+    if (promises?.length > 0) await Promise.all(promises)
+    this.loading = false
   }
 
-  styles = [styles]
+  static styles = [styles]
 
   render() {
     return template

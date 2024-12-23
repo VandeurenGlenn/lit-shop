@@ -10,7 +10,7 @@ import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import { firebaseImgurAlbum, imgurBaseAlbum } from '@lit-shop/apis/imgur-base.js'
-import './images-dialog.js'
+import './../../elements/dialog/images-dialog.js'
 import '@material/web/select/filled-select.js'
 import '@material/web/select/select-option.js'
 
@@ -48,7 +48,9 @@ export default class ImagesAlbums extends LiteElement {
     const { action } = await this.#dialog.removeAlbum(deletehash)
     if (action === 'submit') {
       await api.removeAlbum({ deletehash, firebaseKey })
-      const index = this.albums.indexOf(this.albums.filter((item) => item.deletehash === deletehash)[0])
+      const index = this.albums.indexOf(
+        this.albums.filter((item) => item.deletehash === deletehash)[0]
+      )
       this.albums.splice(index)
       this.requestRender()
     }
@@ -99,14 +101,17 @@ export default class ImagesAlbums extends LiteElement {
                 (album: imgurBaseAlbum) => html`
                   <md-list-item @click=${(event) => this.#onclick(event, album.firebaseKey)}>
                     <span slot="headline"
-                      >${album.title?.length > 31 ? `${album.title.slice(0, 31)}...` : album.title}</span
+                      >${album.title?.length > 31
+                        ? `${album.title.slice(0, 31)}...`
+                        : album.title}</span
                     >
                     <flex-one></flex-one>
                     <md-icon-button
                       data-variant="icon"
                       slot="end"
                       @click=${(event) =>
-                        (event.cancelBubble = true && this.removeAlbum(album.deletehash, album.firebaseKey))}>
+                        (event.cancelBubble =
+                          true && this.removeAlbum(album.deletehash, album.firebaseKey))}>
                       <custom-icon icon="delete"></custom-icon>
                     </md-icon-button>
                   </md-list-item>

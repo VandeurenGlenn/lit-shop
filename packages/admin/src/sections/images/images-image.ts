@@ -6,8 +6,12 @@ import '@material/web/button/text-button.js'
 import '@material/web/textfield/filled-text-field.js'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
-import './images-dialog.js'
-import { firebaseImgurAlbum, firebaseImgurImage, imgurBaseImage } from '@lit-shop/apis/imgur-base.js'
+import './../../elements/dialog/images-dialog.js'
+import {
+  firebaseImgurAlbum,
+  firebaseImgurImage,
+  imgurBaseImage
+} from '@lit-shop/apis/imgur-base.js'
 import '@vandeurenglenn/lite-elements/dropdown-menu.js'
 import '@vandeurenglenn/lite-elements/list-item.js'
 import '@vandeurenglenn/flex-elements/row.js'

@@ -73,7 +73,7 @@ const getCategories = async () => {
     }
     const items = (await (await get(categoriesRef)).val()) || [];
     cache.set('categories', {
-        value: transformProducts(items),
+        value: items,
         timestamp: new Date().getTime()
     });
     console.log('fresh');

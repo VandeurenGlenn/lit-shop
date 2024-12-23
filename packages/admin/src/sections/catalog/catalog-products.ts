@@ -4,10 +4,13 @@ import '@material/web/list/list.js'
 import '@vandeurenglenn/lite-elements/list.js'
 import '@vandeurenglenn/lite-elements/list-item.js'
 import '../../elements/items/product-item.js'
+import '@material/web/fab/fab.js'
+import { Product } from '@lit-shop/types'
+import { ProductItem } from '../../elements/items/product-item.js'
 
 @customElement('catalog-products')
 export class CatalogProducts extends LiteElement {
-  @property({ type: Object, consumes: 'products' })
+  @property({ type: Array, consumes: 'products' })
   accessor products
 
   constructor() {
@@ -21,40 +24,40 @@ export class CatalogProducts extends LiteElement {
     this.shadowRoot.querySelector('.container').ondragover = (event) => {
       event.preventDefault()
     }
-    this.shadowRoot.querySelector('.container').ondrop = (event) => {
+    this.shadowRoot.querySelector('.container').ondrop = async (event) => {
       event.preventDefault()
+      console.log(event.target)
+
       const target = event.composedPath()[0]
       var data = event.dataTransfer.getData('text')
       console.log(data)
-      const node = this.shadowRoot.querySelector(`[data-route="${data}"]`)
+      const node = this.shadowRoot.querySelector(`[key="${data}"]`)
       console.log(node)
-      const clone = document.createElement('product-item')
+      const clone = document.createElement('product-item') as ProductItem
       console.log(target)
-
-      console.log(target.index === node.index)
-      if (target.index === node.index) return
+      if (target.position === node.position) return
       else {
-        this.shadowRoot.removeChild(node)
-        this.shadowRoot.insertBefore(clone, event.target)
+        this.shadowRoot.querySelector('custom-list').removeChild(node)
+        this.shadowRoot.querySelector('custom-list').insertBefore(clone, event.target)
       }
-      console.log(clone)
       clone.key = node.key
-      clone.value = node.value
+      clone.name = node.name
+      clone.position = node.position
       clone.dataset.route = node.dataset.route
 
       console.log(event)
-      const items = Array.from(this.querySelectorAll('product-item'))
+      const items = Array.from(this.shadowRoot.querySelectorAll('product-item'))
 
-      items.forEach(async (item, i) => {
-        item.index = i
-        await firebase.database().ref(`products/${item.key}/index`).set(i)
-      })
-      this.requestRender()
+      const promises = []
 
-      console.log(items)
-      // this.stamp()
+      for (const item of items) {
+        promises.push(() => {
+          item.position = i
+          promises.push(firebase.set(`products/${item.key}/position`, item.position))
+        })
+      }
+      await Promise.all(promises)
     }
-    this.requestRender()
   }
 
   _onClick(e) {
@@ -72,6 +75,16 @@ export class CatalogProducts extends LiteElement {
   _onFabClick(event) {
     event.preventDefault()
     event.stopImmediatePropagation()
+    const host = document
+      .querySelector('admin-shell')
+      .querySelector('catalog-section')
+      .shadowRoot.querySelector('custom-pages')
+    if (!host.querySelector('catalog-add-product')) {
+      const addProduct = document.createElement('catalog-add-product')
+      addProduct.setAttribute('route', 'add-product')
+      host.appendChild(addProduct)
+    }
+
     location.hash = '#!/catalog/add-product'
   }
 
@@ -114,20 +127,10 @@ export class CatalogProducts extends LiteElement {
         min-width: 240px;
       }
 
-      .fab {
-        display: flex;
+      md-fab {
         position: fixed;
         bottom: 24px;
         right: 24px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        height: 48px;
-        min-width: 110px;
-        border: 1px solid #888;
-        border-radius: 28px;
-        box-sizing: border-box;
-        padding: 12px;
       }
 
       ::slotted(:nth-of-type(odd)) {
@@ -155,26 +158,24 @@ export class CatalogProducts extends LiteElement {
       <custom-list class="container">
         ${this.products
           ? map(
-              Object.entries(this.products).sort((a, b) => a[1].index - b[1].index),
-              ([key, product]) => html`
+              this.products.sort((a, b) => a.position - b.position),
+              (product) => html`
                 <product-item
                   .name=${product.name}
-                  .key=${key}
-                  .index=${product.index}
+                  .key=${product.key}
+                  .position=${product.position}
                   .public=${product.public}
-                  data-route=${key}></product-item>
+                  data-route=${product.key}></product-item>
               `
             )
           : ''}
       </custom-list>
 
-      <span
-        class="fab"
-        @click=${this._onFabClick}>
-        <custom-icon icon="add"></custom-icon>
-        <span class="flex"></span>
-        add
-      </span>
+      <md-fab @click=${this._onFabClick}>
+        <custom-icon
+          icon="add"
+          slot="icon"></custom-icon>
+      </md-fab>
     `
   }
 }

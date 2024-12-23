@@ -9,12 +9,11 @@ import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import '@vandeurenglenn/lite-elements/icon.js'
 import { imgurBaseImage } from '@lit-shop/apis/imgur-base.js'
-import './images-dialog.js'
+import './../../elements/dialog/images-dialog.js'
 import '@vandeurenglenn/lite-elements/card.js'
 import '@vandeurenglenn/lite-elements/typography.js'
 import '@vandeurenglenn/lite-elements/icon.js'
 import '@vandeurenglenn/lite-elements/icon-button.js'
-import { ImagesContext } from '../../context/media/images.js'
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -24,7 +23,7 @@ declare global {
 
 @customElement('images-library')
 export class ImagesLibrary extends LiteElement {
-  @property({ type: Array, consumes: true }) accessor images
+  @property({ type: Array, consumes: 'imgurBaseImages' }) accessor images
 
   get #dialog() {
     return this.shadowRoot.querySelector('images-dialog')
@@ -40,7 +39,9 @@ export class ImagesLibrary extends LiteElement {
     if (action === 'submit') {
       this.#dialog.busy('removing image')
       await api.removeImage({ deletehash, firebaseKey })
-      const index = this.images.indexOf(this.images.filter((item) => item.deletehash === deletehash)[0])
+      const index = this.images.indexOf(
+        this.images.filter((item) => item.deletehash === deletehash)[0]
+      )
       this.images.splice(index, 1)
       this.requestRender()
       this.#dialog.close()
@@ -62,7 +63,9 @@ export class ImagesLibrary extends LiteElement {
                 type: 'base64',
                 title: image.name,
                 description: fields.description,
-                image: image.data.replace('data:image/png;base64,', '')
+                image: image.data
+                  .replace('data:image/png;base64,', '')
+                  .replace('data:image/jpeg;base64,', '')
               })
           )
         )
@@ -147,16 +150,18 @@ export class ImagesLibrary extends LiteElement {
             (image: imgurBaseImage) => html`
               <img
                 @click=${(event) => this.#onclick(event, image.firebaseKey)}
-                src=${`${location.origin}/api/image?image=${image.link.replace('.png', 'b.png')}`} />
+                src=${`${location.origin}/api/image?image=${image.link.replace(
+                  '.png',
+                  'm.png'
+                )}`} />
             `
           )}
         </flex-wrap-center>
       </flex-container>
-      <md-fab
-        variant="primary"
-        label="add image"
-        @click=${this.addImage}>
-        <custom-icon slot="icon">add_a_photo</custom-icon>
+      <md-fab @click=${this.addImage}>
+        <custom-icon
+          slot="icon"
+          icon="add"></custom-icon>
       </md-fab>
     `
   }
