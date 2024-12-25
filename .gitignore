@@ -3,6 +3,6 @@ node_modules
 packages/**/www/**/*.js
 packages/**/www/**/*.d.ts
 .wireit
-serviceAccountKey.json
+packages/**/serviceAccountKey.json
 packages/**/exports/**/*.js
 packages/**/exports/**/*.d.ts

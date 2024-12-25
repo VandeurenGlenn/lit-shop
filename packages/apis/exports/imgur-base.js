@@ -155,6 +155,7 @@ const byteArrayToString$1 = function (bytes) {
 // We define it as an object literal instead of a class because a class compiled down to es5 can't
 // be treeshaked. https://github.com/rollup/rollup/issues/1691
 // Static lookup maps, lazily populated by init_()
+// TODO(dlarocque): Define this as a class, since we no longer target ES5.
 const base64$1 = {
     /**
      * Maps bytes to characters.
@@ -484,7 +485,7 @@ let Deferred$1 = class Deferred {
         });
     }
     /**
-     * Our API internals are not promiseified and cannot because our callback APIs have subtle expectations around
+     * Our API internals are not promisified and cannot because our callback APIs have subtle expectations around
      * invoking promises inline, which Promises are forbidden to do. This method accepts an optional node-style callback
      * and returns a node-style callback which will resolve or reject the Deferred's promise.
      */
@@ -640,7 +641,7 @@ function validateIndexedDBOpenable$1() {
  *
  * Usage:
  *
- *   // Typescript string literals for type-safe codes
+ *   // TypeScript string literals for type-safe codes
  *   type Err =
  *     'unknown' |
  *     'object-not-found'
@@ -691,6 +692,8 @@ let FirebaseError$1 = class FirebaseError extends Error {
         this.name = ERROR_NAME$1;
         // Fix For ES5
         // https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+        // TODO(dlarocque): Replace this with `new.target`: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-newtarget
+        //                   which we can now use since we no longer target ES5.
         Object.setPrototypeOf(this, FirebaseError.prototype);
         // Maintains proper stack trace for where our error was thrown.
         // Only available on V8.
@@ -751,7 +754,7 @@ function jsonEval$1(str) {
 }
 /**
  * Returns JSON representing a javascript object.
- * @param {*} data Javascript object to be stringified.
+ * @param {*} data JavaScript object to be stringified.
  * @return {string} The JSON contents of the object.
  */
 function stringify$1(data) {
@@ -1190,7 +1193,7 @@ function errorPrefix$1(fnName, argName) {
 // so it's been modified.
 // Note that not all Unicode characters appear as single characters in JavaScript strings.
 // fromCharCode returns the UTF-16 encoding of a character - so some Unicode characters
-// use 2 characters in Javascript.  All 4-byte UTF-8 characters begin with a first
+// use 2 characters in JavaScript.  All 4-byte UTF-8 characters begin with a first
 // character in the range 0xD800 - 0xDBFF (the first character of a so-called surrogate
 // pair).
 // See http://www.ecma-international.org/ecma-262/5.1/#sec-15.1.3
@@ -1797,8 +1800,8 @@ function isVersionServiceProvider$1(provider) {
     return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
 }
 
-const name$p$1 = "@firebase/app";
-const version$1$2 = "0.10.4";
+const name$q$1 = "@firebase/app";
+const version$1$2 = "0.10.17";
 
 /**
  * @license
@@ -1818,21 +1821,23 @@ const version$1$2 = "0.10.4";
  */
 const logger$3 = new Logger$1('@firebase/app');
 
-const name$o$1 = "@firebase/app-compat";
+const name$p$1 = "@firebase/app-compat";
 
-const name$n$1 = "@firebase/analytics-compat";
+const name$o$1 = "@firebase/analytics-compat";
 
-const name$m$1 = "@firebase/analytics";
+const name$n$1 = "@firebase/analytics";
 
-const name$l$1 = "@firebase/app-check-compat";
+const name$m$1 = "@firebase/app-check-compat";
 
-const name$k$1 = "@firebase/app-check";
+const name$l$1 = "@firebase/app-check";
 
-const name$j$1 = "@firebase/auth";
+const name$k$1 = "@firebase/auth";
 
-const name$i$1 = "@firebase/auth-compat";
+const name$j$1 = "@firebase/auth-compat";
 
-const name$h$1 = "@firebase/database";
+const name$i$1 = "@firebase/database";
+
+const name$h$1 = "@firebase/data-connect";
 
 const name$g$1 = "@firebase/database-compat";
 
@@ -1862,22 +1867,23 @@ const name$4$1 = "@firebase/storage-compat";
 
 const name$3$1 = "@firebase/firestore";
 
-const name$2$2 = "@firebase/vertexai-preview";
+const name$2$2 = "@firebase/vertexai";
 
 const name$1$2 = "@firebase/firestore-compat";
 
 const name$t = "firebase";
-const version$5 = "10.12.1";
+const version$5 = "11.1.0";
 const PLATFORM_LOG_STRING$1 = {
-    [name$p$1]: 'fire-core',
-    [name$o$1]: 'fire-core-compat',
-    [name$m$1]: 'fire-analytics',
-    [name$n$1]: 'fire-analytics-compat',
-    [name$k$1]: 'fire-app-check',
-    [name$l$1]: 'fire-app-check-compat',
-    [name$j$1]: 'fire-auth',
-    [name$i$1]: 'fire-auth-compat',
-    [name$h$1]: 'fire-rtdb',
+    [name$q$1]: 'fire-core',
+    [name$p$1]: 'fire-core-compat',
+    [name$n$1]: 'fire-analytics',
+    [name$o$1]: 'fire-analytics-compat',
+    [name$l$1]: 'fire-app-check',
+    [name$m$1]: 'fire-app-check-compat',
+    [name$k$1]: 'fire-auth',
+    [name$j$1]: 'fire-auth-compat',
+    [name$i$1]: 'fire-rtdb',
+    [name$h$1]: 'fire-data-connect',
     [name$g$1]: 'fire-rtdb-compat',
     [name$f$1]: 'fire-fn',
     [name$e$1]: 'fire-fn-compat',
@@ -1894,7 +1900,7 @@ const PLATFORM_LOG_STRING$1 = {
     [name$3$1]: 'fire-fst',
     [name$1$2]: 'fire-fst-compat',
     [name$2$2]: 'fire-vertex',
-    'fire-js': 'fire-js',
+    'fire-js': 'fire-js', // Platform identifier for JS SDK.
     [name$t]: 'fire-js-all'
 };
 
@@ -2205,37 +2211,43 @@ let HeartbeatServiceImpl$1 = class HeartbeatServiceImpl {
      */
     async triggerHeartbeat() {
         var _a, _b;
-        const platformLogger = this.container
-            .getProvider('platform-logger')
-            .getImmediate();
-        // This is the "Firebase user agent" string from the platform logger
-        // service, not the browser user agent.
-        const agent = platformLogger.getPlatformInfoString();
-        const date = getUTCDateString$1();
-        if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
-            this._heartbeatsCache = await this._heartbeatsCachePromise;
-            // If we failed to construct a heartbeats cache, then return immediately.
-            if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
+        try {
+            const platformLogger = this.container
+                .getProvider('platform-logger')
+                .getImmediate();
+            // This is the "Firebase user agent" string from the platform logger
+            // service, not the browser user agent.
+            const agent = platformLogger.getPlatformInfoString();
+            const date = getUTCDateString$1();
+            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
+                this._heartbeatsCache = await this._heartbeatsCachePromise;
+                // If we failed to construct a heartbeats cache, then return immediately.
+                if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
+                    return;
+                }
+            }
+            // Do not store a heartbeat if one is already stored for this day
+            // or if a header has already been sent today.
+            if (this._heartbeatsCache.lastSentHeartbeatDate === date ||
+                this._heartbeatsCache.heartbeats.some(singleDateHeartbeat => singleDateHeartbeat.date === date)) {
                 return;
             }
+            else {
+                // There is no entry for this date. Create one.
+                this._heartbeatsCache.heartbeats.push({ date, agent });
+            }
+            // Remove entries older than 30 days.
+            this._heartbeatsCache.heartbeats =
+                this._heartbeatsCache.heartbeats.filter(singleDateHeartbeat => {
+                    const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
+                    const now = Date.now();
+                    return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS$1;
+                });
+            return this._storage.overwrite(this._heartbeatsCache);
         }
-        // Do not store a heartbeat if one is already stored for this day
-        // or if a header has already been sent today.
-        if (this._heartbeatsCache.lastSentHeartbeatDate === date ||
-            this._heartbeatsCache.heartbeats.some(singleDateHeartbeat => singleDateHeartbeat.date === date)) {
-            return;
+        catch (e) {
+            logger$3.warn(e);
         }
-        else {
-            // There is no entry for this date. Create one.
-            this._heartbeatsCache.heartbeats.push({ date, agent });
-        }
-        // Remove entries older than 30 days.
-        this._heartbeatsCache.heartbeats = this._heartbeatsCache.heartbeats.filter(singleDateHeartbeat => {
-            const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
-            const now = Date.now();
-            return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS$1;
-        });
-        return this._storage.overwrite(this._heartbeatsCache);
     }
     /**
      * Returns a base64 encoded string which can be attached to the heartbeat-specific header directly.
@@ -2246,34 +2258,40 @@ let HeartbeatServiceImpl$1 = class HeartbeatServiceImpl {
      */
     async getHeartbeatsHeader() {
         var _a;
-        if (this._heartbeatsCache === null) {
-            await this._heartbeatsCachePromise;
+        try {
+            if (this._heartbeatsCache === null) {
+                await this._heartbeatsCachePromise;
+            }
+            // If it's still null or the array is empty, there is no data to send.
+            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
+                this._heartbeatsCache.heartbeats.length === 0) {
+                return '';
+            }
+            const date = getUTCDateString$1();
+            // Extract as many heartbeats from the cache as will fit under the size limit.
+            const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader$1(this._heartbeatsCache.heartbeats);
+            const headerString = base64urlEncodeWithoutPadding$1(JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }));
+            // Store last sent date to prevent another being logged/sent for the same day.
+            this._heartbeatsCache.lastSentHeartbeatDate = date;
+            if (unsentEntries.length > 0) {
+                // Store any unsent entries if they exist.
+                this._heartbeatsCache.heartbeats = unsentEntries;
+                // This seems more likely than emptying the array (below) to lead to some odd state
+                // since the cache isn't empty and this will be called again on the next request,
+                // and is probably safest if we await it.
+                await this._storage.overwrite(this._heartbeatsCache);
+            }
+            else {
+                this._heartbeatsCache.heartbeats = [];
+                // Do not wait for this, to reduce latency.
+                void this._storage.overwrite(this._heartbeatsCache);
+            }
+            return headerString;
         }
-        // If it's still null or the array is empty, there is no data to send.
-        if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
-            this._heartbeatsCache.heartbeats.length === 0) {
+        catch (e) {
+            logger$3.warn(e);
             return '';
         }
-        const date = getUTCDateString$1();
-        // Extract as many heartbeats from the cache as will fit under the size limit.
-        const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader$1(this._heartbeatsCache.heartbeats);
-        const headerString = base64urlEncodeWithoutPadding$1(JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }));
-        // Store last sent date to prevent another being logged/sent for the same day.
-        this._heartbeatsCache.lastSentHeartbeatDate = date;
-        if (unsentEntries.length > 0) {
-            // Store any unsent entries if they exist.
-            this._heartbeatsCache.heartbeats = unsentEntries;
-            // This seems more likely than emptying the array (below) to lead to some odd state
-            // since the cache isn't empty and this will be called again on the next request,
-            // and is probably safest if we await it.
-            await this._storage.overwrite(this._heartbeatsCache);
-        }
-        else {
-            this._heartbeatsCache.heartbeats = [];
-            // Do not wait for this, to reduce latency.
-            void this._storage.overwrite(this._heartbeatsCache);
-        }
-        return headerString;
     }
 };
 function getUTCDateString$1() {
@@ -2420,9 +2438,9 @@ function registerCoreComponents$1(variant) {
     _registerComponent$1(new Component$1('platform-logger', container => new PlatformLoggerServiceImpl$1(container), "PRIVATE" /* ComponentType.PRIVATE */));
     _registerComponent$1(new Component$1('heartbeat', container => new HeartbeatServiceImpl$1(container), "PRIVATE" /* ComponentType.PRIVATE */));
     // Register `app` package.
-    registerVersion$1(name$p$1, version$1$2, variant);
-    // BUILD_TARGET will be replaced by values like esm5, esm2017, cjs5, etc during the compilation
-    registerVersion$1(name$p$1, version$1$2, 'esm2017');
+    registerVersion$1(name$q$1, version$1$2, variant);
+    // BUILD_TARGET will be replaced by values like esm2017, cjs2017, etc during the compilation
+    registerVersion$1(name$q$1, version$1$2, 'esm2017');
     // Register platform SDK identifier (no version).
     registerVersion$1('fire-js', '');
 }
@@ -2436,7 +2454,7 @@ function registerCoreComponents$1(variant) {
 registerCoreComponents$1('');
 
 const name$s = "@firebase/database";
-const version$4 = "1.0.5";
+const version$4 = "1.0.10";
 
 /**
  * @license
@@ -2993,7 +3011,7 @@ const isWindowsStoreApp$1 = function () {
     return typeof Windows === 'object' && typeof Windows.UI === 'object';
 };
 /**
- * Converts a server error code to a Javascript Error
+ * Converts a server error code to a JavaScript Error
  */
 function errorForServerCode(code, query) {
     let reason = 'Unknown Error';
@@ -3022,7 +3040,7 @@ const INTEGER_REGEXP_$1 = new RegExp('^-?(0*)\\d{1,10}$');
  */
 const INTEGER_32_MIN$1 = -2147483648;
 /**
- * For use in kyes, the maximum possible 32-bit integer.
+ * For use in keys, the maximum possible 32-bit integer.
  */
 const INTEGER_32_MAX$1 = 2147483647;
 /**
@@ -3147,7 +3165,7 @@ let AppCheckTokenProvider$1 = class AppCheckTokenProvider {
                 // Support delayed initialization of FirebaseAppCheck. This allows our
                 // customers to initialize the RTDB SDK before initializing Firebase
                 // AppCheck and ensures that all requests are authenticated if a token
-                // becomes available before the timoeout below expires.
+                // becomes available before the timeout below expires.
                 setTimeout(() => {
                     if (this.appCheck) {
                         this.getToken(forceRefresh).then(resolve, reject);
@@ -3206,7 +3224,7 @@ let FirebaseAuthTokenProvider$1 = class FirebaseAuthTokenProvider {
                 // Support delayed initialization of FirebaseAuth. This allows our
                 // customers to initialize the RTDB SDK before initializing Firebase
                 // Auth and ensures that all requests are authenticated if a token
-                // becomes available before the timoeout below expires.
+                // becomes available before the timeout below expires.
                 setTimeout(() => {
                     if (this.auth_) {
                         this.getToken(forceRefresh).then(resolve, reject);
@@ -3860,7 +3878,7 @@ let BrowserPollConnection$1 = class BrowserPollConnection {
  *********************************************************************************************/
 let FirebaseIFrameScriptHolder$1 = class FirebaseIFrameScriptHolder {
     /**
-     * @param commandCB - The callback to be called when control commands are recevied from the server.
+     * @param commandCB - The callback to be called when control commands are received from the server.
      * @param onMessageCB - The callback to be triggered when responses arrive from the server.
      * @param onDisconnect - The callback to be triggered when this tag holder is closed
      * @param urlFn - A function that provides the URL of the endpoint to send data to.
@@ -4492,12 +4510,6 @@ WebSocketConnection$1.healthyTimeout = 30000;
  * they are available.
  */
 let TransportManager$1 = class TransportManager {
-    /**
-     * @param repoInfo - Metadata around the namespace we're connecting to
-     */
-    constructor(repoInfo) {
-        this.initTransports_(repoInfo);
-    }
     static get ALL_TRANSPORTS() {
         return [BrowserPollConnection$1, WebSocketConnection$1];
     }
@@ -4507,6 +4519,12 @@ let TransportManager$1 = class TransportManager {
      */
     static get IS_TRANSPORT_INITIALIZED() {
         return this.globalTransportInitialized_;
+    }
+    /**
+     * @param repoInfo - Metadata around the namespace we're connecting to
+     */
+    constructor(repoInfo) {
+        this.initTransports_(repoInfo);
     }
     initTransports_(repoInfo) {
         const isWebSocketsAvailable = WebSocketConnection$1 && WebSocketConnection$1['isAvailable']();
@@ -5157,6 +5175,9 @@ let EventEmitter$1 = class EventEmitter {
  * we definitely cannot reach the internet.
  */
 let OnlineMonitor$1 = class OnlineMonitor extends EventEmitter$1 {
+    static getInstance() {
+        return new OnlineMonitor();
+    }
     constructor() {
         super(['online']);
         this.online_ = true;
@@ -5180,9 +5201,6 @@ let OnlineMonitor$1 = class OnlineMonitor extends EventEmitter$1 {
                 }
             }, false);
         }
-    }
-    static getInstance() {
-        return new OnlineMonitor();
     }
     getInitialEvent(eventType) {
         assert$1(eventType === 'online', 'Unknown event type: ' + eventType);
@@ -5471,6 +5489,9 @@ function validationPathToErrorString$1(validationPath) {
  * limitations under the License.
  */
 let VisibilityMonitor$1 = class VisibilityMonitor extends EventEmitter$1 {
+    static getInstance() {
+        return new VisibilityMonitor();
+    }
     constructor() {
         super(['visible']);
         let hidden;
@@ -5509,9 +5530,6 @@ let VisibilityMonitor$1 = class VisibilityMonitor extends EventEmitter$1 {
                 }
             }, false);
         }
-    }
-    static getInstance() {
-        return new VisibilityMonitor();
     }
     getInitialEvent(eventType) {
         assert$1(eventType === 'visible', 'Unknown event type: ' + eventType);
@@ -7160,6 +7178,12 @@ let __childrenNodeConstructor$1;
  * number, or boolean) accessible via getValue().
  */
 let LeafNode$1 = class LeafNode {
+    static set __childrenNodeConstructor(val) {
+        __childrenNodeConstructor$1 = val;
+    }
+    static get __childrenNodeConstructor() {
+        return __childrenNodeConstructor$1;
+    }
     /**
      * @param value_ - The value to store in this leaf node. The object type is
      * possible in the event of a deferred value
@@ -7171,12 +7195,6 @@ let LeafNode$1 = class LeafNode {
         this.lazyHash_ = null;
         assert$1(this.value_ !== undefined && this.value_ !== null, "LeafNode shouldn't be created with null/undefined value.");
         validatePriorityNode$1(this.priorityNode_);
-    }
-    static set __childrenNodeConstructor(val) {
-        __childrenNodeConstructor$1 = val;
-    }
-    static get __childrenNodeConstructor() {
-        return __childrenNodeConstructor$1;
     }
     /** @inheritDoc */
     isLeafNode() {
@@ -7565,10 +7583,6 @@ const buildChildSet$1 = function (childList, cmp, keyFn, mapSortFn) {
 let _defaultIndexMap$1;
 const fallbackObject$1 = {};
 let IndexMap$1 = class IndexMap {
-    constructor(indexes_, indexSet_) {
-        this.indexes_ = indexes_;
-        this.indexSet_ = indexSet_;
-    }
     /**
      * The default IndexMap for nodes without a priority
      */
@@ -7578,6 +7592,10 @@ let IndexMap$1 = class IndexMap {
             _defaultIndexMap$1 ||
                 new IndexMap({ '.priority': fallbackObject$1 }, { '.priority': PRIORITY_INDEX$1 });
         return _defaultIndexMap$1;
+    }
+    constructor(indexes_, indexSet_) {
+        this.indexes_ = indexes_;
+        this.indexSet_ = indexSet_;
     }
     get(indexKey) {
         const sortedMap = safeGet$1(this.indexes_, indexKey);
@@ -7709,6 +7727,10 @@ let EMPTY_NODE$1;
  * list of children in the children property, sorted by child name.
  */
 let ChildrenNode$1 = class ChildrenNode {
+    static get EMPTY_NODE() {
+        return (EMPTY_NODE$1 ||
+            (EMPTY_NODE$1 = new ChildrenNode(new SortedMap$1(NAME_COMPARATOR$1), null, IndexMap$1.Default)));
+    }
     /**
      * @param children_ - List of children of this node..
      * @param priorityNode_ - The priority of this node (as a snapshot node).
@@ -7729,10 +7751,6 @@ let ChildrenNode$1 = class ChildrenNode {
         if (this.children_.isEmpty()) {
             assert$1(!this.priorityNode_ || this.priorityNode_.isEmpty(), 'An empty node cannot have a priority');
         }
-    }
-    static get EMPTY_NODE() {
-        return (EMPTY_NODE$1 ||
-            (EMPTY_NODE$1 = new ChildrenNode(new SortedMap$1(NAME_COMPARATOR$1), null, IndexMap$1.Default)));
     }
     /** @inheritDoc */
     isLeafNode() {
@@ -9014,6 +9032,18 @@ function queryParamsGetQueryObject$1(queryParams) {
  * persistent connection (using WebSockets or long-polling)
  */
 let ReadonlyRestClient$1 = class ReadonlyRestClient extends ServerActions$1 {
+    reportStats(stats) {
+        throw new Error('Method not implemented.');
+    }
+    static getListenId_(query, tag) {
+        if (tag !== undefined) {
+            return 'tag$' + tag;
+        }
+        else {
+            assert$1(query._queryParams.isDefault(), "should have a tag if it's not a default query.");
+            return query._path.toString();
+        }
+    }
     /**
      * @param repoInfo_ - Data about the namespace we are connecting to
      * @param onDataUpdate_ - A callback for new data from the server
@@ -9031,18 +9061,6 @@ let ReadonlyRestClient$1 = class ReadonlyRestClient extends ServerActions$1 {
          * that's been removed. :-/
          */
         this.listens_ = {};
-    }
-    reportStats(stats) {
-        throw new Error('Method not implemented.');
-    }
-    static getListenId_(query, tag) {
-        if (tag !== undefined) {
-            return 'tag$' + tag;
-        }
-        else {
-            assert$1(query._queryParams.isDefault(), "should have a tag if it's not a default query.");
-            return query._path.toString();
-        }
     }
     /** @inheritDoc */
     listen(query, currentHashFn, tag, onComplete) {
@@ -9800,16 +9818,16 @@ const EmptyChildren$1 = () => {
  * A tree with immutable elements.
  */
 let ImmutableTree$1 = class ImmutableTree {
-    constructor(value, children = EmptyChildren$1()) {
-        this.value = value;
-        this.children = children;
-    }
     static fromObject(obj) {
         let tree = new ImmutableTree(null);
         each$1(obj, (childPath, childSnap) => {
             tree = tree.set(new Path$1(childPath), childSnap);
         });
         return tree;
+    }
+    constructor(value, children = EmptyChildren$1()) {
+        this.value = value;
+        this.children = children;
     }
     /**
      * True if the value is empty and there are no children
@@ -12506,7 +12524,7 @@ function treeHasChildren$1(tree) {
     return tree.node.childCount > 0;
 }
 /**
- * @returns Whethe rthe tree is empty (no value or children).
+ * @returns Whether the tree is empty (no value or children).
  */
 function treeIsEmpty$1(tree) {
     return treeGetValue$1(tree) === undefined && !treeHasChildren$1(tree);
@@ -14264,7 +14282,7 @@ function push(parent, value) {
     // then() and catch() methods and is used as the return value of push(). The
     // second remains a regular Reference and is used as the fulfilled value of
     // the first ThennableReference.
-    const thennablePushRef = child(parent, name);
+    const thenablePushRef = child(parent, name);
     const pushRef = child(parent, name);
     let promise;
     if (value != null) {
@@ -14273,9 +14291,9 @@ function push(parent, value) {
     else {
         promise = Promise.resolve(pushRef);
     }
-    thennablePushRef.then = promise.then.bind(promise);
-    thennablePushRef.catch = promise.then.bind(promise, undefined);
-    return thennablePushRef;
+    thenablePushRef.then = promise.then.bind(promise);
+    thenablePushRef.catch = promise.then.bind(promise, undefined);
+    return thenablePushRef;
 }
 /**
  * Removes the data at this Database location.
@@ -14576,7 +14594,7 @@ function registerDatabase$1(variant) {
         return repoManagerDatabaseFromApp$1(app, authProvider, appCheckProvider, url);
     }, "PUBLIC" /* ComponentType.PUBLIC */).setMultipleInstances(true));
     registerVersion$1(name$s, version$4, variant);
-    // BUILD_TARGET will be replaced by values like esm5, esm2017, cjs5, etc during the compilation
+    // BUILD_TARGET will be replaced by values like esm2017, cjs2017, etc during the compilation
     registerVersion$1(name$s, version$4, 'esm2017');
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
