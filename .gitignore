@@ -2,7 +2,9 @@
 node_modules
 packages/**/www/**/*.js
 packages/**/www/**/*.d.ts
-.wireit
 packages/**/serviceAccountKey.json
-packages/**/exports/**/*.js
-packages/**/exports/**/*.d.ts
+packages/**/exports
+
+.wireit
+/packages/apis/exports
+/packages/server/exports
