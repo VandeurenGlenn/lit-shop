@@ -1,13 +1,6 @@
 import { LiteElement, css, customElement, html, property } from '@vandeurenglenn/lite'
-import '@vandeurenglenn/flex-elements/container.js'
 import '@material/web/fab/fab.js'
 import '@vandeurenglenn/lite-elements/icon.js'
-import { InputFields } from '../../elements/input-fields/input-fields.js'
-import { InputField } from '../../elements/input-fields/input-field.js'
-import { Product } from '@lit-shop/types'
-import { sizeField } from '../../elements/input-fields/size-field.js'
-import './../../elements/input-fields/size-fields.js'
-import './../../elements/input-fields/image-fields.js'
 import { TemplateResult } from 'lit'
 
 export type StepConfig = {
@@ -33,6 +26,8 @@ export class ProductFlow extends LiteElement {
   @property({ attribute: false }) accessor stepRender
 
   lastRender: TemplateResult
+
+  stepRenders = {}
 
   get stepIndex() {
     return this.steps.findIndex((step) => step.step === this.step)
@@ -78,9 +73,12 @@ export class ProductFlow extends LiteElement {
   }
 
   #previous() {
+    const stepResult = this.steps[this.stepIndex].stepValidate()
+    if (stepResult.error) return
+    this.stepResults[this.step] = stepResult.values
     this.step = this.steps[this.stepIndex - 1].step
-    const lastRender = this.lastRender
-    const lastRenderValues = this.lastRender.values[0] as [string, any][]
+    const lastRender = this.stepRenders[this.step]
+    const lastRenderValues = this.stepRenders[this.step].values[0] as [string, any][]
 
     if (lastRenderValues) {
       for (let i = 0; i < lastRenderValues.length; i++) {
@@ -92,8 +90,8 @@ export class ProductFlow extends LiteElement {
         }
       }
     }
-    this.stepRender = lastRender
 
+    this.stepRender = lastRender
     this.dispatchEvent(
       new CustomEvent('step', {
         detail: { results: this.stepResults, isLastStep: this.isLastStep, step: this.step }
@@ -104,8 +102,10 @@ export class ProductFlow extends LiteElement {
   #next() {
     let errors = false
     const stepResult = this.steps[this.stepIndex].stepValidate()
+    const currentStep = this.step
     if (stepResult.error) return
 
+    this.stepRenders[currentStep] = this.stepRender
     this.stepResults[this.step] = stepResult.values
 
     const stepResults = this.stepResults
@@ -126,8 +126,29 @@ export class ProductFlow extends LiteElement {
       step = this.step
     }
 
-    this.lastRender = this.stepRender
-    this.stepRender = this.steps[this.stepIndex].stepRender(this.steps[this.stepIndex].fields)
+    if (this.stepRenders[this.step]) {
+      const lastRender = this.stepRenders[this.step]
+      const lastRenderValues = lastRender.values[0] as [string, any][]
+
+      if (lastRenderValues) {
+        for (let i = 0; i < lastRenderValues.length; i++) {
+          if (!Array.isArray(lastRenderValues[i])) {
+            lastRenderValues[i] = this.stepResults[this.step][i]
+          } else {
+            const [label, value] = lastRenderValues[i]
+            if (value?.type === 'select') {
+              lastRenderValues[i][1].value = this.stepResults[this.step][label]
+            } else {
+              lastRenderValues[i][1] = this.stepResults[this.step][label]
+            }
+          }
+        }
+        this.stepRender = lastRender
+        this.stepRenders[this.step] = this.stepRender
+      }
+    } else
+      this.stepRender = this.steps[this.stepIndex].stepRender(this.steps[this.stepIndex].fields)
+    this.stepRenders[this.step] = this.stepRender
   }
 
   startFlow(steps: StepsConfig) {
@@ -141,7 +162,8 @@ export class ProductFlow extends LiteElement {
 
   render() {
     if (!this.stepRender) return
-    return html`${this.stepRender}
+    return html`
+      ${this.stepRender}
       <flex-row class="nav">
         ${this.step !== 'initial'
           ? html`
@@ -163,6 +185,7 @@ export class ProductFlow extends LiteElement {
                 slot="icon"
                 icon="arrow_forward"></custom-icon
             ></md-fab>`}
-      </flex-row> `
+      </flex-row>
+    `
   }
 }

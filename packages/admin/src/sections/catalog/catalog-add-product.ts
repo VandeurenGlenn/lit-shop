@@ -1,21 +1,19 @@
-import '../../image-nails.js'
-// import 'custom-input';
-import '@vandeurenglenn/custom-date/custom-date.js'
-import { generateSKU, generateUUID } from '@lit-shop/utils'
-import '../../elements/input-fields/input-fields.js'
-import { LiteElement, html, customElement, property, query } from '@vandeurenglenn/lite'
+import { generateSKU } from '@lit-shop/utils'
+import { LiteElement, html, customElement, property, query, css } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/container.js'
-import { StyleList, css } from '@vandeurenglenn/lite/element'
-import '@material/web/fab/fab.js'
-import '@vandeurenglenn/lite-elements/icon.js'
-import '@vandeurenglenn/lite-elements/tabs.js'
-import '@vandeurenglenn/lite-elements/tab.js'
 import firebase from '../../firebase.js'
-import { Product } from '@lit-shop/types'
 import './../../flows/product/product-flow.js'
-import { ProductFlow } from '../../flows/product/product-flow.js'
-import { InputFields } from '../../elements/input-fields/input-fields.js'
-import { ImageFields } from '../../elements/input-fields/image-fields.js'
+
+import './../../elements/input-fields/size-fields.js'
+import './../../elements/input-fields/image-fields.js'
+import './../../elements/input-fields/input-fields.js'
+
+import type { StyleList } from '@vandeurenglenn/lite/element'
+import type { Product } from '@lit-shop/types'
+import type { ProductFlow } from '../../flows/product/product-flow.js'
+import type { InputFields } from '../../elements/input-fields/input-fields.js'
+import type { ImageFields } from '../../elements/input-fields/image-fields.js'
+import type { SizeFields } from '../../elements/input-fields/size-fields.js'
 
 const initialStep = (fields) => html` <input-fields .fields=${fields}></input-fields> `
 
@@ -34,58 +32,22 @@ export default class CatalogAddProduct extends LiteElement {
 
   @property({ type: String }) accessor product
 
-  @property({ type: String }) accessor sku: string
-
   @query('product-flow') accessor productFlow: ProductFlow
 
-  get uniqueId() {
-    return generateUUID()
-  }
-
-  @property({ type: Array }) accessor imageFields
-
-  @property({ type: Array }) accessor fields
-
-  @property({ type: Array }) accessor sizeFields
-
-  async connectedCallback() {
-    const uniqueId = generateUUID()
-  }
-
   _onStep = (event) => {
-    console.log(event)
-
-    console.log(event.detail)
-
-    if (event.detail.step === 'sizes' && !event.detail.isLastStep) {
-      this.productFlow.fields = this.sizeFields
-      console.log('fields', this.sizeFields)
-      return
-    }
-    if (event.detail.step === 'initial') {
-      this.productFlow.fields = this.fields
-      return
-    }
-
-    if (event.detail.step === 'images' && !event.detail.isLastStep) {
-      this.productFlow.fields = this.imageFields
-      return
-    }
     if (event.detail.isLastStep) return this.addProduct(event.detail.results)
   }
 
   _onSelect(event) {
     this.selected = event.detail
   }
-  async addProduct(results) {
-    console.log({ results })
 
+  async addProduct(results) {
     const product: Product = {
       ...results.initial,
       sizes: results.sizes,
       images: results.images
     }
-    console.log({ product })
     this.busy = true
 
     const key = await firebase.push('products', product)
@@ -96,23 +58,23 @@ export default class CatalogAddProduct extends LiteElement {
 
       const sku = generateSKU(product.category, `${size}${unit}`, key)
       product.sizes[i].sku = sku
-      let barcode = `${productCount}${i}`
-
-      product.sizes[i].barcode = `${productCount}${i}`
     }
     product.position = productCount - 1
+    const time = new Date().getTime()
+    product.createdAt = time
+    product.lastChangedAt = time
 
     await firebase.update(`products/${key}`, product)
 
     location.hash = `#!/catalog/products`
-    // remove element completly
+    // remove element completely
     this.remove()
   }
 
-  async onChange(propertyKey: string, value: any): void {
-    if (propertyKey === 'categories' && !this.steps && value?.length > 0) {
-      console.log(value)
+  async onChange(propertyKey: string, value: any): Promise<void> {
+    console.log(value)
 
+    if (propertyKey === 'categories' && value?.length > 0) {
       this.steps = [
         {
           step: 'initial',
@@ -135,7 +97,7 @@ export default class CatalogAddProduct extends LiteElement {
           stepValidate: () => {
             const field = this.shadowRoot
               .querySelector('product-flow')
-              .shadowRoot.querySelector('size-fields') as InputFields
+              .shadowRoot.querySelector('size-fields') as SizeFields
             return field.checkValidityAndGetValues()
           },
           fields: [{ size: 100, unit: 'ml', price: 10, stock: 10, EAN: '' }]
@@ -152,19 +114,11 @@ export default class CatalogAddProduct extends LiteElement {
           fields: []
         }
       ]
-      console.log(await this.rendered)
 
-      await this.requestRender()
+      this.requestRender()
       this.productFlow.startFlow(this.steps)
     }
   }
-
-  // firstRender(): void {
-  //   this.sizeFields = []
-  //   this.imageFields = []
-  //   this.shadowRoot.querySelector('product-flow').addEventListener('step', this._onStep)
-  // }
-
   static styles?: StyleList = [
     css`
       :host([busy]) {

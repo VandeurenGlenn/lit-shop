@@ -10,8 +10,6 @@ import {
 import '@vandeurenglenn/flex-elements/row.js'
 import './image-field.js'
 import './../dialog/images-dialog.js'
-import { Product } from '@lit-shop/types'
-import { ImageField } from './image-field.js'
 
 @customElement('image-fields')
 export class ImageFields extends LiteElement {

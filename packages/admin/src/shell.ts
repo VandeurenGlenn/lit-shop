@@ -45,7 +45,7 @@ export class AdminShell extends LiteElement {
 
   @property({ provides: true }) accessor product
 
-  @property({ provides: true, batches: true }) accessor categories = []
+  @property({ provides: true, batches: true, batchDelay: 1000 }) accessor categories
 
   @property({ provides: true }) accessor stats
 

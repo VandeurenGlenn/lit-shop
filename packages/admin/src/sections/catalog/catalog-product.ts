@@ -173,9 +173,6 @@ export default class CatalogProduct extends LiteElement {
     }
   }
   _save = async () => {
-    console.log('saving')
-    console.log(this.product)
-
     if (this.selected === 'general') {
       const values = this.shadowRoot.querySelector('input-fields').getValues()
       for (const label of Object.keys(values)) {
