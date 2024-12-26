@@ -2,6 +2,7 @@ import { LiteElement, css, customElement, html, property } from '@vandeurenglenn
 import '@material/web/fab/fab.js'
 import '@vandeurenglenn/lite-elements/icon.js'
 import { TemplateResult } from 'lit'
+import style from './product-flow.css.js'
 
 export type StepConfig = {
   step: string // step name
@@ -13,6 +14,7 @@ export type StepConfig = {
 export type StepsConfig = StepConfig[]
 @customElement('product-flow')
 export class ProductFlow extends LiteElement {
+  static styles = [style]
   @property({ type: Array }) accessor fields
 
   @property({ type: Boolean, attribute: 'is-last-step', reflect: true }) accessor isLastStep
@@ -29,6 +31,8 @@ export class ProductFlow extends LiteElement {
 
   stepRenders = {}
 
+  stepResults = {}
+
   get stepIndex() {
     return this.steps.findIndex((step) => step.step === this.step)
   }
@@ -41,31 +45,6 @@ export class ProductFlow extends LiteElement {
       this.requestRender()
     }
   }
-
-  stepResults = {}
-
-  static styles = [
-    css`
-      :host {
-        display: block;
-        flex-direction: column;
-        width: 100%;
-        position: relative;
-        height: 100%;
-      }
-      .nav {
-        position: absolute;
-        bottom: 24px;
-        left: 24px;
-        right: 24px;
-        display: flex;
-        justify-content: space-between;
-      }
-      :host([is-first-step]) .nav {
-        justify-content: flex-end;
-      }
-    `
-  ]
 
   reset() {
     this.step = undefined
@@ -100,7 +79,6 @@ export class ProductFlow extends LiteElement {
   }
 
   #next() {
-    let errors = false
     const stepResult = this.steps[this.stepIndex].stepValidate()
     const currentStep = this.step
     if (stepResult.error) return
@@ -108,13 +86,12 @@ export class ProductFlow extends LiteElement {
     this.stepRenders[currentStep] = this.stepRender
     this.stepResults[this.step] = stepResult.values
 
-    const stepResults = this.stepResults
     let step = this.step
     const isLastStep = this.isLastStep
 
     this.dispatchEvent(
       new CustomEvent('step', {
-        detail: { results: stepResults, isLastStep, step }
+        detail: { results: this.stepResults, isLastStep, step }
       })
     )
 
