@@ -45,7 +45,7 @@ export class AdminShell extends LiteElement {
 
   @property({ provides: true }) accessor product
 
-  @property({ provides: true }) accessor categories = []
+  @property({ provides: true, batches: true }) accessor categories = []
 
   @property({ provides: true }) accessor stats
 
@@ -245,6 +245,7 @@ export class AdminShell extends LiteElement {
     }
     if (!customElements.get(routeInfo.tag))
       await import(`./${routeInfo.import || routeInfo.tag}.js`)
+
     this.shadowRoot.querySelector('custom-selector').select(route)
     this.pages.select(paths[0], selection)
     console.log({ routeInfo })
@@ -285,6 +286,7 @@ export class AdminShell extends LiteElement {
       this.loading = false
       return
     }
+
     for (let i = 0; i < paths.length; i++) {
       let el = previous.querySelector(`[route="${paths[i]}"]`)
 
@@ -292,7 +294,7 @@ export class AdminShell extends LiteElement {
         el = previous.shadowRoot.querySelector(`[route="${paths[i]}"]`)
       console.log(el)
 
-      const route = el.getAttribute('route')
+      const route = el ? el.getAttribute('route') : paths[i]
       console.log({ route })
       // TODO: once all updates are handed local atleast cache for a minute
       switch (route) {
@@ -356,11 +358,10 @@ export class AdminShell extends LiteElement {
           break
       }
 
-      if (selection && i === paths.length - 1) el.selection = selection
+      if (selection && i === paths.length - 1 && el) el.selection = selection
 
       previous.select(paths[i], selection)
-
-      previous = el
+      if (el) previous = el
     }
 
     if (promises?.length > 0) await Promise.all(promises)

@@ -12,7 +12,7 @@ import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field
 import { debounce } from '../../debounce.js'
 
 @customElement('size-field')
-export class sizeField extends LiteElement {
+export class SizeField extends LiteElement {
   @property({ type: Number })
   accessor size
 
@@ -37,7 +37,7 @@ export class sizeField extends LiteElement {
       await field.updateComplete
       console.log(this[field.label])
 
-      if (!this[field.label]) this[field.label] = field.placeholder
+      // if (!this[field.label]) this[field.label] = field.placeholder
       field.addEventListener('input', () => this._oninput(field))
     })
     const select = this.shadowRoot.querySelector('md-outlined-select')
@@ -49,9 +49,11 @@ export class sizeField extends LiteElement {
   }
 
   private _oninput = (field) => {
+    console.log(field.label)
+
     debounce(() => {
       this[field.label] = field.value
-    })
+    })()
   }
 
   checkValidity() {

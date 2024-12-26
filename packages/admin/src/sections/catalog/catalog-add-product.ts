@@ -14,9 +14,18 @@ import firebase from '../../firebase.js'
 import { Product } from '@lit-shop/types'
 import './../../flows/product/product-flow.js'
 import { ProductFlow } from '../../flows/product/product-flow.js'
+import { InputFields } from '../../elements/input-fields/input-fields.js'
+import { ImageFields } from '../../elements/input-fields/image-fields.js'
+
+const initialStep = (fields) => html` <input-fields .fields=${fields}></input-fields> `
+
+const sizesStep = (fields) => html` <size-fields .fields=${fields}></size-fields> `
+
+const imagesStep = (fields) => html` <image-fields .fields=${fields}></image-fields> `
 
 @customElement('catalog-add-product')
 export default class CatalogAddProduct extends LiteElement {
+  steps
   @property({ type: Array, consumes: 'categories' }) accessor categories
 
   @property({ type: String }) accessor selected: string
@@ -100,22 +109,61 @@ export default class CatalogAddProduct extends LiteElement {
     this.remove()
   }
 
-  onChange(propertyKey: string, value: any): void {
-    if (propertyKey === 'categories') {
-      this.fields = [
-        ['category', { type: 'select', options: this.categories }],
-        ['name', ''],
-        ['description', '']
+  async onChange(propertyKey: string, value: any): void {
+    if (propertyKey === 'categories' && !this.steps && value?.length > 0) {
+      console.log(value)
+
+      this.steps = [
+        {
+          step: 'initial',
+          stepRender: initialStep,
+          stepValidate: () => {
+            const field = this.shadowRoot
+              .querySelector('product-flow')
+              .shadowRoot.querySelector('input-fields') as InputFields
+            return field.checkValidityAndGetValues()
+          },
+          fields: [
+            ['category', { type: 'select', options: value }],
+            ['name', ''],
+            ['description', '']
+          ]
+        },
+        {
+          step: 'sizes',
+          stepRender: sizesStep,
+          stepValidate: () => {
+            const field = this.shadowRoot
+              .querySelector('product-flow')
+              .shadowRoot.querySelector('size-fields') as InputFields
+            return field.checkValidityAndGetValues()
+          },
+          fields: [{ size: 100, unit: 'ml', price: 10, stock: 10, EAN: '' }]
+        },
+        {
+          step: 'images',
+          stepRender: imagesStep,
+          stepValidate: () => {
+            const field = this.shadowRoot
+              .querySelector('product-flow')
+              .shadowRoot.querySelector('image-fields') as ImageFields
+            return field.checkValidityAndGetValues()
+          },
+          fields: []
+        }
       ]
-      this.productFlow.fields = this.fields
+      console.log(await this.rendered)
+
+      await this.requestRender()
+      this.productFlow.startFlow(this.steps)
     }
   }
 
-  firstRender(): void {
-    this.sizeFields = [{ unit: 'ml', amount: 500, price: 0, stock: 0, EAN: '' }]
-    this.imageFields = []
-    this.shadowRoot.querySelector('product-flow').addEventListener('step', this._onStep)
-  }
+  // firstRender(): void {
+  //   this.sizeFields = []
+  //   this.imageFields = []
+  //   this.shadowRoot.querySelector('product-flow').addEventListener('step', this._onStep)
+  // }
 
   static styles?: StyleList = [
     css`
@@ -123,12 +171,14 @@ export default class CatalogAddProduct extends LiteElement {
         justify-content: center;
         align-items: center;
         height: 100%;
+        width: 100%;
       }
 
       :host {
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 100%;
       }
 
       flex-container {
@@ -140,6 +190,7 @@ export default class CatalogAddProduct extends LiteElement {
 
   render() {
     if (this.busy) return html`<busy-animation message="Adding product"></busy-animation>`
+    if (!this.steps) return html``
     return html`<flex-container center
       ><product-flow @step=${this._onStep}></product-flow
     ></flex-container>`

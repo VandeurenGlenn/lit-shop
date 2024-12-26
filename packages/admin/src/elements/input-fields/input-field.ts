@@ -55,20 +55,25 @@ export class InputField extends LiteElement {
 
     if (value?.type && value?.options) {
       if (value.type === 'select') {
-        this.isSelect = true
         this.options = value.options
+        this.value = value.value || value.options[0]
+        this.isSelect = true
       }
     }
 
-    const selectEl = this.shadowRoot.querySelector('md-outlined-select')
+    if (propertyKey === 'isSelect' && value) {
+      const selectEl = this.shadowRoot.querySelector('md-outlined-select')
 
-    if (selectEl) {
-      await selectEl.updateComplete
-      this.value = value.value || this.options[0]
-      selectEl.selectIndex(0)
-      selectEl.addEventListener('value', (e) => {
-        this.value = e.target.value
-      })
+      if (selectEl) {
+        await selectEl.updateComplete
+        selectEl.select(this.value)
+        selectEl.addEventListener('change', (e) => {
+          this.value = selectEl.value
+          console.log(this.value)
+
+          selectEl.select(this.value)
+        })
+      }
     }
   }
 

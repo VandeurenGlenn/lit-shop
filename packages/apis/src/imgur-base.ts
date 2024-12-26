@@ -173,7 +173,7 @@ export default class ImgurBase extends Imgur {
     try {
       await remove(child(this.#imagesRef, firebaseKey))
       await super.removeImage(deletehash)
-      return 'succes'
+      return 'success'
     } catch (error) {
       console.log(error)
     }

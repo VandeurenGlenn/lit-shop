@@ -1,21 +1,25 @@
-import { LiteElement, html, css, customElement, property } from '@vandeurenglenn/lite'
+import { LiteElement, html, css, customElement, property, queryAll } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/row.js'
 import './size-field.js'
 import { Product } from '@lit-shop/types'
+import { SizeField } from './size-field.js'
 
 @customElement('size-fields')
 export class SizeFields extends LiteElement {
   @property({ type: Array })
-  accessor fields
+  accessor fields: { price: number; size: number; stock: number; unit: string; EAN: string }[]
 
   addSize() {
-    this.fields.push({ price: 0, size: 0, stock: 0, unit: 'ml' })
+    const field = {}
+    if (!this.fields) this.fields = [field]
+    else this.fields.push(field)
     this.requestRender()
   }
 
   getValues() {
     const values = []
-    for (const field of this.fields) {
+    const sizeFields = Array.from(this.shadowRoot.querySelectorAll('size-field')) as SizeField[]
+    for (const field of sizeFields) {
       values.push({
         size: field.size,
         price: field.price,
@@ -27,6 +31,31 @@ export class SizeFields extends LiteElement {
     return values
   }
 
+  checkValidityAndGetValues() {
+    const fields = Array.from(this.shadowRoot.querySelectorAll('size-field')) as SizeField[]
+    const values = []
+
+    let error = false
+    for (const field of fields) {
+      if (!field.checkValidity()) {
+        error = true
+        field.error = true
+      }
+      values.push({
+        size: field.size,
+        price: field.price,
+        stock: field.stock,
+        unit: field.unit,
+        EAN: field.EAN
+      })
+    }
+    return { error, values }
+  }
+
+  reset() {
+    this.fields = []
+  }
+
   static styles = [
     css`
       :host {
@@ -35,16 +64,29 @@ export class SizeFields extends LiteElement {
     `
   ]
 
+  _removeField(EAN) {
+    let index
+    for (let i = 0; i < this.fields.length; i++) {
+      if (this.fields[i].EAN === EAN) {
+        index = i
+        break
+      }
+    }
+    this.fields
+  }
+
   render() {
     return html`
       ${this.fields
         ? this.fields.map(
             (field) => html`
               <size-field
+                @click=${() => this._removeField(field.EAN)}
                 .unit=${field.unit}
                 .size=${field.size}
                 .price=${field.price}
-                .stock=${field.stock}></size-field>
+                .stock=${field.stock}
+                .EAN=${field.EAN}></size-field>
             `
           )
         : ''}

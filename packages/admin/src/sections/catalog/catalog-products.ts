@@ -75,15 +75,15 @@ export class CatalogProducts extends LiteElement {
   _onFabClick(event) {
     event.preventDefault()
     event.stopImmediatePropagation()
-    const host = document
-      .querySelector('admin-shell')
-      .querySelector('catalog-section')
-      .shadowRoot.querySelector('custom-pages')
-    if (!host.querySelector('catalog-add-product')) {
-      const addProduct = document.createElement('catalog-add-product')
-      addProduct.setAttribute('route', 'add-product')
-      host.appendChild(addProduct)
-    }
+    // const host = document
+    //   .querySelector('admin-shell')
+    //   .querySelector('catalog-section')
+    //   .shadowRoot.querySelector('custom-pages')
+    // if (!host.querySelector('catalog-add-product')) {
+    //   const addProduct = document.createElement('catalog-add-product')
+    //   addProduct.setAttribute('route', 'add-product')
+    //   host.appendChild(addProduct)
+    // }
 
     location.hash = '#!/catalog/add-product'
   }

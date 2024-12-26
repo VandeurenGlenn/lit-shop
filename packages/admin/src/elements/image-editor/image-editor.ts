@@ -56,7 +56,6 @@ export class ImageEditor extends LiteElement {
     css`
       :host {
         display: flex;
-        flex-direction: column;
         left: 0;
         right: 0;
         bottom: 0;
@@ -71,13 +70,14 @@ export class ImageEditor extends LiteElement {
         width: calc(100% - 16px);
       }
 
-      ::slotted(*),
-      * {
+      .container {
         pointer-events: none;
+        display: flex;
+        flex-direction: column;
       }
 
       :host([open]),
-      :host([open]) ::slotted(*) {
+      :host([open]) .container {
         pointer-events: auto;
         opacity: 1;
       }
@@ -119,32 +119,34 @@ export class ImageEditor extends LiteElement {
 
   render() {
     return html`
+      <span class="container">
+        <span class="scrim"></span>
+        <flex-container padding="0">
+          <img id="cropper" />
+        </flex-container>
+        <flex-row class="actions">
+          <custom-button
+            label="cancel"
+            type="elevated"
+            action="close">
+            <custom-icon
+              slot="icon"
+              icon="close"></custom-icon>
+          </custom-button>
+          <flex-it></flex-it>
+          <custom-button
+            label="done"
+            type="tonal"
+            action="done">
+            <custom-icon
+              slot="icon"
+              icon="done"></custom-icon>
+          </custom-button>
+        </flex-row>
+      </span>
       <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.css" />
-      <span class="scrim"></span>
-      <flex-container padding="0">
-        <img id="cropper" />
-      </flex-container>
-      <flex-row class="actions">
-        <custom-button
-          label="cancel"
-          type="elevated"
-          action="close">
-          <custom-icon
-            slot="icon"
-            icon="close"></custom-icon>
-        </custom-button>
-        <flex-it></flex-it>
-        <custom-button
-          label="done"
-          type="tonal"
-          action="done">
-          <custom-icon
-            slot="icon"
-            icon="done"></custom-icon>
-        </custom-button>
-      </flex-row>
     `
   }
 }

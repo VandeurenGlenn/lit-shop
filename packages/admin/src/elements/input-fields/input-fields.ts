@@ -27,10 +27,26 @@ export class InputFields extends LiteElement {
   getValues() {
     const fields = Array.from(this.shadowRoot.querySelectorAll('input-field')) as InputField[]
     const values = {}
+
     for (const field of fields) {
       values[field.name] = field.value
     }
     return values
+  }
+
+  checkValidityAndGetValues() {
+    const fields = Array.from(this.shadowRoot.querySelectorAll('input-field')) as InputField[]
+    const values = {}
+
+    let error = false
+    for (const field of fields) {
+      if (!field.checkValidity()) {
+        error = true
+        field.error = true
+      }
+      values[field.name] = field.value
+    }
+    return { error, values }
   }
 
   render() {

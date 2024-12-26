@@ -3,6 +3,8 @@ import '../../elements/input-fields/input-field.js'
 import '../../elements/input-fields/input-fields.js'
 import '../../elements/input-fields/size-fields.js'
 import '../../elements/input-fields/size-field.js'
+import '../../elements/input-fields/image-fields.js'
+import '../../elements/input-fields/image-field.js'
 import '@vandeurenglenn/lite-elements/dropdown-menu.js'
 import '@vandeurenglenn/lite-elements/icon'
 import '@vandeurenglenn/lite-elements/list-item.js'
@@ -18,7 +20,6 @@ import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 
 import { map } from 'lit/directives/map.js'
 import { CustomPages } from '../../types.js'
-import { ref, set } from 'firebase/database'
 import { LiteElement, customElement, property, query, html } from '@vandeurenglenn/lite'
 import { StyleList, css } from '@vandeurenglenn/lite/element'
 import { Product } from '@lit-shop/types'
@@ -80,6 +81,16 @@ export default class CatalogProduct extends LiteElement {
               })
           )
         )
+
+        const images = this.product.images || []
+        for (const res of result) {
+          console.log(res)
+
+          const key = res.firebaseKey
+          images.push(key)
+        }
+
+        this.product.images = images
       } else if (image.type === 'url') {
         result = [
           await api.addImage({
@@ -121,6 +132,7 @@ export default class CatalogProduct extends LiteElement {
   _onFabClick = () => {
     if (this.selected === 'images') {
       this.addImage()
+      // this.shadowRoot.querySelector('image-fields').addImage()
     } else if (this.selected === 'sizes') {
       this.shadowRoot.querySelector('size-fields').addSize()
     } else {
@@ -132,12 +144,12 @@ export default class CatalogProduct extends LiteElement {
     console.log(propertyKey, this[propertyKey])
 
     if (propertyKey === 'product') {
-      this.product.category = {
-        value: this.product.category,
-        type: 'select',
-        options: this.categories
-      }
-      console.log(this.product)
+      if (!this.product.category?.value)
+        this.product.category = {
+          value: this.product.category,
+          type: 'select',
+          options: this.categories
+        }
 
       this.fields = Object.entries(this.product).filter(
         (entry) =>
@@ -150,7 +162,6 @@ export default class CatalogProduct extends LiteElement {
       )
 
       this.sizeFields = this.product.sizes
-      console.log(this.sizeFields)
     }
     if (
       (propertyKey === 'selected' && this.images) ||
@@ -162,6 +173,22 @@ export default class CatalogProduct extends LiteElement {
     }
   }
   _save = async () => {
+    console.log('saving')
+    console.log(this.product)
+
+    if (this.selected === 'general') {
+      const values = this.shadowRoot.querySelector('input-fields').getValues()
+      for (const label of Object.keys(values)) {
+        this.product[label] = values[label]
+      }
+    } else if (this.selected === 'sizes') {
+      const values = this.shadowRoot.querySelector('size-fields').getValues()
+      this.product.sizes = values
+    } else if (this.selected === 'images') {
+      // const images = Array.from(this.shadowRoot.querySelectorAll('product-image')) as ProductImage[]
+      // this.product.images = images.map((image) => image.image.key)
+    }
+
     try {
       await firebase.update(`products/${this.product.key}`, this.product)
       if (this.product.images) {
@@ -182,9 +209,13 @@ export default class CatalogProduct extends LiteElement {
   }
 
   onSelected = (event) => {
+    console.log({ event })
+
     if (this.selected === 'general') {
       const values = this.shadowRoot.querySelector('input-fields').getValues()
-      this.product = { ...this.product, ...values }
+      for (const label of Object.keys(values)) {
+        this.product[label] = values[label]
+      }
     } else if (this.selected === 'sizes') {
       const values = this.shadowRoot.querySelector('size-fields').getValues()
       this.product.sizes = values
@@ -202,6 +233,8 @@ export default class CatalogProduct extends LiteElement {
         display: flex;
         flex-direction: column;
         align-items: center;
+        align-items: center;
+        width: 100%;
       }
 
       flex-container {
@@ -310,7 +343,6 @@ export default class CatalogProduct extends LiteElement {
   render() {
     return this.product
       ? html`
-          <image-selector-dialog has-library></image-selector-dialog>
           <flex-row class="action-bar">
             <custom-selector
               attr-for-selected="label"

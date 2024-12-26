@@ -8,7 +8,7 @@ const serviceAccount = JSON.parse((await readFile('./serviceAccountKey.json')).t
 
 initializeApp({
   credential: cert(serviceAccount),
-  databaseURL: 'https://topveldwinkel.firebaseio.com'
+  databaseURL: 'https://hello-new-me-default-rtdb.europe-west1.firebasedatabase.app'
 })
 const database = getDatabase()
 

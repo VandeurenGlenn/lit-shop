@@ -50,13 +50,6 @@ export default class ImagesImage extends LiteElement {
       this._dialog.close()
       location.hash = `/#!/media/images/library`
     }
-    const provider = litShop.contextProviders?.images
-    if (provider) {
-      const index = provider.images.indexOf(this.image)
-      console.log('provider')
-
-      provider.images.splice(index, 1)
-    }
   }
 
   async removeOriginal() {

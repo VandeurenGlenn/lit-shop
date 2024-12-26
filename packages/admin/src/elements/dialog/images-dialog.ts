@@ -14,6 +14,7 @@ import { imgurAlbumParams } from '@lit-shop/apis/imgur/types'
 import { DeviceApi } from '@lit-shop/apis/device'
 import '@material/web/progress/circular-progress.js'
 import { imgurBaseImage } from '@lit-shop/apis/imgur-base'
+import CameraPhoto from 'es-html5-camera-photo'
 
 declare type actionResult = {
   action: string
@@ -30,6 +31,8 @@ declare global {
 @customElement('images-dialog')
 export class ImagesDialog extends LiteElement {
   deviceApi: DeviceApi = new DeviceApi()
+  #cameraPhoto: CameraPhoto
+
   @query('custom-pages')
   accessor pages
 
@@ -173,12 +176,19 @@ export class ImagesDialog extends LiteElement {
   #takePhoto = async () => {
     // this._previewEl.stop();
     // this._previewEl.srcObject = null;
-    const blob = await this.deviceApi.camera.takePhoto(this.#cameraFacingMode)
+    const config = {
+      sizeFactor: 1,
+      imageType: 'png',
+      imageCompression: 0,
+      isImageMirror: false
+    }
+
+    let dataUri = this.#cameraPhoto.getDataUri(config)
 
     // const fd = new FormData();
     // fd.append('image', blob);
 
-    this.#image.data = [{ name: new Date().getTime(), data: await this.readAsDataURL(blob) }]
+    this.#image.data = [{ name: new Date().getTime(), data: dataUri }]
     this.#image.type = 'base64[]'
 
     const img = document.createElement('img')
@@ -237,7 +247,17 @@ export class ImagesDialog extends LiteElement {
     if (detail === 'camera') {
       this.frontCameraDisabled = !(await this.deviceApi.hasFrontCam())
       this.rearCameraDisabled = !(await this.deviceApi.hasBackCam())
-      this.deviceApi.camera.preview(this.#cameraPreview, this.#cameraFacingMode)
+      // get your video element with his corresponding id from the html
+      let videoElement = document.getElementById('videoId')
+
+      // pass the video element to the constructor.
+      this.#cameraPhoto = new CameraPhoto(this.#cameraPreview)
+      const stream = await this.#cameraPhoto.startCamera(this.#cameraFacingMode, {
+        width: 3840,
+        height: 3840
+      })
+
+      // this.deviceApi.camera.preview(this.#cameraPreview, this.#cameraFacingMode)
     }
   }
 
