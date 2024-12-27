@@ -57,7 +57,7 @@ for (const dir of dirs) {
 const plugins = [json(), resolve(), typescript(), materialSymbols({ placeholderPrefix: 'symbol' })]
 
 if (isProduction) {
-  plugins.push(terser())
+  // plugins.push(terser())
   plugins.push(
     generateSW({
       swDest: 'www/service-worker.js',
