@@ -7,6 +7,7 @@ import '@material/web/textfield/filled-text-field.js'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import './../../elements/dialog/images-dialog.js'
+import '@vandeurenglenn/lite-elements/selector.js'
 import {
   firebaseImgurAlbum,
   firebaseImgurImage,
@@ -130,10 +131,13 @@ export default class ImagesImage extends LiteElement {
               @click=${() => this.editImage()}>
               <custom-typography
                 type="label"
+                slot="end"
                 size="medium">
                 edit
               </custom-typography>
-              <custom-icon slot="end">edit</custom-icon>
+              <custom-icon
+                slot="start"
+                icon="edit"></custom-icon>
             </custom-list-item>
 
             <custom-list-item
@@ -141,11 +145,14 @@ export default class ImagesImage extends LiteElement {
               label="remove"
               @click=${() => this.removeImage()}>
               <custom-typography
+                slot="end"
                 type="label"
                 size="medium">
                 remove
               </custom-typography>
-              <custom-icon slot="end">delete</custom-icon>
+              <custom-icon
+                slot="start"
+                icon="delete"></custom-icon>
             </custom-list-item>
           </custom-dropdown-menu>
         </flex-row>

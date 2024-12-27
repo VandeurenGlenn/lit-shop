@@ -1,7 +1,6 @@
-import { LiteElement, customElement, property, query, html } from '@vandeurenglenn/lite'
+import { LiteElement, customElement, property, html } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/lite-elements/toggle-button.js'
 import '@material/web/field/outlined-field.js'
-
 import '@vandeurenglenn/lite-elements/typography.js'
 import '@lit-shop/translate/string.js'
 import { StyleList, css } from '@vandeurenglenn/lite/element'
@@ -28,7 +27,10 @@ export class ImageField extends LiteElement {
     return true
   }
 
-  showError() {}
+  delete = () => {
+    const answer = confirm('Are you sure you want to delete this image?')
+    answer && this.remove()
+  }
 
   static styles?: StyleList = [
     css`
@@ -45,8 +47,14 @@ export class ImageField extends LiteElement {
     return html`
       ${this.image
         ? html` <img
-            src=${`api/image?image=${this.image.link}`}
-            alt=${this.image.title} />`
+              src=${`api/image?image=${this.image.link.replace('.png', 'm.png')}`}
+              alt=${this.image.title} />
+            <flex-row class="toolbar">
+              <custom-icon-button
+                icon="delete"
+                @click=${this.delete}>
+              </custom-icon-button>
+            </flex-row>`
         : ''}
     `
   }

@@ -35,6 +35,8 @@ export default class CatalogAddProduct extends LiteElement {
   @query('product-flow') accessor productFlow: ProductFlow
 
   _onStep = (event) => {
+    console.log(event.detail)
+
     if (event.detail.isLastStep) return this.addProduct(event.detail.results)
   }
 
@@ -43,6 +45,8 @@ export default class CatalogAddProduct extends LiteElement {
   }
 
   async addProduct(results) {
+    console.log({ results })
+
     const product: Product = {
       ...results.initial,
       sizes: results.sizes,
@@ -146,7 +150,7 @@ export default class CatalogAddProduct extends LiteElement {
     if (this.busy) return html`<busy-animation message="Adding product"></busy-animation>`
     if (!this.steps) return html``
     return html`<flex-container center
-      ><product-flow @step=${this._onStep}></product-flow
+      ><product-flow @step=${(event) => this._onStep(event)}></product-flow
     ></flex-container>`
   }
 }

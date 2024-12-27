@@ -47,7 +47,7 @@ export class ProductImage extends LiteElement {
     `
   ]
 
-  render(): import('lit-html').TemplateResult<1> {
+  render() {
     return html`
       ${this.image
         ? html` <img

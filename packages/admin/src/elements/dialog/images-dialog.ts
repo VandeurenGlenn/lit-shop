@@ -502,11 +502,11 @@ export class ImagesDialog extends LiteElement {
 
   #busytemplate(title, description) {
     return html`
-      <flex-row slot="headline">
+      <flex-row slot="header">
         <h5>${title}</h5>
       </flex-row>
 
-      <flex-column slot="content"> ${description} </flex-column>
+      ${description ? html`<p>${description}</p>` : ''}
 
       <flex-row
         slot="actions"

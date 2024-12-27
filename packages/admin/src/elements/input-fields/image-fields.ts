@@ -16,17 +16,20 @@ export class ImageFields extends LiteElement {
   @property({ type: Array })
   accessor fields
 
-  @query('images-dialog')
-  accessor dialog
-
   @queryAll('image-field') accessor imageFields
 
   async addImage() {
-    const result = await this.dialog.addImage()
+    const dialog = document.createElement('images-dialog')
+    dialog.hasLibrary = true
+
+    document.body.appendChild(dialog)
+
+    const result = await dialog.addImage()
     console.log(result)
 
     if (result.action !== 'submit') return
 
+    dialog.busy('', 'please wait, uploading image!')
     if (result.image.type === 'library') {
       const image = await firebase.get(`images/${result.image.data}`)
       console.log(image)
@@ -71,7 +74,8 @@ export class ImageFields extends LiteElement {
         })
       ])
     }
-
+    dialog.close()
+    dialog.remove()
     this.requestRender()
   }
 
@@ -110,8 +114,6 @@ export class ImageFields extends LiteElement {
           title="add info field"
           @click=${() => this.addImage()}></custom-icon-button>
       </flex-row>
-
-      <images-dialog has-library></images-dialog>
     `
   }
 }

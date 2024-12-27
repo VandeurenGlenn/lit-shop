@@ -99,33 +99,25 @@ export class SizeField extends LiteElement {
       md-outlined-text-field[label='EAN'] {
         margin-bottom: 16px;
       }
+      md-outlined-select {
+        min-width: auto;
+      }
+      .actions {
+        margin-top: 16px;
+      }
     `
   ]
 
-  async scan(dataURI) {
-    console.log(Quagga)
-
-    const result = await Quagga.decodeSingle({
-      decoder: {
-        readers: ['ean_reader'] // List of active readers
-      },
-      locate: true, // try to locate the barcode in the image
-      src: dataURI // or 'data:image/jpg;base64,' + data
-    })
-    console.log(result)
-
-    return result
+  delete = async () => {
+    const answer = await confirm('Are you sure you want to delete this item?')
+    answer && this.remove()
   }
 
   scanBarcode = async (label) => {
-    console.log('scanning')
-    console.log(event)
-
-    // this.scanning = true
     const scanner = document.querySelector('qrcode-scanner')
     const code = await scanner.scan()
     scanner.stop()
-    this.shadowRoot.querySelector(`[label="${label}"]`).value = code
+    this[label] = code
   }
 
   render() {
@@ -186,6 +178,13 @@ export class SizeField extends LiteElement {
           placeholder="10"
           value=${this.stock}>
         </md-outlined-text-field>
+      </flex-row>
+      <flex-row
+        center-center
+        class="actions">
+        <custom-icon-button
+          @click=${this.delete}
+          icon="delete"></custom-icon-button>
       </flex-row>
     `
   }

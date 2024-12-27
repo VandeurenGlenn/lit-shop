@@ -10,6 +10,7 @@ import '@vandeurenglenn/lite-elements/icon'
 import '@vandeurenglenn/lite-elements/list-item.js'
 import '@vandeurenglenn/lite-elements/toggle-button.js'
 import '@vandeurenglenn/lite-elements/pages.js'
+import '@vandeurenglenn/lite-elements/selector.js'
 import '../../elements/time/time-ago.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@material/web/fab/fab.js'
@@ -56,7 +57,6 @@ export default class CatalogProduct extends LiteElement {
   accessor imagesToRender
 
   addImage = async () => {
-    console.log('add image')
     const dialog = document.createElement('images-dialog')
     dialog.hasLibrary = true
     document.body.appendChild(dialog)
@@ -199,6 +199,8 @@ export default class CatalogProduct extends LiteElement {
   }
 
   _delete = async () => {
+    const answer = confirm('are you sure you want to delete this product?')
+    if (!answer) return
     try {
       await firebase.remove(`products/${this.product.key}`)
       location.hash = '/#!/catalog/products'
@@ -220,7 +222,7 @@ export default class CatalogProduct extends LiteElement {
       this.product.sizes = values
     } else if (this.selected === 'images') {
       const images = Array.from(this.shadowRoot.querySelectorAll('product-image')) as ProductImage[]
-      this.product.images = images.map((image) => image.image.key)
+      if (images.length > 0) this.product.images = images.map((image) => image.image.key)
     }
 
     this.selected = event.detail
@@ -345,7 +347,7 @@ export default class CatalogProduct extends LiteElement {
           <flex-row class="action-bar">
             <custom-selector
               attr-for-selected="label"
-              @selected=${this.onSelected}
+              @selected=${(event) => this.onSelected(event)}
               default-selected="general">
               <custom-button label="general">general</custom-button>
               <custom-button label="sizes">sizes</custom-button>
