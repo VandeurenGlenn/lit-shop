@@ -20,6 +20,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@ericblade/quagga2": "^1.8.4",
     "@lit-labs/context": "^0.5.1",
     "@lit-shop/apis": "^1.0.0",
     "@material/web": "^2.2.0",
@@ -32,6 +33,7 @@
     "dnm-smartcroppr": "^1.4.2",
     "es-html5-camera-photo": "^4.0.0",
     "firebase": "^11.0.2",
+    "html5-qrcode": "^2.3.8",
     "javascript-time-ago": "^2.5.11",
     "scoped-pubsub": "^1.0.3",
     "uuid": "^11.0.3"

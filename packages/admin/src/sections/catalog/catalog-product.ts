@@ -158,7 +158,9 @@ export default class CatalogProduct extends LiteElement {
           entry[0] !== 'timestamp' &&
           entry[0] !== 'index' &&
           entry[0] !== 'sizes' &&
-          entry[0] !== 'images'
+          entry[0] !== 'images' &&
+          entry[0] !== 'createdAt' &&
+          entry[0] !== 'changedAt'
       )
 
       this.sizeFields = this.product.sizes
@@ -368,7 +370,7 @@ export default class CatalogProduct extends LiteElement {
                 <span slot="start">edited</span>
                 <time-ago
                   slot="end"
-                  value=${this.product.timestamp}></time-ago>
+                  value=${this.product.changedAt}></time-ago>
               </custom-list-item>
             </custom-dropdown-menu>
           </flex-row>

@@ -20,7 +20,7 @@ export class DeviceApi {
     }
   }
 
-  async hasFrontCam() {
+  static async hasFrontCam() {
     try {
       await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user' }
@@ -31,7 +31,7 @@ export class DeviceApi {
     }
   }
 
-  async hasBackCam() {
+  static async hasBackCam() {
     try {
       await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' }
@@ -40,6 +40,14 @@ export class DeviceApi {
     } catch (e) {
       return false
     }
+  }
+
+  async hasBackCam() {
+    return DeviceApi.hasBackCam()
+  }
+
+  async hasFrontCam() {
+    return DeviceApi.hasFrontCam()
   }
 
   /**

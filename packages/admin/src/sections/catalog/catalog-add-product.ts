@@ -62,7 +62,7 @@ export default class CatalogAddProduct extends LiteElement {
     product.position = productCount - 1
     const time = new Date().getTime()
     product.createdAt = time
-    product.lastChangedAt = time
+    product.changedAt = time
 
     await firebase.update(`products/${key}`, product)
 

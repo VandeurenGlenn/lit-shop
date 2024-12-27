@@ -10,6 +10,8 @@ export type Product = {
   stock: number
   position: number
   sizes: { price: number; stock: number; sku: string; size: number; unit: UnitOfMeasurement; barcode: number }[]
+  changedAt: number
+  createdAt: number
 }
 
 export type Settings = {

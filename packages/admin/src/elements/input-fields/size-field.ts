@@ -10,6 +10,9 @@ import '@material/web/select/outlined-select.js'
 import '@material/web/select/select-option.js'
 import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
 import { debounce } from '../../debounce.js'
+import './../camera/element.js'
+import './../qrcode-scanner.js'
+// import * as Quagga from '@ericblade/quagga2/'
 
 @customElement('size-field')
 export class SizeField extends LiteElement {
@@ -27,7 +30,11 @@ export class SizeField extends LiteElement {
 
   @property({ type: Boolean }) accessor error
 
+  @property({ type: Boolean, reflect: true }) accessor scanning
+
   @queryAll('md-outlined-text-field') accessor fields
+
+  @query('camera-element') accessor cameraElement
 
   async firstRender(): Promise<void> {
     const fields = Array.from(
@@ -86,19 +93,58 @@ export class SizeField extends LiteElement {
 
         border-radius: var(--md-sys-shape-corner-medium);
         background: var(--md-sys-color-surface-container-high);
+        pointer-events: none;
       }
 
       md-outlined-text-field[label='EAN'] {
         margin-bottom: 16px;
       }
+
+      .scanner {
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        display: block;
+      }
+
+      :host([scanning]) .scanner {
+        opacity: 1;
+        pointer-events: auto;
+      }
     `
   ]
 
-  render() {
-    console.log(this.size)
+  async scan(dataURI) {
+    console.log(Quagga)
 
+    const result = await Quagga.decodeSingle({
+      decoder: {
+        readers: ['ean_reader'] // List of active readers
+      },
+      locate: true, // try to locate the barcode in the image
+      src: dataURI // or 'data:image/jpg;base64,' + data
+    })
+    console.log(result)
+
+    return result
+  }
+
+  scanBarcode = async (label) => {
+    console.log('scanning')
+    console.log(event)
+
+    // this.scanning = true
+    const scanner = document.querySelector('qrcode-scanner')
+    const code = await scanner.scan()
+    scanner.stop()
+    this.shadowRoot.querySelector(`[label="${label}"]`).value = code
+  }
+
+  render() {
     return html`
       <!-- Support new and old EAN-->
+
       <md-outlined-text-field
         required
         type="text"
@@ -107,6 +153,7 @@ export class SizeField extends LiteElement {
         maxLength="13"
         value=${this.EAN}>
         <custom-icon-button
+          @click=${() => this.scanBarcode('EAN')}
           slot="trailing-icon"
           icon="photo_camera"></custom-icon-button
       ></md-outlined-text-field>

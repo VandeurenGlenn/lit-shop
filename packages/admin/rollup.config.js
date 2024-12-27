@@ -10,6 +10,7 @@ import { join } from 'path'
 import materialSymbols from 'rollup-plugin-material-symbols'
 import terser from '@rollup/plugin-terser'
 import { generateSW } from 'rollup-plugin-workbox'
+import commonjs from '@rollup/plugin-commonjs'
 
 cp('../../node_modules/@vandeurenglenn/lite-elements/exports/themes', 'www/themes', {
   recursive: true
