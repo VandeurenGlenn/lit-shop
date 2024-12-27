@@ -17,7 +17,13 @@ export class QRCodeScanner extends LiteElement {
         pointer-events: none;
       }
 
-      :host([scanning]) {
+      ::slotted(*) {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      :host([scanning]),
+      :host([scanning]) ::slotted(*) {
         opacity: 1;
         pointer-events: auto;
       }

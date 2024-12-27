@@ -93,24 +93,11 @@ export class SizeField extends LiteElement {
 
         border-radius: var(--md-sys-shape-corner-medium);
         background: var(--md-sys-color-surface-container-high);
-        pointer-events: none;
+        pointer-events: auto;
       }
 
       md-outlined-text-field[label='EAN'] {
         margin-bottom: 16px;
-      }
-
-      .scanner {
-        opacity: 0;
-        pointer-events: none;
-        position: absolute;
-        inset: 0;
-        display: block;
-      }
-
-      :host([scanning]) .scanner {
-        opacity: 1;
-        pointer-events: auto;
       }
     `
   ]
