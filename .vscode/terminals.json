@@ -5,23 +5,17 @@
       "name": "command",
       "description": "The command terminal",
       "focus": true,
-      "persist": true
+      "persist": false
     },
     {
       "name": "admin",
-      "commands": [
-        "cd packages/admin",
-        "npm run watch"
-      ]
+      "persist": false,
+      "commands": ["cd packages/admin", "npm run watch"]
     },
     {
       "name": "server",
-      "commands": [
-        "cd packages/server",
-        "npm run build",
-        "npm run start"
-      ]
+      "persist": false,
+      "commands": ["cd packages/server", "npm run build", "npm run start"]
     }
-   
   ]
 }
