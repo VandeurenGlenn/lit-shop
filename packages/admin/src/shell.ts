@@ -1,4 +1,3 @@
-import { controller as firebaseController } from '@lit-shop/firebase-controller'
 import { LiteElement, property, customElement, query } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/lite-elements/theme.js'
 import './animations/busy.js'
@@ -7,22 +6,16 @@ import '@lit-shop/translate/string.js'
 import Router from './router.js'
 import { translate } from '@lit-shop/translate'
 import PubSub from '@vandeurenglenn/little-pubsub'
-
 import '@vandeurenglenn/lite-elements/pages.js'
-
 import template from './shell.html.js'
 import styles from './shell.css.js'
 
 import { auth } from './firebase.js'
-import { set } from 'firebase/database'
 
 globalThis.translate = translate
 globalThis.pubsub = globalThis.pubsub || new PubSub()
 
 declare global {
-  var litShop: {
-    contextProviders?: { [index: string]: any }
-  }
   interface HTMLElementTagNameMap {
     'admin-shell': AdminShell
   }
