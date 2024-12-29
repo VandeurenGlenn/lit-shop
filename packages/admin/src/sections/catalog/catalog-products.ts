@@ -55,6 +55,8 @@ export class CatalogProducts extends LiteElement {
   }
 
   _onFabClick = (event) => {
+    console.log('click')
+
     event.preventDefault()
     event.stopImmediatePropagation()
     location.hash = '#!/catalog/add-product'
@@ -137,7 +139,7 @@ export class CatalogProducts extends LiteElement {
           : ''}
       </custom-list>
 
-      <md-fab @click=${this._onFabClick}>
+      <md-fab @click=${(event) => this._onFabClick(event)}>
         <custom-icon
           icon="add"
           slot="icon"></custom-icon>
