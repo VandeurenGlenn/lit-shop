@@ -1,14 +1,7 @@
 import Imgur from './imgur/imgur.js'
 import { imgurAlbumParams, imgurImageParams } from './imgur/types.js'
-import { getDatabase, ref, onValue as _onValue, get, set, push, child, remove } from 'firebase/database'
-import { controller as firebaseController } from '@lit-shop/firebase-controller'
 
-const database = firebaseController.database
-
-const keyRef = ref(database, '/apiKeys/imgur')
-
-const clientId: string = await (await get(keyRef)).val()
-console.log({ clientId })
+const clientId = await firebase.get('apiKeys/imgur')
 
 export declare type firebaseImgurAlbum = {
   id: string
@@ -82,9 +75,6 @@ export declare type imgurBaseImage = {
 }
 
 export default class ImgurBase extends Imgur {
-  #albumsRef = ref(database, 'albums')
-  #imagesRef = ref(database, 'images')
-
   // todo support authenticated and anonymous (if authenticated ids are used, else delethashes are used)
   constructor() {
     super({
@@ -94,16 +84,14 @@ export default class ImgurBase extends Imgur {
 
   async createAlbum({ ids, title, description, cover }: imgurAlbumParams): Promise<firebaseImgurAlbum> {
     const result = await super.createAlbum({ ids, title, description, cover })
-    const pushResult = await push(this.#albumsRef, result)
-    console.log(pushResult)
-    console.log(pushResult.key)
+    const firebaseKey = await firebase.push('albums', result)
 
-    return { ...result, firebaseKey: pushResult.key }
+    return { ...result, firebaseKey }
   }
 
   async getAlbums(): Promise<imgurBaseAlbum[]> {
-    const albums = await (await get(this.#albumsRef)).val()
-    console.log(albums)
+    const albums = await firebase.get('albums')
+
     if (!albums) return []
     return Promise.all(
       Object.entries(albums).map(async ([firebaseKey, album]: [string, firebaseImgurAlbum]) => {
@@ -116,8 +104,8 @@ export default class ImgurBase extends Imgur {
   async removeAlbum({ deletehash, firebaseKey }: imgurBaseAlbum) {
     try {
       await super.removeAlbum(deletehash)
-      await remove(child(this.#albumsRef, firebaseKey))
-      return 'succes'
+      await firebase.remove(`albums/${firebaseKey}`)
+      return 'success'
     } catch (error) {
       console.log(error)
     }
@@ -125,9 +113,7 @@ export default class ImgurBase extends Imgur {
   }
 
   async getAlbum(firebaseKey: string): Promise<imgurBaseAlbum> {
-    console.log({ firebaseKey })
-
-    const album = await (await get(child(this.#albumsRef, firebaseKey))).val()
+    const album = await firebase.get(`albums/${firebaseKey}`)
 
     return {
       firebaseKey,
@@ -138,27 +124,27 @@ export default class ImgurBase extends Imgur {
   }
 
   async getAlbumImages(firebaseKey: string): Promise<imgurBaseImage[]> {
-    const album = await (await get(child(this.#albumsRef, firebaseKey))).val()
+    const album = await firebase.get(`albums/${firebaseKey}`)
     return { firebaseKey, ...super.getAlbumImages(album.id), ...album }
   }
 
   async addImage(image: imgurImageParams): Promise<imgurBaseImage> {
     const result = await super.addImage(image)
-    const pushResult = await push(this.#imagesRef, {
+    const firebaseKey = await firebase.push('images', {
       id: result.id,
       deletehash: result.deletehash,
       link: result.link
     })
-    return { ...result, firebaseKey: pushResult.key }
+    return { ...result, firebaseKey }
   }
 
   async getImage(firebaseKey: string): Promise<imgurBaseImage> {
-    const image = await (await get(child(this.#imagesRef, firebaseKey))).val()
+    const image = await firebase.get(`images/${firebaseKey}`)
     return { firebaseKey, ...(await super.getImage(image.id)), ...image }
   }
 
   async getImages(): Promise<imgurBaseImage[]> {
-    const images = await (await get(this.#imagesRef)).val()
+    const images = await firebase.get('images')
     if (!images) return []
     return Promise.all(
       Object.entries(images).map(async ([firebaseKey, image]: [string, imgurBaseImage]) => ({
@@ -171,16 +157,16 @@ export default class ImgurBase extends Imgur {
 
   async removeImage({ deletehash, firebaseKey }: imgurBaseImage) {
     try {
-      await remove(child(this.#imagesRef, firebaseKey))
+      await firebase.remove(`images/${firebaseKey}`)
       await super.removeImage(deletehash)
       return 'success'
     } catch (error) {
       console.log(error)
     }
-    // .remove()
   }
 
   async lookup(id) {
-    return Object.entries(await (await get(this.#imagesRef)).val()).filter((entry) => entry[1].id === id)
+    const images = await firebase.get('images')
+    return Object.entries(images).filter((entry) => entry[1].id === id)
   }
 }

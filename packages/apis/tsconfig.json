@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "ES2022",
     "outDir": "./www",
-    "moduleResolution": "nodenext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "useDefineForClassFields": false,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,

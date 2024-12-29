@@ -29,6 +29,14 @@
     },
     "./imgur/types.js": {
       "types": "./exports/imgur/types.d.ts"
+    },
+    "./firebase": {
+      "import": "./exports/firebase.js",
+      "types": "./exports/firebase.d.ts"
+    },
+    "./firebase.js": {
+      "import": "./exports/firebase.js",
+      "types": "./exports/firebase.d.ts"
     }
   },
   "scripts": {

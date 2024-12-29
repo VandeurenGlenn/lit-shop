@@ -9,7 +9,6 @@
       "@firebase/database",
       "@lit-shop/apis/imgur",
       "@lit-shop/apis/imgur-base",
-      "@lit-shop/firebase-controller",
       "node",
       "@vandeurenglenn/lite-elements/elements.js"
     ]
