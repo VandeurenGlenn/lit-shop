@@ -3,7 +3,7 @@ import '@vandeurenglenn/lite-elements/list.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import './../../elements/items/stock-item.js'
 import '@material/web/fab/fab.js'
-import { StockItem } from './../../elements/items/stock-item.js'
+import type { StockItem } from './../../elements/items/stock-item.js'
 
 @customElement('stock-section')
 export class StockSection extends LiteElement {

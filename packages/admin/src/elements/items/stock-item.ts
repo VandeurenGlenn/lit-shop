@@ -1,5 +1,4 @@
 import { customElement, property, html, css, LiteElement } from '@vandeurenglenn/lite'
-import '@material/web/icon/icon.js'
 import '@material/web/textfield/outlined-text-field.js'
 
 @customElement('stock-item')
