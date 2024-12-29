@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "rollup -c",
+    "ncu": "ncu -u --install always",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "exports": {

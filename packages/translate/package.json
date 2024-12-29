@@ -23,18 +23,19 @@
   },
   "scripts": {
     "build": "rollup -c",
+    "ncu": "ncu -u --install always",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@vandeurenglenn/lite": "^0.2.52",
+    "@vandeurenglenn/lite": "^0.2.54",
     "lit": "^3.2.1"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^12.1.1",
-    "rollup": "^4.28.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "rollup": "^4.29.1",
     "tslib": "^2.8.1"
   }
 }
