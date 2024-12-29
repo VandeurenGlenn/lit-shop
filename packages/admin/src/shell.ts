@@ -59,8 +59,8 @@ export class AdminShell extends LiteElement {
 
   @query('custom-drawer') accessor drawer
 
-  get translatedTitle() {
-    return this.shadowRoot.querySelector('translate-string[name="title"]')
+  get commandElement() {
+    return this.shadowRoot.querySelector('command-element')
   }
   set drawerOpened(value) {
     if (value) this.setAttribute('drawer-opened', '')
@@ -85,6 +85,7 @@ export class AdminShell extends LiteElement {
   }
 
   async firstRender(): Promise<void> {
+    console.log('first render')
     const setupApi = async () => {
       const importee = await import('./api.js')
       const Api = importee.default
@@ -101,6 +102,15 @@ export class AdminShell extends LiteElement {
         this.router = new Router(this)
       }
     })
+
+    // this.commandElement.addEventListener('command', (event) => {
+    //   console.log(event.detail)
+    //   if (event.detail.command === 'search') {
+    //     // this.router.search(event.detail.value)
+    //     // this.router.command(event.detail.value)
+    //   }
+    //   // this.router.command(event.detail)
+    // })
   }
 
   async #login() {
@@ -251,15 +261,16 @@ export class AdminShell extends LiteElement {
     console.log({ routeInfo })
 
     let previous = this.pages.querySelector(`[route="${paths[0]}"]`)
+    if (previous) this.lastSelected = previous
     console.log(previous)
 
     paths.shift()
     // if (routeInfo.hideHeader) this.#hideHeader()
     // else this.#showHeader()
 
-    this.translatedTitle.innerHTML = paths.join(' > ')
+    // this.commandElement.name = paths.join(' > ')
 
-    // console.log(paths && i === paths.length - 1 );
+    // console.log(paths && i === paths.length - 1)
     console.log({ paths })
 
     const promises = []
@@ -294,6 +305,7 @@ export class AdminShell extends LiteElement {
         el = previous.shadowRoot.querySelector(`[route="${paths[i]}"]`)
       console.log(el)
 
+      if (el) this.lastSelected = el
       const route = el ? el.getAttribute('route') : paths[i]
       console.log({ route })
       // TODO: once all updates are handed local atleast cache for a minute

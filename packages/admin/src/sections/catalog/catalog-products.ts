@@ -11,13 +11,7 @@ import { ProductItem } from '../../elements/items/product-item.js'
 @customElement('catalog-products')
 export class CatalogProducts extends LiteElement {
   @property({ type: Array, consumes: 'products' })
-  accessor products
-
-  constructor() {
-    super()
-    this._onClick = this._onClick.bind(this)
-    this._onFabClick = this._onFabClick.bind(this)
-  }
+  accessor products: Product[]
 
   async connectedCallback() {
     this.addEventListener('click', this._onClick)
@@ -60,31 +54,9 @@ export class CatalogProducts extends LiteElement {
     }
   }
 
-  _onClick(e) {
-    // this.selected =
-    const target = e.composedPath()[0]
-    console.log(e)
-
-    if (target.localName === 'product-item') {
-      this.selected = target.dataset.route
-      this.product = this.products[this.selected]
-      globalThis.adminGo('product', this.selected)
-    }
-  }
-
-  _onFabClick(event) {
+  _onFabClick = (event) => {
     event.preventDefault()
     event.stopImmediatePropagation()
-    // const host = document
-    //   .querySelector('admin-shell')
-    //   .querySelector('catalog-section')
-    //   .shadowRoot.querySelector('custom-pages')
-    // if (!host.querySelector('catalog-add-product')) {
-    //   const addProduct = document.createElement('catalog-add-product')
-    //   addProduct.setAttribute('route', 'add-product')
-    //   host.appendChild(addProduct)
-    // }
-
     location.hash = '#!/catalog/add-product'
   }
 
@@ -112,6 +84,9 @@ export class CatalogProducts extends LiteElement {
         box-sizing: border-box;
       }
 
+      header {
+        justify-content: space-between;
+      }
       custom-list {
         padding: 12px;
       }
@@ -142,19 +117,11 @@ export class CatalogProducts extends LiteElement {
   render() {
     return html`
       <header>
-        <custom-svg-icon icon="filter-list"></custom-svg-icon>
-        <span class="flex"></span>
-        <custom-svg-icon icon="mode-edit"></custom-svg-icon>
-        <custom-svg-icon icon="search"></custom-svg-icon>
-      </header>
-      <!-- <header>
-  <translate-string class="name">name</translate-string>
-  <flex-it></flex-it>
-  <translate-string style="padding-right: 24px">stock</translate-string>
+        <custom-icon icon="filter_list"></custom-icon>
 
-  <translate-string>public</translate-string>
-</header>
--->
+        <custom-icon icon="search"></custom-icon>
+      </header>
+
       <custom-list class="container">
         ${this.products
           ? map(
@@ -164,8 +131,7 @@ export class CatalogProducts extends LiteElement {
                   .name=${product.name}
                   .key=${product.key}
                   .position=${product.position}
-                  .public=${product.public}
-                  data-route=${product.key}></product-item>
+                  .public=${product.public}></product-item>
               `
             )
           : ''}

@@ -42,12 +42,6 @@ export class ProductItem extends LiteElement {
     css`
       :host {
         display: block;
-        pointer-events: auto !important;
-        background: var(--md-sys-color-surface-variant);
-        padding: 12px 24px;
-        width: 100%;
-        box-sizing: border-box;
-        border-radius: var(--md-sys-shape-corner-large);
       }
 
       custom-icon[public] {
@@ -58,6 +52,12 @@ export class ProductItem extends LiteElement {
         display: flex;
         align-items: center;
         text-decoration: none;
+        pointer-events: auto !important;
+        background: var(--md-sys-color-surface-variant);
+        padding: 12px 24px;
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: var(--md-sys-shape-corner-large);
 
         color: var(--md-sys-color-on-surface-variant);
       }

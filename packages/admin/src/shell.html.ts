@@ -10,6 +10,7 @@ import '@vandeurenglenn/lite-elements/typography.js'
 import '@vandeurenglenn/lite-elements/divider.js'
 import '@lit-shop/translate/string.js'
 import './menu/menu-item.js'
+import './elements/command/command-element.js'
 export default html`
   <image-editor></image-editor>
   <custom-icon-set>
@@ -45,12 +46,13 @@ export default html`
       <span name="category">@symbol-category</span>
       <span name="inventory">@symbol-inventory</span>
       <span name="inventory_2">@symbol-inventory_2</span>
+      <span name="filter_list">@symbol-filter_list</span>
+      <span name="search">@symbol-search</span>
     </template>
   </custom-icon-set>
-  <custom-drawer-layout appBarType="small">
-    <translate-string
-      name="title"
-      slot="top-app-bar-title"></translate-string>
+  <custom-drawer-layout appBarType="center-aligned">
+    <!-- 
+<command-element slot="top-app-bar-title"></command-element> -->
 
     <custom-selector
       slot="drawer-content"

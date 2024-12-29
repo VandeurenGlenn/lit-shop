@@ -7,11 +7,17 @@ export class StockItem extends LiteElement {
   @property({ type: String, reflect: true })
   accessor key: string
 
+  @property({ type: String, reflect: true, attribute: 'size-key' })
+  accessor sizeKey: string
+
   @property({ type: String })
   accessor stock: string
 
   @property({ type: String })
   accessor name: string
+
+  @property({ type: Boolean })
+  accessor editMode: boolean
 
   static styles = [
     css`
@@ -24,6 +30,7 @@ export class StockItem extends LiteElement {
         padding-left: 24px;
         box-sizing: border-box;
         width: 100%;
+        height: 48px;
         border-radius: var(--md-sys-shape-corner-large);
       }
 
@@ -41,22 +48,27 @@ export class StockItem extends LiteElement {
       }
 
       md-outlined-text-field {
+        height: 48px;
         --md-outlined-text-field-container-shape: var(--md-sys-shape-corner-medium);
+      }
+
+      .stock {
+        margin-left: auto;
+        margin-right: 24px;
       }
     `
   ]
 
   render() {
-    console.log(this.stock)
-
     return html`
       <span class="body">${this.name}</span>
-      ${this.stock
-        ? html`
-            <md-outlined-text-field
-              type="number"
-              .value=${this.stock}></md-outlined-text-field>
-          `
+      ${this.stock !== undefined && !this.editMode
+        ? html`<span class="stock">${this.stock}</span> `
+        : this.stock !== undefined && this.editMode
+        ? html`<md-outlined-text-field
+            type="number"
+            @input=${(e: any) => (this.stock = e.target.value)}
+            .value=${this.stock}></md-outlined-text-field>`
         : ''}
     `
   }
