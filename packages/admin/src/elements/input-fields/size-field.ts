@@ -16,21 +16,9 @@ import './../qrcode-scanner.js'
 
 @customElement('size-field')
 export class SizeField extends LiteElement {
-  @property({ type: Number })
-  accessor size
-
-  @property({ type: Number })
-  accessor price
-
-  @property({ type: Number }) accessor stock
-
-  @property({ type: String }) accessor unit
-
-  @property({ type: String }) accessor EAN
-
-  @property({ type: Boolean }) accessor error
-
   @property({ type: Boolean, reflect: true }) accessor scanning
+
+  @property({ type: Object, attribute: false }) accessor field
 
   @queryAll('md-outlined-text-field') accessor fields
 
@@ -42,24 +30,21 @@ export class SizeField extends LiteElement {
     ) as MdOutlinedTextField[]
     fields.forEach(async (field) => {
       await field.updateComplete
-      console.log(this[field.label])
 
       // if (!this[field.label]) this[field.label] = field.placeholder
       field.addEventListener('input', () => this._oninput(field))
     })
     const select = this.shadowRoot.querySelector('md-outlined-select')
     await select.updateComplete
-    this.unit = select.value
+    this.field.unit = select.value
     select.addEventListener('input', (e) => {
-      this.unit = select.value
+      this.field.unit = select.value
     })
   }
 
   private _oninput = (field) => {
-    console.log(field.label)
-
     debounce(() => {
-      this[field.label] = field.value
+      this.field[field.label] = field.value
     })()
   }
 
@@ -121,6 +106,8 @@ export class SizeField extends LiteElement {
   }
 
   render() {
+    if (!this.field) return html``
+
     return html`
       <!-- Support new and old EAN-->
 
@@ -130,7 +117,7 @@ export class SizeField extends LiteElement {
         label="EAN"
         minLength="12"
         maxLength="13"
-        value=${this.EAN}>
+        value=${this.field.EAN}>
         <custom-icon-button
           @click=${() => this.scanBarcode('EAN')}
           slot="trailing-icon"
@@ -143,12 +130,12 @@ export class SizeField extends LiteElement {
           type="number"
           label="size"
           placeholder="500"
-          value=${this.size}>
+          value=${this.field.size}>
         </md-outlined-text-field>
 
         <md-outlined-select
           required
-          value=${this.unit}
+          value=${this.field.unit}
           label="unit">
           <md-select-option value="kg">kg</md-select-option>
           <md-select-option value="g">g</md-select-option>
@@ -168,7 +155,7 @@ export class SizeField extends LiteElement {
           label="price"
           placeholder="5"
           step="0.01"
-          value=${this.price}>
+          value=${this.field.price}>
         </md-outlined-text-field>
 
         <md-outlined-text-field
@@ -176,7 +163,7 @@ export class SizeField extends LiteElement {
           type="number"
           label="stock"
           placeholder="10"
-          value=${this.stock}>
+          value=${this.field.stock}>
         </md-outlined-text-field>
       </flex-row>
       <flex-row

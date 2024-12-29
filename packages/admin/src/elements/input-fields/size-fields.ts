@@ -1,7 +1,6 @@
 import { LiteElement, html, css, customElement, property, queryAll } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/row.js'
 import './size-field.js'
-import { Product } from '@lit-shop/types'
 import { SizeField } from './size-field.js'
 
 @customElement('size-fields')
@@ -20,13 +19,7 @@ export class SizeFields extends LiteElement {
     const values = []
     const sizeFields = Array.from(this.shadowRoot.querySelectorAll('size-field')) as SizeField[]
     for (const field of sizeFields) {
-      values.push({
-        size: field.size,
-        price: field.price,
-        stock: field.stock,
-        unit: field.unit,
-        EAN: field.EAN
-      })
+      values.push(field.field)
     }
     return values
   }
@@ -41,13 +34,7 @@ export class SizeFields extends LiteElement {
         error = true
         field.error = true
       }
-      values.push({
-        size: field.size,
-        price: field.price,
-        stock: field.stock,
-        unit: field.unit,
-        EAN: field.EAN
-      })
+      values.push(field.field)
     }
     return { error, values }
   }
@@ -82,11 +69,7 @@ export class SizeFields extends LiteElement {
             (field) => html`
               <size-field
                 @click=${() => this._removeField(field.EAN)}
-                .unit=${field.unit}
-                .size=${field.size}
-                .price=${field.price}
-                .stock=${field.stock}
-                .EAN=${field.EAN}></size-field>
+                .field=${field}></size-field>
             `
           )
         : ''}
