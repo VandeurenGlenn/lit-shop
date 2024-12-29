@@ -1,4 +1,13 @@
-export type UnitOfMeasurement = 'kg' | 'g' | 'mg' | 'l' | 'ml' | 'cl' | 'dl' // kg, g, mg, l, ml, cl, dl, unit, pcs
+export type UnitOfMeasurement = 'kg' | 'g' | 'mg' | 'l' | 'ml' | 'cl' | 'dl' | 'pc' | 'pcs'
+
+export type SKU = {
+  EAN: string
+  amount: number
+  unit: UnitOfMeasurement
+  price: number
+  stock: number
+  sku: string
+}
 
 export type Product = {
   uniqueId: string
@@ -9,7 +18,7 @@ export type Product = {
   public: string
   stock: number
   position: number
-  sizes: { price: number; stock: number; sku: string; size: number; unit: UnitOfMeasurement; barcode: number }[]
+  SKUs: SKU[]
   changedAt: number
   createdAt: number
 }

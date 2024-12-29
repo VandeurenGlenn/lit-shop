@@ -37,10 +37,8 @@ export class StockSection extends LiteElement {
 
   checkValidity() {
     this.products.forEach((product) => {
-      product.sizes.forEach((size, i) => {
-        const el = this.shadowRoot.querySelector(
-          `stock-item[key="${product.key}"][size-key="${i}"]`
-        ) as StockItem
+      product.SKUs.forEach((size, i) => {
+        const el = this.shadowRoot.querySelector(`stock-item[key="${product.key}"][size-key="${i}"]`) as StockItem
 
         if (el.stock === '') {
           el.stock = '0'
@@ -53,14 +51,12 @@ export class StockSection extends LiteElement {
     if (propertyKey === 'editMode' && value === false) {
       this.checkValidity()
       this.products.forEach((product) => {
-        product.sizes.forEach((size, i) => {
-          const el = this.shadowRoot.querySelector(
-            `stock-item[key="${product.key}"][size-key="${i}"]`
-          ) as StockItem
+        product.SKUs.forEach((size, i) => {
+          const el = this.shadowRoot.querySelector(`stock-item[key="${product.key}"][size-key="${i}"]`) as StockItem
 
           size.stock = el.stock
 
-          firebase.update(`products/${product.key}/sizes/${i}`, {
+          firebase.update(`products/${product.key}/SKUs/${i}`, {
             stock: size.stock
           })
         })
@@ -75,12 +71,12 @@ export class StockSection extends LiteElement {
           ${this.products
             ? this.products.map(
                 (product) => html`
-                  ${product.sizes.map((size) => {
+                  ${product.SKUs.map((size) => {
                     return html`
                       <stock-item
-                        .sizeKey=${product.sizes.indexOf(size).toString()}
+                        .sizeKey=${product.SKUs.indexOf(size).toString()}
                         .editMode=${this.editMode}
-                        .name=${`${product.name}-${size.size}${size.unit}`}
+                        .name=${`${product.name}-${size.amount}${size.unit}`}
                         .key=${product.key}
                         .stock=${size.stock}></stock-item>
                     `

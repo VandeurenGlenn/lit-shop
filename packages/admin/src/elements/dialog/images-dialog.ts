@@ -122,8 +122,7 @@ export class ImagesDialog extends LiteElement {
         width: auto;
       }
 
-      flex-container video,
-      img:not([data-variant='icon']) {
+      flex-container video {
         height: -webkit-fill-available;
         width: -webkit-fill-available;
       }
@@ -137,15 +136,12 @@ export class ImagesDialog extends LiteElement {
         padding-top: 12px;
       }
 
-      md-dialog {
-        --_container-color: #2d2f31;
-      }
-
       md-filled-text-field {
         --_container-color: #2d2f31;
       }
       [route='library'] img {
-        width: 150px;
+        width: 100px;
+        height: 100px;
         cursor: pointer;
       }
     `

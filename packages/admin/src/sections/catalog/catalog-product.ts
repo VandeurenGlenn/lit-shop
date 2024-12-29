@@ -1,8 +1,8 @@
 import '@vandeurenglenn/custom-date'
 import '../../elements/input-fields/input-field.js'
 import '../../elements/input-fields/input-fields.js'
-import '../../elements/input-fields/size-fields.js'
-import '../../elements/input-fields/size-field.js'
+import '../../elements/input-fields/sku-fields.js'
+import '../../elements/input-fields/sku-field.js'
 import '../../elements/input-fields/image-fields.js'
 import '../../elements/input-fields/image-field.js'
 import '@vandeurenglenn/lite-elements/dropdown-menu.js'
@@ -48,7 +48,7 @@ export default class CatalogProduct extends LiteElement {
   accessor selected = 'general'
 
   @property({ type: Array })
-  accessor sizeFields: [string, string | number | boolean | string[]][]
+  accessor skuFields: [string, string | number | boolean | string[]][]
 
   @property({ type: Array, consumes: 'images' })
   accessor images
@@ -75,9 +75,7 @@ export default class CatalogProduct extends LiteElement {
                 type: 'base64',
                 title: image.name.toString(),
                 description: fields.description,
-                image: image.data
-                  .replace('data:image/png;base64,', '')
-                  .replace('data:image/jpeg;base64,', '')
+                image: image.data.replace('data:image/png;base64,', '').replace('data:image/jpeg;base64,', '')
               })
           )
         )
@@ -133,8 +131,8 @@ export default class CatalogProduct extends LiteElement {
     if (this.selected === 'images') {
       this.addImage()
       // this.shadowRoot.querySelector('image-fields').addImage()
-    } else if (this.selected === 'sizes') {
-      this.shadowRoot.querySelector('size-fields').addSize()
+    } else if (this.selected === 'SKUs') {
+      this.shadowRoot.querySelector('sku-fields').addsku()
     } else {
       this.shadowRoot.querySelector('input-fields').addField()
     }
@@ -154,21 +152,17 @@ export default class CatalogProduct extends LiteElement {
       this.fields = Object.entries(this.product).filter(
         (entry) =>
           entry[0] !== 'key' &&
-          entry[0] !== 'sku' &&
           entry[0] !== 'timestamp' &&
           entry[0] !== 'index' &&
-          entry[0] !== 'sizes' &&
+          entry[0] !== 'SKUs' &&
           entry[0] !== 'images' &&
           entry[0] !== 'createdAt' &&
           entry[0] !== 'changedAt'
       )
 
-      this.sizeFields = this.product.sizes
+      this.skuFields = this.product.SKUs
     }
-    if (
-      (propertyKey === 'selected' && this.images) ||
-      (propertyKey === 'images' && this.selected === 'images')
-    ) {
+    if ((propertyKey === 'selected' && this.images) || (propertyKey === 'images' && this.selected === 'images')) {
       if (this.product.images) {
         this.imagesToRender = this.images.filter((image) => this.product.images.includes(image.key))
       }
@@ -180,9 +174,9 @@ export default class CatalogProduct extends LiteElement {
       for (const label of Object.keys(values)) {
         this.product[label] = values[label]
       }
-    } else if (this.selected === 'sizes') {
-      const values = this.shadowRoot.querySelector('size-fields').getValues()
-      this.product.sizes = values
+    } else if (this.selected === 'SKUs') {
+      const values = this.shadowRoot.querySelector('sku-fields').getValues()
+      this.product.SKUs = values
     } else if (this.selected === 'images') {
       // const images = Array.from(this.shadowRoot.querySelectorAll('product-image')) as ProductImage[]
       // this.product.images = images.map((image) => image.image.key)
@@ -217,9 +211,9 @@ export default class CatalogProduct extends LiteElement {
       for (const label of Object.keys(values)) {
         this.product[label] = values[label]
       }
-    } else if (this.selected === 'sizes') {
-      const values = this.shadowRoot.querySelector('size-fields').getValues()
-      this.product.sizes = values
+    } else if (this.selected === 'SKUs') {
+      const values = this.shadowRoot.querySelector('sku-fields').getValues()
+      this.product.SKUs = values
     } else if (this.selected === 'images') {
       const images = Array.from(this.shadowRoot.querySelectorAll('product-image')) as ProductImage[]
       if (images.length > 0) this.product.images = images.map((image) => image.image.key)
@@ -322,11 +316,11 @@ export default class CatalogProduct extends LiteElement {
         </flex-wrap-evenly>
       `
     }
-    if (this.selected === 'sizes') {
+    if (this.selected === 'SKUs') {
       return html`
         <flex-container>
           <flex-container class="wrapper">
-            <size-fields .fields=${this.product.sizes}></size-fields>
+            <sku-fields .fields=${this.product.SKUs}></sku-fields>
           </flex-container>
         </flex-container>
       `
@@ -350,7 +344,7 @@ export default class CatalogProduct extends LiteElement {
               @selected=${(event) => this.onSelected(event)}
               default-selected="general">
               <custom-button label="general">general</custom-button>
-              <custom-button label="sizes">sizes</custom-button>
+              <custom-button label="SKUs">SKUs</custom-button>
               <custom-button label="images">images</custom-button>
             </custom-selector>
 

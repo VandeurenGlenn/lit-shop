@@ -4,7 +4,7 @@ import '@vandeurenglenn/flex-elements/container.js'
 import firebase from '../../firebase.js'
 import './../../flows/product/product-flow.js'
 
-import './../../elements/input-fields/size-fields.js'
+import '../../elements/input-fields/sku-fields.js'
 import './../../elements/input-fields/image-fields.js'
 import './../../elements/input-fields/input-fields.js'
 
@@ -13,11 +13,11 @@ import type { Product } from '@lit-shop/types'
 import type { ProductFlow } from '../../flows/product/product-flow.js'
 import type { InputFields } from '../../elements/input-fields/input-fields.js'
 import type { ImageFields } from '../../elements/input-fields/image-fields.js'
-import type { SizeFields } from '../../elements/input-fields/size-fields.js'
+import type { SkuFields } from '../../elements/input-fields/sku-fields.js'
 
 const initialStep = (fields) => html` <input-fields .fields=${fields}></input-fields> `
 
-const sizesStep = (fields) => html` <size-fields .fields=${fields}></size-fields> `
+const SKUsStep = (fields) => html` <sku-fields .fields=${fields}></sku-fields> `
 
 const imagesStep = (fields) => html` <image-fields .fields=${fields}></image-fields> `
 
@@ -49,7 +49,7 @@ export default class CatalogAddProduct extends LiteElement {
 
     const product: Product = {
       ...results.initial,
-      sizes: results.sizes,
+      SKUs: results.SKUs,
       images: results.images
     }
     this.busy = true
@@ -57,11 +57,11 @@ export default class CatalogAddProduct extends LiteElement {
     const key = await firebase.push('products', product)
     const snap = await firebase.get('products')
     const productCount = Object.keys(snap).length
-    for (let i = 0; i < product.sizes.length; i++) {
-      const { size, unit } = product.sizes[i]
+    for (let i = 0; i < product.SKUs.length; i++) {
+      const { amount, unit } = product.SKUs[i]
 
-      const sku = generateSKU(product.category, `${size}${unit}`, key)
-      product.sizes[i].sku = sku
+      const sku = generateSKU(product.category, `${amount}${unit}`, key)
+      product.SKUs[i].sku = sku
     }
     product.position = productCount - 1
     const time = new Date().getTime()
@@ -96,15 +96,15 @@ export default class CatalogAddProduct extends LiteElement {
           ]
         },
         {
-          step: 'sizes',
-          stepRender: sizesStep,
+          step: 'SKUs',
+          stepRender: SKUsStep,
           stepValidate: () => {
             const field = this.shadowRoot
               .querySelector('product-flow')
-              .shadowRoot.querySelector('size-fields') as SizeFields
+              .shadowRoot.querySelector('sku-fields') as SkuFields
             return field.checkValidityAndGetValues()
           },
-          fields: [{ size: 100, unit: 'ml', price: 10, stock: 10, EAN: '' }]
+          fields: [{ amount: 100, unit: 'ml', price: 10, stock: 10, EAN: '' }]
         },
         {
           step: 'images',

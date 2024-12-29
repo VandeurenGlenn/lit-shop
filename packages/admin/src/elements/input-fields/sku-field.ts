@@ -10,12 +10,11 @@ import '@material/web/select/outlined-select.js'
 import '@material/web/select/select-option.js'
 import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
 import { debounce } from '../../debounce.js'
-import './../camera/element.js'
-import './../qrcode-scanner.js'
-// import * as Quagga from '@ericblade/quagga2/'
+import '../camera/element.js'
+import '../qrcode-scanner.js'
 
-@customElement('size-field')
-export class SizeField extends LiteElement {
+@customElement('sku-field')
+export class SkuField extends LiteElement {
   @property({ type: Boolean, reflect: true }) accessor scanning
 
   @property({ type: Object, attribute: false }) accessor field
@@ -25,9 +24,7 @@ export class SizeField extends LiteElement {
   @query('camera-element') accessor cameraElement
 
   async firstRender(): Promise<void> {
-    const fields = Array.from(
-      this.shadowRoot.querySelectorAll('md-outlined-text-field')
-    ) as MdOutlinedTextField[]
+    const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field')) as MdOutlinedTextField[]
     fields.forEach(async (field) => {
       await field.updateComplete
 
@@ -128,9 +125,9 @@ export class SizeField extends LiteElement {
         <md-outlined-text-field
           required
           type="number"
-          label="size"
+          label="amount"
           placeholder="500"
-          value=${this.field.size}>
+          value=${this.field.amount}>
         </md-outlined-text-field>
 
         <md-outlined-select
@@ -147,6 +144,8 @@ export class SizeField extends LiteElement {
             >ml</md-select-option
           >
           <md-select-option value="cl">cl</md-select-option>
+          <md-select-option value="pc">pc</md-select-option>
+          <md-select-option value="pcs">pcs</md-select-option>
         </md-outlined-select>
 
         <md-outlined-text-field

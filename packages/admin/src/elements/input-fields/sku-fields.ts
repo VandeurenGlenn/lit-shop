@@ -1,14 +1,15 @@
 import { LiteElement, html, css, customElement, property, queryAll } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/row.js'
-import './size-field.js'
-import { SizeField } from './size-field.js'
+import './sku-field.js'
+import type { SkuField } from './sku-field.js'
+import { Product, SKU } from '@lit-shop/types'
 
-@customElement('size-fields')
-export class SizeFields extends LiteElement {
+@customElement('sku-fields')
+export class SkuFields extends LiteElement {
   @property({ type: Array })
-  accessor fields: { price: number; size: number; stock: number; unit: string; EAN: string }[]
+  accessor fields: SKU[]
 
-  addSize() {
+  addsku() {
     const field = {}
     if (!this.fields) this.fields = [field]
     else this.fields.push(field)
@@ -17,15 +18,15 @@ export class SizeFields extends LiteElement {
 
   getValues() {
     const values = []
-    const sizeFields = Array.from(this.shadowRoot.querySelectorAll('size-field')) as SizeField[]
-    for (const field of sizeFields) {
+    const skuFields = Array.from(this.shadowRoot.querySelectorAll('sku-field')) as SkuField[]
+    for (const field of skuFields) {
       values.push(field.field)
     }
     return values
   }
 
   checkValidityAndGetValues() {
-    const fields = Array.from(this.shadowRoot.querySelectorAll('size-field')) as SizeField[]
+    const fields = Array.from(this.shadowRoot.querySelectorAll('sku-field')) as SkuField[]
     const values = []
 
     let error = false
@@ -67,9 +68,9 @@ export class SizeFields extends LiteElement {
       ${this.fields
         ? this.fields.map(
             (field) => html`
-              <size-field
+              <sku-field
                 @click=${() => this._removeField(field.EAN)}
-                .field=${field}></size-field>
+                .field=${field}></sku-field>
             `
           )
         : ''}
@@ -80,7 +81,7 @@ export class SizeFields extends LiteElement {
         <custom-icon-button
           icon="add"
           title="add info field"
-          @click=${() => this.addSize()}></custom-icon-button>
+          @click=${() => this.addsku()}></custom-icon-button>
       </flex-row>
     `
   }

@@ -38,6 +38,8 @@ export class AdminShell extends LiteElement {
 
   @property({ provides: true }) accessor product
 
+  @property({ provides: true, batches: true, batchDelay: 1000 }) accessor orders
+
   @property({ provides: true, batches: true, batchDelay: 1000 }) accessor categories
 
   @property({ provides: true }) accessor stats
@@ -125,6 +127,7 @@ export class AdminShell extends LiteElement {
     'add-product': ['products', 'categories'],
     'catalog-products': ['products', 'categories'],
     'catalog-product': ['products', 'categories'],
+    orders: ['orders', 'products', 'categories', 'images'],
     // sales: [
     //   'products',
     //   'categories',
@@ -143,11 +146,7 @@ export class AdminShell extends LiteElement {
     categories: ['categories'],
     members: ['members', { name: 'attendance', type: 'object' }],
     planning: [{ name: 'planning', type: 'object' }],
-    calendar: [
-      'members',
-      { name: 'planning', type: 'object' },
-      { name: 'calendar', type: 'object' }
-    ],
+    calendar: ['members', { name: 'planning', type: 'object' }, { name: 'calendar', type: 'object' }],
     files: ['members', { name: 'files', type: 'object' }],
     'add-event': ['events', 'categories', 'products']
   }
@@ -206,12 +205,8 @@ export class AdminShell extends LiteElement {
         resolve(true)
       }, 1000)
 
-      firebase.onChildChanged(propertyProvider, (snap) =>
-        deleteOrReplace(propertyProvider, snap, 'replace')
-      )
-      firebase.onChildRemoved(propertyProvider, (snap) =>
-        deleteOrReplace(propertyProvider, snap, 'delete')
-      )
+      firebase.onChildChanged(propertyProvider, (snap) => deleteOrReplace(propertyProvider, snap, 'replace'))
+      firebase.onChildRemoved(propertyProvider, (snap) => deleteOrReplace(propertyProvider, snap, 'delete'))
     })
   }
 
@@ -238,16 +233,10 @@ export class AdminShell extends LiteElement {
     // if (paths.includes('catalog') && !customElements.get('catalog-section')) await import('./catalog.js')
     // if (paths.includes('media') && !customElements.get('media-section')) await import('./media.js')
     // const routeInfo = Router.routes[route]
-    if (
-      paths[0] === 'catalog' ||
-      paths[0] === 'categories' ||
-      paths[0] === 'settings' ||
-      paths[0] === 'media'
-    ) {
+    if (paths[0] === 'catalog' || paths[0] === 'categories' || paths[0] === 'settings' || paths[0] === 'media') {
       if (!customElements.get(`${paths[0]}-section`)) await import(`./${paths[0]}-section.js`)
     }
-    if (!customElements.get(routeInfo.tag))
-      await import(`./${routeInfo.import || routeInfo.tag}.js`)
+    if (!customElements.get(routeInfo.tag)) await import(`./${routeInfo.import || routeInfo.tag}.js`)
 
     this.shadowRoot.querySelector('custom-selector').select(route)
     this.pages.select(paths[0], selection)
@@ -281,6 +270,7 @@ export class AdminShell extends LiteElement {
         case 'stock':
         case 'orders':
           promises.push(
+            this.handlePropertyProvider('orders'),
             this.handlePropertyProvider('products'),
             this.handlePropertyProvider('images')
           )
@@ -294,8 +284,7 @@ export class AdminShell extends LiteElement {
     for (let i = 0; i < paths.length; i++) {
       let el = previous.querySelector(`[route="${paths[i]}"]`)
 
-      if (!el && previous.shadowRoot)
-        el = previous.shadowRoot.querySelector(`[route="${paths[i]}"]`)
+      if (!el && previous.shadowRoot) el = previous.shadowRoot.querySelector(`[route="${paths[i]}"]`)
       console.log(el)
 
       if (el) this.lastSelected = el
@@ -318,6 +307,7 @@ export class AdminShell extends LiteElement {
         case 'orders':
           promises.push(
             this.handlePropertyProvider('images'),
+            this.handlePropertyProvider('orders'),
             this.handlePropertyProvider('products')
           )
           break
