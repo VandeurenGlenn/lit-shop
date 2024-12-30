@@ -26,5 +26,10 @@
     "images": {
       "imgur": true
     }
+  },
+
+  "firebase": {
+    "databaseURL": "https://hello-new-me-default-rtdb.europe-west1.firebasedatabase.app",
+    "serviceAccountKey": "./serviceAccountKey.json"
   }
 }

@@ -10,11 +10,11 @@ import { getDatabase } from 'firebase-admin/database'
 
 const config = JSON.parse((await readFile('./server.config.json')).toString())
 
-const serviceAccount = JSON.parse((await readFile('./serviceAccountKey.json')).toString())
+const serviceAccount = JSON.parse((await readFile(config.firebase.serviceAccountKey)).toString())
 
 const app = initializeApp({
   credential: cert(serviceAccount),
-  databaseURL: 'https://hello-new-me-default-rtdb.europe-west1.firebasedatabase.app'
+  databaseURL: config.firebase.databaseURL
 })
 
 const database = getDatabase(app)

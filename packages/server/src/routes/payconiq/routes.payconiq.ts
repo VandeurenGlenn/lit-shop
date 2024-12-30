@@ -4,11 +4,13 @@ import { readFile } from 'fs/promises'
 import Router from 'koa-router'
 import { CALLBACK_URL, CANCEL_PAYMENT, CREATE_PAYMENT } from './constants.js'
 
-const serviceAccount = JSON.parse((await readFile('./serviceAccountKey.json')).toString())
+const config = JSON.parse((await readFile('./server.config.json')).toString())
+
+const serviceAccount = JSON.parse((await readFile(config.firebase.serviceAccountKey)).toString())
 
 initializeApp({
   credential: cert(serviceAccount),
-  databaseURL: 'https://hello-new-me-default-rtdb.europe-west1.firebasedatabase.app'
+  databaseURL: config.firebase.databaseURL
 })
 const database = getDatabase()
 
