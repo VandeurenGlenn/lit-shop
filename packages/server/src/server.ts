@@ -30,7 +30,6 @@ if (config.services?.checkout) {
         console.log(`API key found for service ${service}`)
         console.log(`setting up routes for service ${service}`)
         const routes = (await import(`./routes.${service}.js`)).default
-        console.log(routes)
 
         server.use(routes)
       } else {
@@ -46,7 +45,6 @@ if (config.services?.checkout) {
 if (config.services.images) {
   const routes = (await import(`./routes.images.js`)).default
   server.use(routes)
-
   // just a check for now, all images are handled by the same route
   for (const service of Object.keys(config.services.images)) {
     const snap = await database.ref(`apiKeys/${service}`).get()
@@ -66,9 +64,6 @@ if (config.services.images) {
 server.use(
   koaCompress({
     filter(content_type) {
-      console.log(content_type)
-      console.log(/text|application\/javascript/i.test(content_type))
-
       return /text|application\/javascript/i.test(content_type)
     },
     threshold: 2048,
