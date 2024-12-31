@@ -25,6 +25,13 @@
     },
     "images": {
       "imgur": true
+    },
+    "generators": {
+      "pdf": false,
+      "invoice": false,
+      "packinglist": false,
+      "shippinglabel": false,
+      "qrcode": true
     }
   },
 

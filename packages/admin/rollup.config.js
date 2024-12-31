@@ -21,6 +21,12 @@ try {
   console.log('No files to delete')
 }
 
+try {
+  execSync('cp node_modules/qrcode/build/qrcode.min.js www/qrcode.min.js')
+} catch {
+  console.log('No files to copy')
+}
+
 const sw = `
 try {
   window.registration = await navigator.serviceWorker.register('/service-worker.js');

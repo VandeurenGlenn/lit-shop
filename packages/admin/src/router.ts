@@ -91,6 +91,9 @@ export default class Router {
     },
     '/settings': {
       tag: 'settings-section'
+    },
+    '/qrcodes': {
+      tag: 'qrcodes-section'
     }
   }
 

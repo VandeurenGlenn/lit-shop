@@ -30,7 +30,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@vandeurenglenn/lite": "^0.2.54",
+    "@vandeurenglenn/lite": "^0.2.55",
     "lit": "^3.2.1"
   },
   "devDependencies": {

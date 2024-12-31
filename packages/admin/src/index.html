@@ -63,6 +63,35 @@
       custom-pages {
         display: flex;
       }
+
+
+      .view {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10002;
+      }
+      .backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        opacity: 0.3;
+      }
+      .view canvas {
+        opacity: 1;
+      }
     </style>
     <script>
       ;(async () => {
@@ -83,6 +112,7 @@
         <add-product route="add-product"></add-product>
         <media-section route="media"></media-section>
         <settings-section route="settings"></settings-section>
+        <qrcodes-section route="qrcodes"></qrcodes-section>
       </custom-pages>
     </admin-shell>
 
@@ -102,6 +132,7 @@
         }
       })
     </script>
+    <script src="./qrcode.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </body>
 </html>

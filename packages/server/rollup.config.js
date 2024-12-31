@@ -13,7 +13,12 @@ try {
 
 export default [
   {
-    input: ['src/server.ts', 'src/routes/images/routes.images.ts', 'src/routes/payconiq/routes.payconiq.ts'],
+    input: [
+      'src/server.ts',
+      'src/routes/images/routes.images.ts',
+      'src/routes/payconiq/routes.payconiq.ts',
+      'src/routes/generators/routes.qrcode.ts'
+    ],
     external: ['serviceAccountKey.json', './routes.images.js', './routes/payconiq/routes.payconiq'],
 
     output: {

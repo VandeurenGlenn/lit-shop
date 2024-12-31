@@ -61,6 +61,17 @@ if (config.services.images) {
   }
 }
 
+if (config.services.generators) {
+  for (const [service, enabled] of Object.entries(config.services.generators)) {
+    if (enabled) {
+      console.log(`setting up routes for service ${service}`)
+      const routes = (await import(`./routes.${service}.js`)).default
+
+      server.use(routes)
+    }
+  }
+}
+
 server.use(
   koaCompress({
     filter(content_type) {

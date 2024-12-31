@@ -38,15 +38,17 @@ export class AdminShell extends LiteElement {
 
   @property({ provides: true }) accessor product
 
-  @property({ provides: true, batches: true, batchDelay: 1000 }) accessor orders
+  @property({ provides: true, batches: true, batchDelay: 500 }) accessor orders
 
-  @property({ provides: true, batches: true, batchDelay: 1000 }) accessor categories
+  @property({ provides: true, batches: true, batchDelay: 500 }) accessor categories
 
   @property({ provides: true }) accessor stats
 
   @property({ provides: true }) accessor imgurBaseImages
 
   @property({ type: Boolean, reflect: true }) accessor loading
+
+  @property({ provides: true, batches: true, batchDelay: 500 }) accessor qrcodes
 
   @query('custom-pages') accessor pages
 
@@ -128,6 +130,7 @@ export class AdminShell extends LiteElement {
     'catalog-products': ['products', 'categories'],
     'catalog-product': ['products', 'categories'],
     orders: ['orders', 'products', 'categories', 'images'],
+    qrcodes: ['qrcodes'],
     // sales: [
     //   'products',
     //   'categories',
@@ -260,6 +263,9 @@ export class AdminShell extends LiteElement {
 
     if (paths.length === 0) {
       switch (route) {
+        case 'qrcodes':
+          promises.push(this.handlePropertyProvider('qrcodes'))
+          break
         case 'settings':
           promises.push(this.handlePropertyProvider('categories'))
           break

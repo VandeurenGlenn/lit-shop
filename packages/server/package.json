@@ -14,6 +14,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@types/qrcode": "^1.5.5",
+    "@vandeurenglenn/base32": "^1.2.4",
     "firebase-admin": "^13.0.2",
     "http-proxy": "^1.18.1",
     "koa": "^2.15.3",
@@ -21,7 +23,8 @@
     "koa-compress": "^5.1.1",
     "koa-proxy": "^1.0.0-alpha.3",
     "koa-router": "^13.0.1",
-    "koa-static": "^5.0.0"
+    "koa-static": "^5.0.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@types/http-proxy": "^1.17.15",

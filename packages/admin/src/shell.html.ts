@@ -48,6 +48,9 @@ export default html`
       <span name="inventory_2">@symbol-inventory_2</span>
       <span name="filter_list">@symbol-filter_list</span>
       <span name="search">@symbol-search</span>
+      <span name="qrcode">@symbol-qr_code_2</span>
+      <span name="view">@symbol-visibility</span>
+      <span name="download">@symbol-download</span>
     </template>
   </custom-icon-set>
   <custom-drawer-layout appBarType="center-aligned">
@@ -94,6 +97,16 @@ export default html`
         headline="images">
         <custom-icon
           icon="photo_library"
+          slot="end"></custom-icon>
+      </menu-item>
+
+      <custom-divider></custom-divider>
+
+      <menu-item
+        route="qrcodes"
+        headline="qrcodes">
+        <custom-icon
+          icon="qrcode"
           slot="end"></custom-icon>
       </menu-item>
 
