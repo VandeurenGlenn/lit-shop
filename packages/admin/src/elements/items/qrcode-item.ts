@@ -94,16 +94,12 @@ export class QrcodeItem extends LiteElement {
     })
   }
 
-  save() {
-    this.editMode = false
+  save = () => {
     this.qrcode = this.shadowRoot.querySelector('md-outlined-text-field').value
-    firebase.set(`qrcodes/${this.key}`, this.qrcode)
-  }
 
-  async remove() {
-    const answer = confirm('Are you sure you want to delete this qrcode?')
-    if (!answer) return
-    await firebase.remove(`qrcodes/${this.key}`)
+    this.dispatchEvent(new CustomEvent('save', { detail: { key: this.key, qrcode: this.qrcode } }))
+
+    this.editMode = false
   }
 
   async download() {
@@ -167,7 +163,8 @@ export class QrcodeItem extends LiteElement {
                 @click=${() => (this.editMode = true)}></custom-icon-button>
               <custom-icon-button
                 icon="delete"
-                @click=${() => this.remove()}></custom-icon-button>
+                @click=${() =>
+                  this.dispatchEvent(new CustomEvent('remove', { detail: this.qrcode }))}></custom-icon-button>
             </flex-row>`}
     `
   }

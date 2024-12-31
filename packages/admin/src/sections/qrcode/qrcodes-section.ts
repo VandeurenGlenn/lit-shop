@@ -23,26 +23,30 @@ export class QrcodesSection extends LiteElement {
         bottom: 24px;
         right: 24px;
       }
+
+      flex-container {
+        gap: 8px;
+      }
     `
   ]
 
   async addQrcode() {
     const value = prompt('Add QR code')
     if (!value) return
-    const qrcodes = this.qrcodes || []
-
-    this.qrcodes.push(value)
-    const index = this.qrcodes.indexOf(value)
-    await firebase.set(`qrcodes/${index}`, value)
+    await firebase.set(`qrcodes/${this.qrcodes.length}`, value)
   }
 
   async removeQrcode(qrcode) {
     const index = this.qrcodes.indexOf(qrcode)
     if (!confirm('Are you sure you want to delete this QR code?')) return
     if (index !== -1) {
-      this.qrcodes.splice(index, 1)
-      await firebase.update('qrcodes', this.qrcodes)
+      await firebase.remove(`qrcodes/${index}`)
     }
+  }
+
+  async saveQrcode(event, current) {
+    const index = this.qrcodes.indexOf(current)
+    await firebase.set(`qrcodes/${index}`, event.detail.qrcode)
   }
 
   render() {
@@ -51,7 +55,15 @@ export class QrcodesSection extends LiteElement {
     return html`
       <flex-container>
         ${this.qrcodes
-          ? this.qrcodes.map((qrcode) => html` <qrcode-item .qrcode=${qrcode}></qrcode-item> `)
+          ? this.qrcodes.map(
+              (qrcode) =>
+                html`
+                  <qrcode-item
+                    @save=${(event) => this.saveQrcode(event, qrcode)}
+                    @remove=${() => this.removeQrcode(qrcode)}
+                    .qrcode=${qrcode}></qrcode-item>
+                `
+            )
           : html`<p>No QR codes</p>`}
       </flex-container>
       <md-fab @click=${() => this.addQrcode()}
