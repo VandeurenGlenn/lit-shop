@@ -5,9 +5,8 @@ import '@vandeurenglenn/lite-elements/icon-button.js'
 @customElement('qrcode-item')
 export class QrcodeItem extends LiteElement {
   @property({ type: String }) accessor qrcode: string
-  @property({ type: Boolean }) accessor editMode: boolean
-  @property({ type: String, reflect: true }) accessor key: string
-  @property({ type: Boolean, reflect: true }) accessor viewMode: boolean
+  @property({ type: Boolean, reflect: true, attribute: 'edit-mode' }) accessor editMode: boolean
+  @property({ type: Boolean }) accessor viewMode: boolean
 
   static styles = [
     css`
@@ -22,6 +21,11 @@ export class QrcodeItem extends LiteElement {
         width: 100%;
         height: 48px;
         border-radius: var(--md-sys-shape-corner-large);
+      }
+
+      :host([edit-mode]) {
+        background: var(--md-sys-color-surface);
+        padding-left: 0;
       }
 
       custom-icon[public] {
@@ -39,6 +43,7 @@ export class QrcodeItem extends LiteElement {
 
       md-outlined-text-field {
         height: 48px;
+        width: 100%;
         --md-outlined-text-field-container-shape: var(--md-sys-shape-corner-medium);
       }
 
@@ -46,8 +51,13 @@ export class QrcodeItem extends LiteElement {
         border-radius: 12px !important;
       }
 
-      [icon='delete'] {
+      [icon='delete'],
+      [icon='save'] {
         margin-right: 6px;
+      }
+
+      [icon='save'] {
+        margin-left: 6px;
       }
     `
   ]
@@ -58,7 +68,7 @@ export class QrcodeItem extends LiteElement {
     canvas.height = size
     const context = canvas.getContext('2d')
     return new Promise(async (resolve) => {
-      const response = await fetch(`/api/generate-qrcode?text=${this.qrcode}`)
+      const response = await fetch(`/api/get-qrcode?text=${encodeURIComponent(this.qrcode)}`)
       const text = await response.text()
 
       const dataURI = 'data:image/svg+xml;base64,' + btoa(text)
@@ -124,7 +134,6 @@ export class QrcodeItem extends LiteElement {
   }
 
   async view() {
-    this.viewMode = true
     const canvas = await this.generateQRCodeWithImage(320)
 
     const view = document.createElement('div')
@@ -138,7 +147,6 @@ export class QrcodeItem extends LiteElement {
     view.onclick = () => {
       document.body.removeChild(view)
       document.body.removeChild(backdrop)
-      this.viewMode = false
     }
   }
 

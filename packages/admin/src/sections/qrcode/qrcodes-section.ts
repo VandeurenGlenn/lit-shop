@@ -33,6 +33,8 @@ export class QrcodesSection extends LiteElement {
   async addQrcode() {
     const value = prompt('Add QR code')
     if (!value) return
+    const response = await fetch(`/api/generate-qrcode?text=${encodeURIComponent(value)}`)
+    if (response.status !== 200) return alert('Failed to generate QR code')
     await firebase.set(`qrcodes/${this.qrcodes.length}`, value)
   }
 
@@ -40,12 +42,18 @@ export class QrcodesSection extends LiteElement {
     const index = this.qrcodes.indexOf(qrcode)
     if (!confirm('Are you sure you want to delete this QR code?')) return
     if (index !== -1) {
+      await fetch(`/api/delete-qrcode?text=${encodeURIComponent(qrcode)}`, {
+        method: 'DELETE'
+      })
       await firebase.remove(`qrcodes/${index}`)
     }
   }
 
   async saveQrcode(event, current) {
     const index = this.qrcodes.indexOf(current)
+    await fetch(`/api/delete-qrcode?text=${encodeURIComponent(current)}`, {
+      method: 'DELETE'
+    })
     await firebase.set(`qrcodes/${index}`, event.detail.qrcode)
   }
 

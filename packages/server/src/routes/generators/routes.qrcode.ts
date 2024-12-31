@@ -2,10 +2,11 @@ import type { Context } from 'koa'
 import Router from 'koa-router'
 import mime from 'mime-types'
 import qrcode from 'qrcode'
-import { open } from 'fs/promises'
+import { open, unlink } from 'fs/promises'
 import { QRCODES_PATH } from './constants.js'
 import { join } from 'path'
 import base32 from '@vandeurenglenn/base32'
+import { log } from 'console'
 
 const router = new Router()
 
@@ -16,7 +17,7 @@ const generateSafeName = (filename: string) => base32.encode(encoder.encode(file
 const generateSafePath = (filename: string) => join(QRCODES_PATH, `${generateSafeName(filename)}.svg`)
 
 const generateQR = async (text: string, path: string) =>
-  qrcode.toFile(path, encodeURI(text), {
+  qrcode.toFile(path, text, {
     type: 'svg',
     errorCorrectionLevel: 'H',
     margin: 1,
@@ -39,11 +40,8 @@ const streamWhenPossible = async (path, ctx) => {
 }
 
 router.get('/api/generate-qrcode', async (ctx: Context) => {
-  const text = ctx.request.query.text as string
+  const text = decodeURIComponent(ctx.request.query.text as string)
   const path = generateSafePath(text)
-
-  console.log(text)
-  console.log(encodeURI(text))
   try {
     await generateQR(text, path)
     await streamWhenPossible(path, ctx)
@@ -56,7 +54,7 @@ router.get('/api/generate-qrcode', async (ctx: Context) => {
 })
 
 router.get('/api/has-qrcode', async (ctx: Context) => {
-  const text = ctx.request.query.text as string
+  const text = decodeURIComponent(ctx.request.query.text as string)
   const path = generateSafePath(text)
   try {
     await open(path)
@@ -69,11 +67,10 @@ router.get('/api/has-qrcode', async (ctx: Context) => {
 })
 
 router.get('/api/get-qrcode', async (ctx: Context) => {
-  const text = ctx.request.query.text as string
+  const text = decodeURIComponent(ctx.request.query.text as string)
   const path = generateSafePath(text)
   try {
     await streamWhenPossible(path, ctx)
-    // ctx.body =
   } catch (error) {
     try {
       await generateQR(text, path)
@@ -82,6 +79,21 @@ router.get('/api/get-qrcode', async (ctx: Context) => {
       ctx.status = 500
       ctx.body = error.message
     }
+  }
+})
+
+router.delete('/api/delete-qrcode', async (ctx: Context) => {
+  const text = decodeURIComponent(ctx.request.query.text as string)
+  const path = generateSafePath(text)
+  try {
+    await unlink(path)
+
+    ctx.status = 200
+    ctx.body = 'Deleted'
+  } catch (error) {
+    log(error)
+    ctx.status = 500
+    ctx.body = error.message
   }
 })
 
