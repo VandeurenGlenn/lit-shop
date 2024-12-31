@@ -42,9 +42,12 @@ export class QrcodeItem extends LiteElement {
         --md-outlined-text-field-container-shape: var(--md-sys-shape-corner-medium);
       }
 
-      .stock {
-        margin-left: auto;
-        margin-right: 24px;
+      custom-icon-button {
+        border-radius: 12px !important;
+      }
+
+      [icon='delete'] {
+        margin-right: 6px;
       }
     `
   ]

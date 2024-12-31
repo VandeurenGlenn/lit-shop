@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "webshop using lit",
   "scripts": {
+    "audit": "npm audit fix && npm audit --workspaces --if-present",
     "production": "npm run build --workspaces --if-present && npm run production --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
     "ncu": "ncu -u --install always && npm run ncu --workspaces --if-present",

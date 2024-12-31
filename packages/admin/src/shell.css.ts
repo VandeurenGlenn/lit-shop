@@ -53,4 +53,9 @@ export default css`
     box-sizing: border-box;
     padding-top: 16px;
   }
+
+  [slot='drawer-content'] {
+    padding: 12px 24px;
+    box-sizing: border-box;
+  }
 `

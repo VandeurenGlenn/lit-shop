@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "audit": "npm audit fix",
     "build": "rollup -c",
     "ncu": "ncu -u --install always",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,5 +17,10 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@rollup/plugin-typescript": "^12.1.2",
+    "rollup": "^4.29.1",
+    "tslib": "^2.8.1"
+  }
 }

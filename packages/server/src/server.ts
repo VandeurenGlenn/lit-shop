@@ -1,7 +1,6 @@
 import Koa, { Context } from 'koa'
 import koaStatic from 'koa-static'
 import koaCompress from 'koa-compress'
-import { DataSnapshot } from '@firebase/database-types'
 import { constants } from 'zlib'
 
 import { readFile } from 'fs/promises'

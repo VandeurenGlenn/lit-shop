@@ -11,11 +11,24 @@ const router = new Router()
 
 const encoder = new TextEncoder()
 
-const generateSafePath = (path: string) => base32.encode(encoder.encode(path))
+const generateSafeName = (filename: string) => base32.encode(encoder.encode(filename))
+
+const generateSafePath = (filename: string) => join(QRCODES_PATH, `${generateSafeName(filename)}.svg`)
+
+const generateQR = async (text: string, path: string) =>
+  qrcode.toFile(path, encodeURI(text), {
+    type: 'svg',
+    errorCorrectionLevel: 'H',
+    margin: 1,
+    scale: 100,
+    color: {
+      dark: '#fff',
+      light: '#000'
+    }
+  })
 
 const streamWhenPossible = async (path, ctx) => {
-  const safePath = generateSafePath(path)
-  const fd = await open(safePath)
+  const fd = await open(path)
   ctx.status = 200
   ctx.type = mime.lookup(path) || 'application/octet-stream'
   const stream = fd.createReadStream({ autoClose: true })
@@ -27,21 +40,12 @@ const streamWhenPossible = async (path, ctx) => {
 
 router.get('/api/generate-qrcode', async (ctx: Context) => {
   const text = ctx.request.query.text as string
+  const path = generateSafePath(text)
 
-  const path = join(QRCODES_PATH, `${text}.svg`)
-  const safePath = generateSafePath(path)
-
+  console.log(text)
+  console.log(encodeURI(text))
   try {
-    await qrcode.toFile(safePath, text, {
-      type: 'svg',
-      errorCorrectionLevel: 'H',
-      margin: 1,
-      scale: 100,
-      color: {
-        dark: '#fff',
-        light: '#000'
-      }
-    })
+    await generateQR(text, path)
     await streamWhenPossible(path, ctx)
   } catch (error) {
     console.log(error)
@@ -53,8 +57,9 @@ router.get('/api/generate-qrcode', async (ctx: Context) => {
 
 router.get('/api/has-qrcode', async (ctx: Context) => {
   const text = ctx.request.query.text as string
+  const path = generateSafePath(text)
   try {
-    await open(join(QRCODES_PATH, `${text}.svg`))
+    await open(path)
     ctx.status = 200
     ctx.body = true
   } catch (error) {
@@ -65,22 +70,13 @@ router.get('/api/has-qrcode', async (ctx: Context) => {
 
 router.get('/api/get-qrcode', async (ctx: Context) => {
   const text = ctx.request.query.text as string
-  const path = join(QRCODES_PATH, `${text}.svg`)
+  const path = generateSafePath(text)
   try {
     await streamWhenPossible(path, ctx)
     // ctx.body =
   } catch (error) {
     try {
-      await qrcode.toFile(join(QRCODES_PATH, `${text}.svg`), text, {
-        type: 'svg',
-        errorCorrectionLevel: 'H',
-        margin: 1,
-        scale: 10,
-        color: {
-          dark: '#fff',
-          light: '#000'
-        }
-      })
+      await generateQR(text, path)
       await streamWhenPossible(path, ctx)
     } catch (error) {
       ctx.status = 500

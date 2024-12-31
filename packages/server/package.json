@@ -4,6 +4,7 @@
   "description": "",
   "main": "rollup.config.js",
   "scripts": {
+    "audit": "npm audit fix",
     "build": "rollup -c",
     "start": "node exports/server.js",
     "ncu": "ncu -u --install always",
