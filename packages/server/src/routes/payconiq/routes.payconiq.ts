@@ -18,6 +18,10 @@ const router = new Router()
 
 const payconiqTransactionsRef = database.ref('payconiqTransactions')
 
+const giftcardsRef = database.ref('giftcards')
+
+const transactionsRef = database.ref('transactions')
+
 export type PayconiqPaymentStatus =
   | 'PENDING'
   | 'IDENTIFIED'
@@ -46,6 +50,41 @@ const PAYCONIQ_API_KEY = snap.val()
 // remove ext when production
 const apiURL = `https://api.payconiq.com/v3/payments`
 
+payconiqTransactionsRef.on('child_changed', async (snap) => {
+  const payconiqTransaction = snap.val()
+  transactionsRef.child(payconiqTransaction.transactionId).update({ status: payconiqTransaction.status })
+  if (
+    payconiqTransaction.status === 'CANCELLED' ||
+    payconiqTransaction.status === 'FAILED' ||
+    payconiqTransaction.status === 'EXPIRED'
+  ) {
+    // whenever a giftcard is used in a transaction, it should be set to inactive
+    // but we should also check if the transaction was cancelled or failed
+    // if it was, we should set the giftcard to active again
+    if (payconiqTransaction.giftcards) {
+      for (const giftcardId of payconiqTransaction.giftcards) {
+        await giftcardsRef.child(giftcardId).update({ status: 'active', updatedAt: Date.now(), redeemedAt: null })
+      }
+    }
+  } else if (payconiqTransaction.status === 'SUCCEEDED') {
+    // if the transaction was successful, we should set the giftcard to redeemed
+    if (payconiqTransaction.giftcards) {
+      for (const giftcardId of payconiqTransaction.giftcards) {
+        const snap = await giftcardsRef.child(giftcardId).get()
+        if (!snap.exists()) {
+          console.error('giftcard not found')
+          return
+        }
+        await giftcardsRef.child(giftcardId).update({
+          status: 'redeemed',
+          updatedAt: Date.now(),
+          redeemedAt: Date.now()
+        })
+      }
+    }
+  }
+})
+
 const generateHeaders = () => {
   const headers = new Headers()
   headers.set('Authorization', `Bearer ${PAYCONIQ_API_KEY}`)
@@ -56,19 +95,56 @@ const generateHeaders = () => {
 
 router.get(CREATE_PAYMENT, async (ctx) => {
   const headers = generateHeaders()
-  const { amount, description } = ctx.query
+  const { amount, description, giftcards, items } = ctx.query
+  let transactionAmount = Number(amount)
 
-  if (!amount || !description) ctx.body = 'invalid request'
-  else {
-    const body = JSON.stringify({
-      amount: Number(amount) * 100,
-      currency: 'EUR',
-      description,
-      callbackUrl: CALLBACK_URL
-    })
-    const _response = await fetch(apiURL, { headers, body, method: 'POST' })
-    const payment = await _response.json()
-    ctx.body = payment
+  if (!amount || !description || !items) ctx.body = 'invalid request'
+  // check for gitcards and substract their amount from the transaction amount
+  if (giftcards) {
+    try {
+      for (const giftcardId of giftcards) {
+        const snap = await giftcardsRef.child(giftcardId).get()
+
+        if (!snap.exists()) {
+          ctx.body = 'giftcard not found'
+          return
+        }
+
+        const giftcard = snap.val()
+
+        if (giftcard.status !== 'active') {
+          ctx.body = 'giftcard not redeemable'
+          return
+        }
+        giftcardsRef.child(giftcardId).update({ status: 'pending' })
+        transactionAmount -= Number(giftcard.amount)
+      }
+    } catch (error) {
+      console.error(error)
+      ctx.status = 500
+      ctx.body = error.message
+    }
+  } else {
+    try {
+      const body = JSON.stringify({
+        amount: transactionAmount * 100,
+        currency: 'EUR',
+        description,
+        callbackUrl: CALLBACK_URL
+      })
+      const _response = await fetch(apiURL, { headers, body, method: 'POST' })
+      const payment = await _response.json()
+
+      const snap = transactionsRef.push({ payment, items, giftcards, amount })
+      payment.transactionId = snap.key
+      payconiqTransactionsRef.child(payment.paymentId).set(payment)
+      ctx.body = payment
+    } catch (error) {
+      console.error(error)
+      ctx.status = 500
+      ctx.body = error.message
+    }
+    // payment.paymentId
   }
 })
 
@@ -84,7 +160,7 @@ router.get(CANCEL_PAYMENT, async (ctx) => {
 })
 
 router.post(CALLBACK_URL, async (ctx) => {
-  const payment = ctx.request.body as PayconiqCallbackUrlBody
+  const payment = ctx.body as PayconiqCallbackUrlBody
   const ref = payconiqTransactionsRef.child(payment.paymentId)
   if (payment.status !== 'PENDING' && payment.status !== 'AUTHORIZED' && payment.status !== 'IDENTIFIED') {
     await ref.update({ status: payment.status })

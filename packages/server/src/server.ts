@@ -6,19 +6,24 @@ import { constants } from 'zlib'
 import { readFile } from 'fs/promises'
 import { initializeApp, cert } from 'firebase-admin/app'
 import { getDatabase } from 'firebase-admin/database'
-
+import routes from './routes/catalog/routes.products.js'
+import cors from '@koa/cors'
 const config = JSON.parse((await readFile('./server.config.json')).toString())
 
 const serviceAccount = JSON.parse((await readFile(config.firebase.serviceAccountKey)).toString())
 
-const app = initializeApp({
-  credential: cert(serviceAccount),
-  databaseURL: config.firebase.databaseURL
-})
+// const app = initializeApp({
+//   credential: cert(serviceAccount),
+//   databaseURL: config.firebase.databaseURL
+// })
 
-const database = getDatabase(app)
+const database = getDatabase()
 
 const server = new Koa()
+
+server.use(cors('*'))
+
+server.use(routes)
 
 if (config.services?.checkout) {
   for (const [service, enabled] of Object.entries(config.services.checkout)) {

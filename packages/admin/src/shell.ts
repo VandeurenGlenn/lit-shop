@@ -50,6 +50,8 @@ export class AdminShell extends LiteElement {
 
   @property({ provides: true, batches: true, batchDelay: 500 }) accessor qrcodes
 
+  @property({ provides: true, batchDelay: 500 }) accessor giftcards
+
   @query('custom-pages') accessor pages
 
   @query('custom-selector') accessor selector
@@ -131,6 +133,7 @@ export class AdminShell extends LiteElement {
     'catalog-product': ['products', 'categories'],
     orders: ['orders', 'products', 'categories', 'images'],
     qrcodes: ['qrcodes'],
+    giftcards: [{ name: 'giftcards', type: 'object' }],
     // sales: [
     //   'products',
     //   'categories',
@@ -263,6 +266,9 @@ export class AdminShell extends LiteElement {
 
     if (paths.length === 0) {
       switch (route) {
+        case 'giftcards':
+          promises.push(this.handlePropertyProvider('giftcards'))
+          break
         case 'qrcodes':
           promises.push(this.handlePropertyProvider('qrcodes'))
           break

@@ -51,6 +51,7 @@ export default html`
       <span name="qrcode">@symbol-qr_code_2</span>
       <span name="view">@symbol-visibility</span>
       <span name="download">@symbol-download</span>
+      <span name="redeem">@symbol-redeem</span>
     </template>
   </custom-icon-set>
   <custom-drawer-layout appBarType="center-aligned">
@@ -107,6 +108,14 @@ export default html`
         headline="qrcodes">
         <custom-icon
           icon="qrcode"
+          slot="end"></custom-icon>
+      </menu-item>
+
+      <menu-item
+        route="giftcards"
+        headline="giftcards">
+        <custom-icon
+          icon="redeem"
           slot="end"></custom-icon>
       </menu-item>
 

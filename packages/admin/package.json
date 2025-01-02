@@ -32,6 +32,7 @@
     "@vandeurenglenn/little-pubsub": "^1.5.1",
     "cropperjs": "^1.6.2",
     "dnm-smartcroppr": "^1.4.2",
+    "dom-to-image": "^2.6.0",
     "es-html5-camera-photo": "^4.0.0",
     "firebase": "^11.1.0",
     "html5-qrcode": "^2.3.8",

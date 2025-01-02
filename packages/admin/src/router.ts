@@ -94,6 +94,9 @@ export default class Router {
     },
     '/qrcodes': {
       tag: 'qrcodes-section'
+    },
+    '/giftcards': {
+      tag: 'giftcards-section'
     }
   }
 
