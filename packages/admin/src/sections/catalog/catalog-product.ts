@@ -115,12 +115,6 @@ export default class CatalogProduct extends LiteElement {
       }
 
       if (!this.product.images) this.product.images = []
-
-      for (const item of result) {
-        console.log(item)
-        // this.product.images.push(item.link)
-        // this.album.images.push(item)
-      }
       this._save()
       document.body.removeChild(dialog)
       this.requestRender()
@@ -139,8 +133,6 @@ export default class CatalogProduct extends LiteElement {
   }
 
   onChange(propertyKey) {
-    console.log(propertyKey, this[propertyKey])
-
     if (propertyKey === 'product') {
       if (!this.product.category?.value)
         this.product.category = {
@@ -204,8 +196,6 @@ export default class CatalogProduct extends LiteElement {
   }
 
   onSelected = (event) => {
-    console.log({ event })
-
     if (this.selected === 'general') {
       const values = this.shadowRoot.querySelector('input-fields').getValues()
       for (const label of Object.keys(values)) {
