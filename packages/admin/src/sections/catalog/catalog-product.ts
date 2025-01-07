@@ -118,7 +118,7 @@ export default class CatalogProduct extends LiteElement {
 
       for (const item of result) {
         console.log(item)
-        this.product.images.push(item.link)
+        // this.product.images.push(item.link)
         // this.album.images.push(item)
       }
       this._save()
