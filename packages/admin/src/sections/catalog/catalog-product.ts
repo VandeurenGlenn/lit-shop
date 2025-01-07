@@ -63,6 +63,7 @@ export default class CatalogProduct extends LiteElement {
 
     const { action, fields, image } = await dialog.addImage()
 
+    dialog.busy('Uploading image')
     console.log(action, image)
 
     if (action === 'submit') {
