@@ -1,6 +1,6 @@
 import { LiteElement } from '@vandeurenglenn/lite'
 
-export class PropertyProvider extends LiteElement {
+export class FirebasePropertyProvider extends LiteElement {
   #propertyProviders = []
 
   propertyProviders = {}

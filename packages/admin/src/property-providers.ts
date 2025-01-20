@@ -1,7 +1,7 @@
 import { property } from '@vandeurenglenn/lite'
-import { PropertyProvider } from './property-provider.js'
+import { FirebasePropertyProvider } from './firebase-property-provider.js'
 
-export class PropertyProviders extends PropertyProvider {
+export class PropertyProviders extends FirebasePropertyProvider {
   @property({ provides: true }) accessor albums = []
 
   @property({ provides: true }) accessor album
@@ -29,7 +29,7 @@ export class PropertyProviders extends PropertyProvider {
   @property({ provides: true, batchDelay: 500 }) accessor giftcards
 
   /**
-   * collection of the views and there desired providers
+   * collection of providers and their types, events and or extra properties needed
    */
   propertyProviders = {
     products: ['products', 'categories', 'images'],
