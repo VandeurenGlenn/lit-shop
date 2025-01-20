@@ -144,6 +144,19 @@ export class ImagesDialog extends LiteElement {
         height: 100px;
         cursor: pointer;
       }
+
+      .file-container {
+        gap: 8px;
+        padding: 8px;
+        overflow-y: auto;
+        height: 100%;
+        max-height: 320px;
+      }
+
+      .file-container,
+      md-list-item {
+        width: 100%;
+      }
     `
   ]
 
@@ -189,9 +202,7 @@ export class ImagesDialog extends LiteElement {
 
     const img = document.createElement('img')
     img.src = this.#image.data[0].data as string
-    this.shadowRoot
-      .querySelector('flex-container')
-      .replaceChild(img.cloneNode(true), this.#cameraPreview)
+    this.shadowRoot.querySelector('flex-container').replaceChild(img.cloneNode(true), this.#cameraPreview)
   }
 
   #selectFile = ({}) => {
@@ -214,9 +225,9 @@ export class ImagesDialog extends LiteElement {
           <custom-icon-button slot="end" icon="delete"></custom-icon-button>
         `
           item.onclick = () => {
-            this.shadowRoot.querySelector('section[route="file"]').removeChild(item)
+            this.shadowRoot.querySelector('section[route="file"] .file-container').removeChild(item)
           }
-          this.shadowRoot.querySelector('section[route="file"]').appendChild(item)
+          this.shadowRoot.querySelector('section[route="file"] .file-container').appendChild(item)
           return { name: file.name, data }
         })
       )
@@ -304,10 +315,7 @@ export class ImagesDialog extends LiteElement {
                     (image: imgurBaseImage) => html`
                       <img
                         @click=${(event) => this.#onlibclick(event, image.key)}
-                        src=${`${location.origin}/api/image?image=${image.link.replace(
-                          '.png',
-                          's.png'
-                        )}`} />
+                        src=${`${location.origin}/api/image?image=${image.link.replace('.png', 's.png')}`} />
                     `
                   )}
                 </flex-wrap-around>
@@ -367,6 +375,8 @@ export class ImagesDialog extends LiteElement {
             <md-icon slot="icon">upload</md-icon>
             select
           </filled-tonal-button>
+
+          <flex-column class="file-container"></flex-column>
         </section>
       </custom-pages>
 
@@ -458,9 +468,7 @@ export class ImagesDialog extends LiteElement {
       const action = ({ detail }) => {
         console.log({ detail })
 
-        const inputFields = Array.from(
-          this.shadowRoot.querySelectorAll('[input-field]')
-        ) as MdFilledTextField[]
+        const inputFields = Array.from(this.shadowRoot.querySelectorAll('[input-field]')) as MdFilledTextField[]
         const fields = {}
 
         for (const field of inputFields) {
