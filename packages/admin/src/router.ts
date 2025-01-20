@@ -97,6 +97,9 @@ export default class Router {
     },
     '/giftcards': {
       tag: 'giftcards-section'
+    },
+    '/sales': {
+      tag: 'sales-section'
     }
   }
 
