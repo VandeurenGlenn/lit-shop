@@ -11,6 +11,7 @@ import template from './shell.html.js'
 import styles from './shell.css.js'
 
 import { auth } from './firebase.js'
+import { PropertyProviders } from './property-providers.js'
 
 globalThis.translate = translate
 globalThis.pubsub = globalThis.pubsub || new PubSub()
@@ -22,35 +23,8 @@ declare global {
 }
 
 @customElement('admin-shell')
-export class AdminShell extends LiteElement {
+export class AdminShell extends PropertyProviders {
   router
-  #propertyProviders = []
-
-  @property({ provides: true }) accessor albums = []
-
-  @property({ provides: true }) accessor album
-
-  @property({ provides: true }) accessor images
-
-  @property({ provides: true }) accessor image
-
-  @property({ provides: true, type: Array }) accessor products: []
-
-  @property({ provides: true }) accessor product
-
-  @property({ provides: true, batches: true, batchDelay: 500 }) accessor orders
-
-  @property({ provides: true, batches: true, batchDelay: 500 }) accessor categories
-
-  @property({ provides: true }) accessor stats
-
-  @property({ provides: true }) accessor imgurBaseImages
-
-  @property({ type: Boolean, reflect: true }) accessor loading
-
-  @property({ provides: true, batches: true, batchDelay: 500 }) accessor qrcodes
-
-  @property({ provides: true, batchDelay: 500 }) accessor giftcards
 
   @query('custom-pages') accessor pages
 
@@ -123,112 +97,6 @@ export class AdminShell extends LiteElement {
     })
   }
 
-  /**
-   * collection of the views and there desired providers
-   */
-  propertyProviders = {
-    products: ['products', 'categories'],
-    'add-product': ['products', 'categories'],
-    'catalog-products': ['products', 'categories'],
-    'catalog-product': ['products', 'categories'],
-    orders: ['orders', 'products', 'categories', 'images'],
-    qrcodes: ['qrcodes'],
-    giftcards: [{ name: 'giftcards', type: 'object' }],
-    // sales: [
-    //   'products',
-    //   'categories',
-    //   {
-    //     name: 'payconiqTransactions',
-    //     type: 'array',
-    //     events: { onChildChanged: (val) => this.salesView.payconiqPaymentChange(val) }
-    //   },
-    //   { name: 'promo', type: 'object' },
-    //   'members',
-    //   'tabs'
-    // ],
-
-    images: ['images'],
-    stock: ['products', 'categories'],
-    categories: ['categories'],
-    members: ['members', { name: 'attendance', type: 'object' }],
-    planning: [{ name: 'planning', type: 'object' }],
-    calendar: ['members', { name: 'planning', type: 'object' }, { name: 'calendar', type: 'object' }],
-    files: ['members', { name: 'files', type: 'object' }],
-    'add-event': ['events', 'categories', 'products']
-  }
-
-  setupPropertyProvider(propertyProvider, type = 'array', events?) {
-    return new Promise(async (resolve, reject) => {
-      this.#propertyProviders.push(propertyProvider)
-
-      if (!this[propertyProvider]) this[propertyProvider] = type === 'object' ? {} : []
-
-      const deleteOrReplace = async (propertyProvider, snap, task = 'replace') => {
-        const val = await snap.val()
-        if (type === 'array') {
-          if (typeof val === 'object' && !Array.isArray(val)) val.key = snap.key
-          let i = -1
-
-          for (const item of this[propertyProvider]) {
-            i += 1
-            if (item.key === snap.key) break
-          }
-
-          if (task === 'replace') this[propertyProvider].splice(i, 1, val)
-          else this[propertyProvider].splice(i, 1)
-          this[propertyProvider] = [...this[propertyProvider]]
-        } else if (type === 'object') {
-          if (task === 'replace') this[propertyProvider][snap.key] = val
-          else delete this[propertyProvider][snap.key]
-          this[propertyProvider] = { ...this[propertyProvider] }
-        }
-
-        if (task === 'replace') events?.onChildChanged?.(val)
-        else events?.onChildRemoved?.(val)
-      }
-
-      firebase.onChildAdded(propertyProvider, async (snap) => {
-        const val = await snap.val()
-
-        if (type === 'array') {
-          if (typeof val === 'object' && !Array.isArray(val)) val.key = snap.key
-          if (!this[propertyProvider]) {
-            this[propertyProvider] = [val]
-          } else if (!this[propertyProvider].includes(val)) {
-            this[propertyProvider].push(val)
-          }
-          this[propertyProvider] = [...this[propertyProvider]]
-        } else if (type === 'object') {
-          if (!this[propertyProvider]) this[propertyProvider] = {}
-          this[propertyProvider][snap.key] = val
-          this[propertyProvider] = { ...this[propertyProvider] }
-        }
-        events?.onChildAdded?.(val)
-        resolve(this[propertyProvider])
-      })
-
-      setTimeout(async () => {
-        resolve(true)
-      }, 1000)
-
-      firebase.onChildChanged(propertyProvider, (snap) => deleteOrReplace(propertyProvider, snap, 'replace'))
-      firebase.onChildRemoved(propertyProvider, (snap) => deleteOrReplace(propertyProvider, snap, 'delete'))
-    })
-  }
-
-  handlePropertyProvider(propertyProvider) {
-    if (this.propertyProviders[propertyProvider]) {
-      for (const input of this.propertyProviders[propertyProvider]) {
-        let propertyKey
-        if (typeof input === 'object') propertyKey = input.name
-        else propertyKey = input
-
-        if (!this.#propertyProviders.includes(propertyKey))
-          return this.setupPropertyProvider(propertyKey, input?.type, input?.events)
-      }
-    }
-  }
-
   async select(paths, selection, routeInfo) {
     this.loading = true
     console.log(paths, selection)
@@ -264,31 +132,8 @@ export class AdminShell extends LiteElement {
     const promises = []
     console.log({ route })
 
-    if (paths.length === 0) {
-      switch (route) {
-        case 'giftcards':
-          promises.push(this.handlePropertyProvider('giftcards'))
-          break
-        case 'qrcodes':
-          promises.push(this.handlePropertyProvider('qrcodes'))
-          break
-        case 'settings':
-          promises.push(this.handlePropertyProvider('categories'))
-          break
-        case 'media':
-          promises.push(this.handlePropertyProvider('albums'))
-          break
-        case 'catalog':
-        case 'stock':
-        case 'orders':
-          promises.push(
-            this.handlePropertyProvider('orders'),
-            this.handlePropertyProvider('products'),
-            this.handlePropertyProvider('images')
-          )
-          break
-      }
-      await Promise.all(promises)
+    if (paths.length === 0 && this.propertyProviders[route]) {
+      await this.handlePropertyProvider(route)
       this.loading = false
       return
     }
@@ -304,25 +149,6 @@ export class AdminShell extends LiteElement {
       console.log({ route })
       // TODO: once all updates are handed local atleast cache for a minute
       switch (route) {
-        case 'add-product':
-          promises.push(
-            this.handlePropertyProvider('images'),
-            this.handlePropertyProvider('categories'),
-            this.handlePropertyProvider('stats')
-          )
-          break
-        case 'categories':
-          promises.push(this.handlePropertyProvider('categories'))
-          break
-        case 'products':
-        case 'stock':
-        case 'orders':
-          promises.push(
-            this.handlePropertyProvider('images'),
-            this.handlePropertyProvider('orders'),
-            this.handlePropertyProvider('products')
-          )
-          break
         case 'product':
           // load products only when undefined
           promises.push(
@@ -363,6 +189,8 @@ export class AdminShell extends LiteElement {
             })()
           )
           break
+        default:
+          promises.push(this.handlePropertyProvider(route))
       }
 
       if (selection && i === paths.length - 1 && el) el.selection = selection

@@ -52,6 +52,7 @@ export default html`
       <span name="view">@symbol-visibility</span>
       <span name="download">@symbol-download</span>
       <span name="redeem">@symbol-redeem</span>
+      <span name="point_of_sale">@symbol-point_of_sale</span>
     </template>
   </custom-icon-set>
   <custom-drawer-layout appBarType="center-aligned">
@@ -61,6 +62,14 @@ export default html`
     <custom-selector
       slot="drawer-content"
       attr-for-selected="route">
+      <menu-item
+        route="sales"
+        headline="sales">
+        <custom-icon
+          icon="point_of_sale"
+          slot="end"></custom-icon
+      ></menu-item>
+
       <menu-item
         route="orders"
         headline="orders">
