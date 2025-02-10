@@ -2,7 +2,7 @@ import { initializeApp, cert } from 'firebase-admin/app'
 import { getDatabase } from 'firebase-admin/database'
 import { readFile } from 'fs/promises'
 import Router from 'koa-router'
-import { CALLBACK_URL, CANCEL_PAYMENT, CREATE_PAYMENT } from './constants.js'
+import { API_URL, CALLBACK_URL, CANCEL_PAYMENT, CREATE_PAYMENT } from './constants.js'
 
 const config = JSON.parse((await readFile('./server.config.json')).toString())
 
@@ -46,9 +46,6 @@ export type PayconiqCallbackUrlBody = {
 
 const snap = await database.ref('apiKeys/payconiq').get()
 const PAYCONIQ_API_KEY = snap.val()
-
-// remove ext when production
-const apiURL = `https://api.payconiq.com/v3/payments`
 
 payconiqTransactionsRef.on('child_changed', async (snap) => {
   const payconiqTransaction = snap.val()
@@ -132,7 +129,7 @@ router.get(CREATE_PAYMENT, async (ctx) => {
         description,
         callbackUrl: CALLBACK_URL
       })
-      const _response = await fetch(apiURL, { headers, body, method: 'POST' })
+      const _response = await fetch(API_URL, { headers, body, method: 'POST' })
       const payment = await _response.json()
 
       const snap = transactionsRef.push({ payment, items, giftcards, amount })
