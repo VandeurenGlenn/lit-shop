@@ -84,6 +84,10 @@ router.post(CREATE_PAYMENT, async (ctx) => {
   let transactionAmount = Number(amount)
 
   if (!amount || !description || !items) ctx.body = 'invalid request'
+  console.log('giftcards', giftcards)
+  console.log('items', items)
+  console.log('amount', amount)
+  console.log('description', description)
   // check for gitcards and substract their amount from the transaction amount
   if (giftcards && giftcards.length > 0) {
     try {
@@ -117,9 +121,11 @@ router.post(CREATE_PAYMENT, async (ctx) => {
         description,
         callbackUrl: CALLBACK_URL
       })
+      console.log('body', body)
+
       const _response = await fetch(API_URL, { headers, body, method: 'POST' })
       const payment = await _response.json()
-
+      console.log('payment', payment)
       const snap = transactionsRef.push({ payment, items, amount })
       payment.transactionId = snap.key
       payconiqTransactionsRef.child(payment.paymentId).set(payment)
