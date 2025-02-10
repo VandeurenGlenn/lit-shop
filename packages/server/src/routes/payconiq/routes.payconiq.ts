@@ -78,9 +78,10 @@ const generateHeaders = () => {
   return headers
 }
 
-router.get(CREATE_PAYMENT, async (ctx) => {
+router.post(CREATE_PAYMENT, async (ctx) => {
   const headers = generateHeaders()
-  const { amount, description, giftcards, items } = ctx.query
+  const { amount, description, giftcards, items } = ctx.request.body
+
   let transactionAmount = Number(amount)
 
   if (!amount || !description || !items) ctx.body = 'invalid request'

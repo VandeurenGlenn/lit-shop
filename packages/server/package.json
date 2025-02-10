@@ -15,6 +15,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@koa/bodyparser": "^5.1.1",
     "@koa/cors": "^5.0.0",
     "@types/qrcode": "^1.5.5",
     "@vandeurenglenn/base32": "^1.2.4",

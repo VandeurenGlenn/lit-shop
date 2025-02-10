@@ -7,6 +7,7 @@ import routes from './routes/catalog/routes.products.js'
 import cors from '@koa/cors'
 import { database } from './helpers/firebase.js'
 import ora from 'ora'
+import { bodyParser } from '@koa/bodyparser'
 
 const spinner = ora('Loading server').start()
 
@@ -15,6 +16,8 @@ const config = JSON.parse((await readFile('./server.config.json')).toString())
 const server = new Koa()
 
 server.use(cors('*'))
+
+server.use(bodyParser())
 
 server.use(routes)
 
