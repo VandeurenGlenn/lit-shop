@@ -33,6 +33,7 @@
     "@types/koa": "^2.15.0",
     "@types/koa-router": "^7.4.8",
     "@types/mime-types": "^2.1.4",
-    "mime-types": "^2.1.35"
+    "mime-types": "^2.1.35",
+    "ora": "^8.2.0"
   }
 }

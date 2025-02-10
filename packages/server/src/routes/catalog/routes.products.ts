@@ -1,17 +1,5 @@
-import { initializeApp, cert } from 'firebase-admin/app'
-import { getDatabase } from 'firebase-admin/database'
-import { readFile } from 'fs/promises'
 import Router from 'koa-router'
-
-const config = JSON.parse((await readFile('./server.config.json')).toString())
-
-const serviceAccount = JSON.parse((await readFile(config.firebase.serviceAccountKey)).toString())
-
-const app = initializeApp({
-  credential: cert(serviceAccount),
-  databaseURL: config.firebase.databaseURL
-})
-const database = getDatabase(app)
+import { database } from '../../helpers/firebase.js'
 
 const router = new Router()
 
