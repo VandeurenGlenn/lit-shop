@@ -120,7 +120,7 @@ router.post(CREATE_PAYMENT, async (ctx) => {
       const _response = await fetch(API_URL, { headers, body, method: 'POST' })
       const payment = await _response.json()
 
-      const snap = transactionsRef.push({ payment, items: JSON.parse(items), giftcards, amount })
+      const snap = transactionsRef.push({ payment, items: items, giftcards, amount })
       payment.transactionId = snap.key
       payconiqTransactionsRef.child(payment.paymentId).set(payment)
       ctx.body = payment
