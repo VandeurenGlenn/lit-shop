@@ -80,8 +80,9 @@ const generateHeaders = () => {
 
 router.post(CREATE_PAYMENT, async (ctx) => {
   const headers = generateHeaders()
+  console.log(ctx.request.body)
   const { amount, description, giftcards, items } = ctx.request.body
-
+  console.log(amount, description, giftcards, items)
   let transactionAmount = Number(amount)
 
   if (!amount || !description || !items) ctx.body = 'invalid request'
