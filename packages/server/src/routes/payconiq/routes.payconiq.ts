@@ -90,6 +90,14 @@ router.post(CREATE_PAYMENT, async (ctx) => {
   console.log('items', items)
   console.log('amount', amount)
   console.log('description', description)
+
+  const transactionItems = {}
+  for (const [key, value] of Object.entries(items)) {
+    if (key.startsWith('giftcard-')) {
+      delete items[key]
+      items[`giftcard-${crypto.randomUUID()}`] = value
+    }
+  }
   // check for gitcards and substract their amount from the transaction amount
   if (giftcards && giftcards.length > 0) {
     try {
@@ -147,7 +155,7 @@ router.get(CANCEL_PAYMENT, async (ctx) => {
 
   if (!payment) ctx.body = 'invalid cancel request'
   else {
-    const _response = await fetch(payment as string, { headers, method: 'DELETE' })
+    const _response = await fetch(`https://api.payconiq.com/v3/payments/${payment}`, { headers, method: 'DELETE' })
     ctx.body = await _response.text()
   }
 })
