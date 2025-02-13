@@ -35,6 +35,8 @@ export type PayconiqCallbackUrlBody = {
 const snap = await database.ref('apiKeys/payconiq').get()
 const PAYCONIQ_API_KEY = snap.val()
 
+console.log({ PAYCONIQ_API_KEY })
+
 payconiqTransactionsRef.on('child_changed', async (snap) => {
   const payconiqTransaction = snap.val()
   transactionsRef.child(payconiqTransaction.transactionId).update({ status: payconiqTransaction.status })
@@ -150,7 +152,7 @@ router.get(CANCEL_PAYMENT, async (ctx) => {
   }
 })
 
-router.post(CALLBACK_URL, async (ctx) => {
+router.post('checkout/payconiq/callbackUrl', async (ctx) => {
   const payment = ctx.body as PayconiqCallbackUrlBody
   const ref = payconiqTransactionsRef.child(payment.paymentId)
   if (payment.status !== 'PENDING' && payment.status !== 'AUTHORIZED' && payment.status !== 'IDENTIFIED') {
