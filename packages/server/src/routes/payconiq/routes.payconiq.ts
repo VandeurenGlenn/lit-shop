@@ -136,7 +136,7 @@ router.post(CREATE_PAYMENT, async (ctx) => {
       const _response = await fetch(API_URL, { headers, body, method: 'POST' })
       const payment = await _response.json()
       console.log('payment', payment)
-      const snap = transactionsRef.push({ payment, items, amount })
+      const snap = transactionsRef.push({ payment, items, amount, type: 'payconiq' })
       payment.transactionId = snap.key
       payconiqTransactionsRef.child(payment.paymentId).set(payment)
       ctx.body = payment
