@@ -4,7 +4,10 @@ packages/**/www/**/*.js
 packages/**/www/**/*.d.ts
 packages/**/serviceAccountKey.json
 packages/**/exports
+packages/**/server.config.json
 
 .wireit
 /packages/apis/exports
 /packages/server/exports
+
+
