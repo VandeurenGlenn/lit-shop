@@ -9,6 +9,7 @@ const ordersRef = database.ref('orders')
 router.get('/orders/create', async (ctx: Context) => {
   const items = ctx.request.body.items
   const user = ctx.request.body.user
+  const shipping = ctx.request.body.shipping
 
   if (!items || !user) {
     ctx.status = 400
@@ -16,7 +17,7 @@ router.get('/orders/create', async (ctx: Context) => {
     return
   }
 
-  const order = await ordersRef.push({ user, items, status: 'PENDING' })
+  const order = await ordersRef.push({ user, shipping, items, status: 'PENDING' })
   ctx.body = order.key
 })
 

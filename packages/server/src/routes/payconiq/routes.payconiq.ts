@@ -3,7 +3,7 @@ import { API_URL, CALLBACK_URL, CANCEL_PAYMENT, CREATE_PAYMENT } from './constan
 import { database } from '../../helpers/firebase.js'
 import { PayconiqTransaction } from '@lit-shop/types'
 import { generateGiftcard } from '../../services/giftcard.js'
-import { sendOrderCanceledMail } from '../../services/mailer.js'
+import { sendOrderCanceledMail, sendOrderMail } from '../../services/mailer.js'
 
 const router = new Router()
 
@@ -180,6 +180,16 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
             .child(firebaseTransaction.orderId)
             .update({ status: 'PAID', updatedAt: Date.now(), items: order.items })
         }
+        try {
+          await sendOrderMail(
+            firebaseTransaction.orderId,
+            firebaseTransaction.amount,
+            order.shipping.email,
+            order.shipping
+          )
+        } catch (error) {
+          console.error(error)
+        }
       } else {
         if (firebaseTransaction.giftcards) {
           for (const giftcardId of firebaseTransaction.giftcards) {
@@ -191,7 +201,11 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
         const snap = await database.ref('orders').child(firebaseTransaction.orderId).get()
         const order = snap.val()
 
-        await sendOrderCanceledMail(firebaseTransaction.orderId, firebaseTransaction.amount, order.email)
+        try {
+          await sendOrderCanceledMail(firebaseTransaction.orderId, firebaseTransaction.amount, order.shipping.email)
+        } catch (error) {
+          console.error(error)
+        }
       }
     }, 5000)
   } else {

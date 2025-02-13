@@ -17,16 +17,16 @@ export const sendMail = async (to, subject, html) => {
   })
 }
 
-export const sendOrderMail = async (order) => {
+export const sendOrderMail = async (order, amount, email, shipping) => {
   const html = `
         <h1>Bestelling ontvangen</h1>
         <p>Hartelijk dank voor uw bestelling.</p>
         <p> We sturen je een email van zodra je bestelling verzonden is.</p>
         <p><a href="https://hellonewme.be/orders">Klik hier</a> om je bestelling te bekijken.</p>
-        <p>Order ID: ${order.id}</p>
-        <p>Order total: ${order.total}</p>
+        <p>Order ID: ${order}</p>
+        <p>Order total: ${amount}</p>
     `
-  return sendMail(order.email, 'Bestelling Ontvangen', html)
+  return sendMail(email, 'Bestelling Ontvangen', html)
 }
 
 export const sendOrderCanceledMail = async (order, amount, email, reason = 'door klant') => {
