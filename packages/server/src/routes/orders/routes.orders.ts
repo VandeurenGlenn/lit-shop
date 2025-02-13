@@ -6,7 +6,7 @@ const router = new Router()
 
 const ordersRef = database.ref('orders')
 
-router.get('/orders/create', async (ctx: Context) => {
+router.post('/orders/create', async (ctx: Context) => {
   const items = ctx.request.body.items
   const user = ctx.request.body.user
   const shipping = ctx.request.body.shipping
