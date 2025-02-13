@@ -21,6 +21,7 @@ router.post('/orders/create', async (ctx: Context) => {
   }
 
   const order = await ordersRef.push({ user, shipping, items, status: 'PENDING', createdAt: Date.now() })
+  await database.ref(`users/${user}/orders`).child(order.key).set(order.key)
   ctx.body = order.key
   return
 })

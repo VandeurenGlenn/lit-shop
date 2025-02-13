@@ -207,10 +207,11 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
               await giftcardsRef.child(giftcardId).update({ status: 'active', updatedAt: Date.now(), redeemedAt: null })
             }
           }
-          await txRef.remove()
-          await database.ref('orders').child(firebaseTransaction.orderId).remove()
           const snap = await database.ref('orders').child(firebaseTransaction.orderId).get()
           const order = snap.val()
+          await txRef.remove()
+          await database.ref('orders').child(firebaseTransaction.orderId).remove()
+          await database.ref('users').child(order.user).child(firebaseTransaction.orderId).remove()
 
           try {
             await sendOrderCanceledMail(firebaseTransaction.orderId, firebaseTransaction.amount, order.shipping.email)
