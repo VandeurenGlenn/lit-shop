@@ -141,6 +141,7 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
   const txRef = transactionsRef.child(payconiqTransaction.transactionId)
 
   const firebaseTransaction = (await txRef.get()).val()
+  console.log(payment)
 
   if (payment.status !== 'PENDING' && payment.status !== 'AUTHORIZED' && payment.status !== 'IDENTIFIED') {
     await ref.update({ status: payment.status })
