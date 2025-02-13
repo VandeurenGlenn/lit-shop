@@ -83,6 +83,11 @@ router.post(CREATE_PAYMENT, async (ctx) => {
       ctx.body = error.message
     }
   } else {
+    const discount = (await database.ref('config').child('discount').get()).val()
+    const user = (await database.ref('users').child(order.user).get()).val()
+
+    if (discount && !user.ordered) transactionAmount -= transactionAmount / discount
+
     try {
       const body = JSON.stringify({
         amount: transactionAmount * 100,
@@ -149,8 +154,11 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
       await ref.update({ status: payment.status })
       setTimeout(async () => {
         await ref.remove()
+        const snap = await database.ref('orders').child(firebaseTransaction.orderId).get()
+        const order = snap.val()
         if (payment.status === 'SUCCEEDED') {
           await txRef.update({ status: 'SUCCEEDED' })
+
           if (firebaseTransaction.giftcards) {
             for (const giftcardId of firebaseTransaction.giftcards) {
               const snap = await giftcardsRef.child(giftcardId).get()
@@ -163,10 +171,10 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
                 updatedAt: Date.now(),
                 redeemedAt: Date.now()
               })
+              database.ref('users').child(order.user).update({ ordered: true })
             }
           }
-          const snap = await database.ref('orders').child(firebaseTransaction.orderId).get()
-          const order = snap.val()
+
           if (order.items && order.status !== 'PAID') {
             for (const [key, value] of Object.entries(order.items)) {
               if (key.startsWith('giftcard-')) {
