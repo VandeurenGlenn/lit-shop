@@ -60,8 +60,10 @@ if (config.services.images) {
   // }
 }
 
-const routes = (await import(`./routes.orders.js`)).default
-server.use(routes)
+if (config.services.orders) {
+  const routes = (await import(`./routes.orders.js`)).default
+  server.use(routes)
+}
 
 if (config.services.generators) {
   for (const [service, enabled] of Object.entries(config.services.generators)) {

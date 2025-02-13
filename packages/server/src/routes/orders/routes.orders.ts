@@ -7,6 +7,8 @@ const router = new Router()
 const ordersRef = database.ref('orders')
 
 router.post('/orders/create', async (ctx: Context) => {
+  console.log('creating order')
+  console.log(ctx.request.body)
   const items = ctx.request.body.items
   const user = ctx.request.body.user
   const shipping = ctx.request.body.shipping
@@ -19,6 +21,7 @@ router.post('/orders/create', async (ctx: Context) => {
 
   const order = await ordersRef.push({ user, shipping, items, status: 'PENDING' })
   ctx.body = order.key
+  return
 })
 
 export default router.routes()
