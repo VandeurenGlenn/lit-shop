@@ -49,10 +49,10 @@ const generateHeaders = () => {
 
 router.post(CREATE_PAYMENT, async (ctx) => {
   const headers = generateHeaders()
-  const { amount, description, giftcards, orderId } = ctx.request.body
+  const { amount, description, giftcards, order } = ctx.request.body
   let transactionAmount = Number(amount)
 
-  if (!amount || !description || !orderId) ctx.body = 'invalid request'
+  if (!amount || !description || !order) ctx.body = 'invalid request'
   console.log('giftcards', giftcards)
   console.log('amount', amount)
   console.log('description', description)
@@ -100,7 +100,8 @@ router.post(CREATE_PAYMENT, async (ctx) => {
         paymentId: payment.paymentId,
         amount: transactionAmount,
         status: payment.status,
-        giftcards: giftcards || []
+        giftcards: giftcards || [],
+        order
       }
       const snap = transactionsRef.push(firebaseTransaction)
 
