@@ -162,7 +162,9 @@ router.get(CANCEL_PAYMENT, async (ctx) => {
 
 router.post('checkout/payconiq/callbackUrl', async (ctx) => {
   const payment = ctx.body as PayconiqCallbackUrlBody
+  console.log({ payment })
   const ref = payconiqTransactionsRef.child(payment.paymentId)
+
   if (payment.status !== 'PENDING' && payment.status !== 'AUTHORIZED' && payment.status !== 'IDENTIFIED') {
     await ref.update({ status: payment.status })
     setTimeout(async () => {
