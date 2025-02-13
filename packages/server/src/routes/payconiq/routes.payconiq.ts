@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import { API_URL, CALLBACK_URL, CANCEL_PAYMENT, CREATE_PAYMENT } from './constants.js'
 import { database } from '../../helpers/firebase.js'
 import { PayconiqTransaction } from '@lit-shop/types'
+import { generateGiftcard } from '../../services/giftcard.js'
 
 const router = new Router()
 
@@ -162,12 +163,21 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
         }
         const snap = await database.ref('orders').child(firebaseTransaction.orderId).get()
         const order = snap.val()
-        if (order.giftcards) {
-          for (const giftcardId of order.giftcards) {
-            await giftcardsRef
-              .child(giftcardId)
-              .update({ status: 'redeemed', updatedAt: Date.now(), redeemedAt: Date.now() })
+        if (order.items && order.status !== 'PAID') {
+          for (const [key, value] of Object.entries(order.items)) {
+            if (key.startsWith('giftcard-')) {
+              order.items[key].id = await generateGiftcard(value)
+            }
+            // const snap = await database.ref('products').child(key).get()
+            // const product = snap.val()
+            // if (product) {
+            //   await database.ref('products').child(key).update({ stock: product.stock - value })
+            // }
           }
+          await database
+            .ref('orders')
+            .child(firebaseTransaction.orderId)
+            .update({ status: 'PAID', updatedAt: Date.now(), items: order.items })
         }
       } else {
         if (firebaseTransaction.giftcards) {
@@ -176,6 +186,7 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
           }
         }
         await txRef.remove()
+        await database.ref('orders').child(firebaseTransaction.orderId).remove()
       }
     }, 5000)
   } else {
