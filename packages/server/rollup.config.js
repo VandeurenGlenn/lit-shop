@@ -14,7 +14,13 @@ export default [
       'src/routes/generators/routes.qrcode.ts',
       'src/routes/orders/routes.orders.ts'
     ],
-    external: ['serviceAccountKey.json', './routes.images.js', './routes/payconiq/routes.payconiq'],
+    external: [
+      'serviceAccountKey.json',
+      './routes.images.js',
+      './routes/payconiq/routes.payconiq',
+      './routes/generators/routes.qrcode',
+      './routes.orders.js'
+    ],
 
     output: {
       dir: 'exports',
