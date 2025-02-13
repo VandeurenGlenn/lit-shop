@@ -1,8 +1,7 @@
 import { initializeApp, cert } from 'firebase-admin/app'
 import { getDatabase } from 'firebase-admin/database'
 import { readFile } from 'fs/promises'
-
-export const config = JSON.parse((await readFile('./server.config.json')).toString())
+import { config } from './config.js'
 
 const serviceAccount = JSON.parse((await readFile(config.firebase.serviceAccountKey)).toString())
 

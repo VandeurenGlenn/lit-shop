@@ -11,7 +11,8 @@ export default [
       'src/server.ts',
       'src/routes/images/routes.images.ts',
       'src/routes/payconiq/routes.payconiq.ts',
-      'src/routes/generators/routes.qrcode.ts'
+      'src/routes/generators/routes.qrcode.ts',
+      'src/routes/orders/routes.orders.ts'
     ],
     external: ['serviceAccountKey.json', './routes.images.js', './routes/payconiq/routes.payconiq'],
 

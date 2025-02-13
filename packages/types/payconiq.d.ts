@@ -28,3 +28,10 @@ export type PayconiqPayment = {
     self: PayconiqPaymentLink
   }
 }
+
+export type PayconiqTransaction = {
+  transactionId: string
+  amount: number
+  paymentId: string
+  status: PayConiqPaymentStatus
+}

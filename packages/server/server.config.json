@@ -26,6 +26,7 @@
     "images": {
       "imgur": true
     },
+    "orders": true,
     "generators": {
       "pdf": false,
       "invoice": false,
@@ -38,5 +39,13 @@
   "firebase": {
     "databaseURL": "https://hello-new-me-default-rtdb.europe-west1.firebasedatabase.app",
     "serviceAccountKey": "./serviceAccountKey.json"
+  },
+  "email": {
+    "sender": "noreply@hellonewme.be",
+    "service": "hotmail",
+    "auth": {
+      "user": "",
+      "pass": ""
+    }
   }
 }

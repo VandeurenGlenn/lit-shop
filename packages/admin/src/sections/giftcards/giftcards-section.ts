@@ -69,6 +69,7 @@ export class GiftcardsSection extends LiteElement {
       createdAt: Date.now(),
       paymentType: null,
       paymentId: null,
+      transactionId: null,
       uuid
     }
 
