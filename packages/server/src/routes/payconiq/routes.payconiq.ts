@@ -3,6 +3,7 @@ import { API_URL, CALLBACK_URL, CANCEL_PAYMENT, CREATE_PAYMENT } from './constan
 import { database } from '../../helpers/firebase.js'
 import { PayconiqTransaction } from '@lit-shop/types'
 import { generateGiftcard } from '../../services/giftcard.js'
+import { sendOrderCanceledMail } from '../../services/mailer.js'
 
 const router = new Router()
 
@@ -187,6 +188,10 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
         }
         await txRef.remove()
         await database.ref('orders').child(firebaseTransaction.orderId).remove()
+        const snap = await database.ref('orders').child(firebaseTransaction.orderId).get()
+        const order = snap.val()
+
+        await sendOrderCanceledMail(firebaseTransaction.orderId, firebaseTransaction.amount, order.email)
       }
     }, 5000)
   } else {
