@@ -22,7 +22,7 @@ export const sendOrderMail = async (order, amount, email, shipping) => {
         <h1>Bestelling ontvangen</h1>
         <p>Hartelijk dank voor uw bestelling.</p>
         <p> We sturen je een email van zodra je bestelling verzonden is.</p>
-        <p><a href="https://hellonewme.be/orders">Klik hier</a> om je bestelling te bekijken.</p>
+        <p><a href="https://hellonewme.be/order?order=${order}">Klik hier</a> om je bestelling te bekijken.</p>
         <p>Order ID: ${order}</p>
         <p>Order total: ${amount}</p>
     `

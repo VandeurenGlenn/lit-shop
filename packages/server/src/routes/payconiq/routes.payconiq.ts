@@ -168,12 +168,20 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
           for (const [key, value] of Object.entries(order.items)) {
             if (key.startsWith('giftcard-')) {
               order.items[key].id = await generateGiftcard(value)
+            } else {
+              const productRef = database.ref('products').child(value.key)
+              const snap = await productRef.get()
+              const product = snap.val()
+              if (product) {
+                for (const [key, sku] of Object.entries(product.SKUs)) {
+                  await database
+                  productRef
+                    .child('SKUs')
+                    .child(key)
+                    .update({ stock: sku.stock - value.amount })
+                }
+              }
             }
-            // const snap = await database.ref('products').child(key).get()
-            // const product = snap.val()
-            // if (product) {
-            //   await database.ref('products').child(key).update({ stock: product.stock - value })
-            // }
           }
           await database
             .ref('orders')
