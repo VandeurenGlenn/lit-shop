@@ -1,6 +1,7 @@
 import type { Context } from 'koa'
 import Router from 'koa-router'
 import { database } from '../../helpers/firebase.js'
+import { create } from 'qrcode'
 
 const router = new Router()
 
@@ -19,7 +20,7 @@ router.post('/orders/create', async (ctx: Context) => {
     return
   }
 
-  const order = await ordersRef.push({ user, shipping, items, status: 'PENDING' })
+  const order = await ordersRef.push({ user, shipping, items, status: 'PENDING', createdAt: Date.now() })
   ctx.body = order.key
   return
 })
