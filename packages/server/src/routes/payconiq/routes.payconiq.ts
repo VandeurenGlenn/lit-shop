@@ -193,6 +193,7 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
                 }
               }
             }
+            await database.ref('users').child(order.user).child('orders').update({ status: 'PAID' })
             await database
               .ref('orders')
               .child(firebaseTransaction.orderId)

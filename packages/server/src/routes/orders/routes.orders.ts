@@ -20,8 +20,21 @@ router.post('/orders/create', async (ctx: Context) => {
     return
   }
 
-  const order = await ordersRef.push({ user, shipping, items, status: 'PENDING', createdAt: Date.now() })
-  await database.ref(`users/${user}/orders`).child(order.key).set(order.key)
+  const createdAt = Date.now()
+
+  let totalAmount = 0
+  let totalItems = 0
+
+  for (const [key, item] of Object.entries(items)) {
+    totalAmount += item.price * item.amount
+    totalItems += item.amount
+  }
+
+  const order = await ordersRef.push({ user, shipping, items, status: 'PENDING', createdAt, totalAmount, totalItems })
+  await database
+    .ref(`users/${user}/orders`)
+    .child(order.key)
+    .set({ status: 'PENDING', createdAt, totalAmount, totalItems })
   ctx.body = order.key
   return
 })
