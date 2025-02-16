@@ -158,7 +158,7 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
         if (payment.status === 'SUCCEEDED') {
           await txRef.update({ status: 'SUCCEEDED' })
 
-          if (firebaseTransaction.giftcards) {
+          if (firebaseTransaction.giftcards && firebaseTransaction.giftcards.length > 0) {
             for (const giftcardId of firebaseTransaction.giftcards) {
               const snap = await giftcardsRef.child(giftcardId).get()
               if (!snap.exists()) {
@@ -209,7 +209,7 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
             console.error(error)
           }
         } else {
-          if (firebaseTransaction.giftcards) {
+          if (firebaseTransaction.giftcards && firebaseTransaction.giftcards.length > 0) {
             for (const giftcardId of firebaseTransaction.giftcards) {
               await giftcardsRef.child(giftcardId).update({ status: 'active', updatedAt: Date.now(), redeemedAt: null })
             }
