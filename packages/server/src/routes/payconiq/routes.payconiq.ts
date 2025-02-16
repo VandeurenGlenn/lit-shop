@@ -86,7 +86,7 @@ router.post(CREATE_PAYMENT, async (ctx) => {
     const discount = (await database.ref('config').child('discount').get()).val()
     const user = (await database.ref('users').child(order.user).get()).val()
 
-    if (discount && !user.ordered) transactionAmount -= transactionAmount / discount
+    if (discount && !user.ordered) transactionAmount -= (transactionAmount / 100) * discount
 
     try {
       const body = JSON.stringify({
@@ -153,7 +153,6 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
     if (payment.status !== 'PENDING' && payment.status !== 'AUTHORIZED' && payment.status !== 'IDENTIFIED') {
       await ref.update({ status: payment.status })
       setTimeout(async () => {
-        await ref.remove()
         const snap = await database.ref('orders').child(firebaseTransaction.orderId).get()
         const order = snap.val()
         if (payment.status === 'SUCCEEDED') {
@@ -228,6 +227,8 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
             console.error(error)
           }
         }
+
+        await ref.remove()
       }, 5000)
     } else {
       await ref.update({ status: payment.status })
