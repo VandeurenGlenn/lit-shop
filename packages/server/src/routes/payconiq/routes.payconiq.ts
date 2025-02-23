@@ -49,14 +49,20 @@ const generateHeaders = () => {
 
 router.post(CREATE_PAYMENT, async (ctx) => {
   const headers = generateHeaders()
-  const { amount, description, giftcards, order } = ctx.request.body
-  let transactionAmount = Number(amount)
+  let { amount, description, giftcards, order } = ctx.request.body
+  amount = Number(amount)
 
   if (!amount || !description || !order) ctx.body = 'invalid request'
   console.log('giftcards', giftcards)
   console.log('amount', amount)
   console.log('description', description)
 
+  order = await database.ref('orders').child(order).get()
+  if (!order.exists()) {
+    ctx.body = 'order not found'
+    return
+  }
+  order = order.val()
   // check for gitcards and substract their amount from the transaction amount
   if (giftcards && giftcards.length > 0) {
     try {
@@ -75,7 +81,7 @@ router.post(CREATE_PAYMENT, async (ctx) => {
           return
         }
         giftcardsRef.child(giftcardId).update({ status: 'pending' })
-        transactionAmount -= Number(giftcard.amount)
+        amount -= Number(giftcard.amount)
       }
     } catch (error) {
       console.error(error)
@@ -86,11 +92,11 @@ router.post(CREATE_PAYMENT, async (ctx) => {
     const discount = (await database.ref('config').child('discount').get()).val()
     const user = (await database.ref('users').child(order.user).get()).val()
 
-    if (discount && !user.ordered) transactionAmount -= (transactionAmount / 100) * discount
+    if (discount && !user.ordered) amount -= (amount / 100) * discount
 
     try {
       const body = JSON.stringify({
-        amount: transactionAmount * 100,
+        amount: amount * 100,
         currency: 'EUR',
         description,
         callbackUrl: CALLBACK_URL
@@ -103,7 +109,7 @@ router.post(CREATE_PAYMENT, async (ctx) => {
       const firebaseTransaction = {
         type: 'payconiq',
         paymentId: payment.paymentId,
-        amount: transactionAmount,
+        amount: amount,
         status: payment.status,
         giftcards: giftcards || [],
         order
@@ -113,7 +119,7 @@ router.post(CREATE_PAYMENT, async (ctx) => {
       const _payconiqTransaction: PayconiqTransaction = {
         transactionId: snap.key,
         paymentId: payment.paymentId,
-        amount: transactionAmount,
+        amount: amount,
         status: payment.status
       }
 
