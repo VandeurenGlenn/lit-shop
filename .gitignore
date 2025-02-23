@@ -1,13 +1,15 @@
 .DS_Store
 node_modules
-packages/**/www/**/*.js
-packages/**/www/**/*.d.ts
-packages/**/serviceAccountKey.json
-packages/**/exports
-packages/**/server.config.json
 
 .wireit
 /packages/apis/exports
 /packages/server/exports
 
 .builder-cache
+
+
+packages/**/www/**/*.js
+packages/**/www/**/*.d.ts
+packages/**/serviceAccountKey.json
+packages/**/exports
+packages/**/server.config.json
