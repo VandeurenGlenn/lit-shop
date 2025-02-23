@@ -62,6 +62,7 @@ router.post(CREATE_PAYMENT, async (ctx) => {
     ctx.body = 'order not found'
     return
   }
+  const orderKey = order.key
   order = order.val()
   // check for gitcards and substract their amount from the transaction amount
   if (giftcards && giftcards.length > 0) {
@@ -112,7 +113,7 @@ router.post(CREATE_PAYMENT, async (ctx) => {
         amount: amount,
         status: payment.status,
         giftcards: giftcards || [],
-        order
+        order: orderKey
       }
       const snap = transactionsRef.push(firebaseTransaction)
 
@@ -159,7 +160,7 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
     if (payment.status !== 'PENDING' && payment.status !== 'AUTHORIZED' && payment.status !== 'IDENTIFIED') {
       await ref.update({ status: payment.status })
       setTimeout(async () => {
-        const snap = await database.ref('orders').child(firebaseTransaction.orderId).get()
+        const snap = await database.ref('orders').child(firebaseTransaction.order).get()
         const order = snap.val()
         if (payment.status === 'SUCCEEDED') {
           await txRef.update({ status: 'SUCCEEDED' })
@@ -202,12 +203,12 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
             await database.ref('users').child(order.user).child('orders').update({ status: 'PAID' })
             await database
               .ref('orders')
-              .child(firebaseTransaction.orderId)
+              .child(firebaseTransaction.order)
               .update({ status: 'PAID', updatedAt: Date.now(), items: order.items })
           }
           try {
             await sendOrderMail(
-              firebaseTransaction.orderId,
+              firebaseTransaction.order,
               firebaseTransaction.amount,
               order.shipping.email,
               order.shipping
@@ -221,15 +222,15 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
               await giftcardsRef.child(giftcardId).update({ status: 'active', updatedAt: Date.now(), redeemedAt: null })
             }
           }
-          const snap = await database.ref('orders').child(firebaseTransaction.orderId).get()
+          const snap = await database.ref('orders').child(firebaseTransaction.order).get()
           const order = snap.val()
           await txRef.remove()
-          await database.ref('users').child(order.user).child(firebaseTransaction.orderId).remove()
+          await database.ref('users').child(order.user).child(firebaseTransaction.order).remove()
 
-          await database.ref('orders').child(firebaseTransaction.orderId).remove()
+          await database.ref('orders').child(firebaseTransaction.order).remove()
 
           try {
-            await sendOrderCanceledMail(firebaseTransaction.orderId, firebaseTransaction.amount, order.shipping.email)
+            await sendOrderCanceledMail(firebaseTransaction.order, firebaseTransaction.amount, order.shipping.email)
           } catch (error) {
             console.error(error)
           }
