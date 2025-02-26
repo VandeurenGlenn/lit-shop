@@ -2,6 +2,8 @@ import nodemailer from 'nodemailer'
 import { config } from '../helpers/config.js'
 const transporter = nodemailer.createTransport({
   service: config.email.service,
+  host: 'smtp.hotmail.email',
+  port: 587,
   auth: {
     user: config.email.auth.user,
     pass: config.email.auth.pass
