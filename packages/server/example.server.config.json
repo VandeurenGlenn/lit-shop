@@ -42,7 +42,7 @@
   },
   "email": {
     "sender": "noreply@hellonewme.be",
-    "service": "hotmail",
+    "service": "mailtrap",
     "auth": {
       "user": "",
       "pass": ""

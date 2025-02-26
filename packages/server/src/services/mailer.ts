@@ -1,14 +1,34 @@
 import nodemailer from 'nodemailer'
 import { config } from '../helpers/config.js'
-const transporter = nodemailer.createTransport({
-  service: config.email.service,
-  host: 'smtp.hotmail.email',
-  port: 587,
+
+export type MailerOptions = {
+  host: string
+  port: number
   auth: {
-    user: config.email.auth.user,
-    pass: config.email.auth.pass
+    user: string
+    pass: string
   }
-})
+  service?: string
+}
+
+const getTransporter = () => {
+  const options: MailerOptions = {
+    host: 'live.smtp.mailtrap.io',
+    port: 587,
+    auth: {
+      user: config.email.auth.user || 'api',
+      pass: config.email.auth.pass
+    }
+  }
+  if (config.email.service === 'hotmail') {
+    options.service = config.email.service
+    options.host = 'smtp.hotmail.email'
+  }
+
+  return nodemailer.createTransport(options)
+}
+
+const transporter = getTransporter()
 
 export const sendMail = async (to, subject, html) => {
   return transporter.sendMail({
