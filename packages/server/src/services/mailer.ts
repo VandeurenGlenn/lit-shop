@@ -53,13 +53,13 @@ export const sendOrderMail = async (order, amount, email, shipping) => {
 
 export const sendOrderCanceledMail = async (order, amount, email, reason = 'door klant') => {
   const html = `
-        <h1>Order canceled</h1>
+        <h1>Bestelling verwijderd</h1>
         <p>We hebben uw bestelling verwijderd.</p>
         <p>Als u vragen heeft, aarzel dan niet om contact met ons op te nemen.</p>
         <p>Order ID: ${order}</p>
         <p>Order total: ${amount}</p>
 
-        <strong>Reden voor annulering: ${reason}</strong>
+        <strong>Reden annulatie: ${reason}</strong>
     `
   return sendMail(email, 'Bestelling verwijderd', html)
 }

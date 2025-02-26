@@ -156,12 +156,12 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
     const txRef = transactionsRef.child(payconiqTransaction.transactionId)
 
     const firebaseTransaction = (await txRef.get()).val()
+    const order = (await database.ref('orders').child(firebaseTransaction.order).get()).val()
+
     console.log(payment)
     if (payment.status !== 'PENDING' && payment.status !== 'AUTHORIZED' && payment.status !== 'IDENTIFIED') {
       await ref.update({ status: payment.status })
       setTimeout(async () => {
-        const snap = await database.ref('orders').child(firebaseTransaction.order).get()
-        const order = snap.val()
         if (payment.status === 'SUCCEEDED') {
           await txRef.update({ status: 'SUCCEEDED' })
 
@@ -222,13 +222,10 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
               await giftcardsRef.child(giftcardId).update({ status: 'active', updatedAt: Date.now(), redeemedAt: null })
             }
           }
-          const snap = await database.ref('orders').child(firebaseTransaction.order).get()
-          const order = snap.val()
-          await txRef.remove()
+
           await database.ref('users').child(order.user).child(firebaseTransaction.order).remove()
-
           await database.ref('orders').child(firebaseTransaction.order).remove()
-
+          await txRef.remove()
           try {
             await sendOrderCanceledMail(firebaseTransaction.order, firebaseTransaction.amount, order.shipping.email)
           } catch (error) {
