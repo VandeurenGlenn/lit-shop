@@ -15,6 +15,11 @@ export class QRCodeScanner extends LiteElement {
         inset: 0;
         opacity: 0;
         pointer-events: none;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 10001;
+        align-content: center;
+        justify-items: center;
+        display: grid;
       }
 
       ::slotted(*) {
@@ -27,12 +32,18 @@ export class QRCodeScanner extends LiteElement {
         opacity: 1;
         pointer-events: auto;
       }
+
+      ::slotted(*) {
+        height: 100%;
+        width: 100%;
+      }
     `
   ]
 
   reader
 
   connectedCallback(): void {
+    this.shadowRoot.innerHTML = '<slot></slot>'
     this.innerHTML = '<div id="reader"></div>'
 
     this.reader = new Html5Qrcode('reader')
@@ -45,8 +56,8 @@ export class QRCodeScanner extends LiteElement {
       const config = {
         fps: 10,
         qrbox: {
-          width: 500,
-          height: 500
+          width: 320,
+          height: 320
         }
       }
       const qrCodeSuccessCallback = (decodedText: string) => {

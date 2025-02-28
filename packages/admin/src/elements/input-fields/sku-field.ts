@@ -99,7 +99,9 @@ export class SkuField extends LiteElement {
     const scanner = document.querySelector('qrcode-scanner')
     const code = await scanner.scan()
     scanner.stop()
-    this[label] = code
+
+    this.field[label] = code
+    this.requestRender()
   }
 
   render() {
