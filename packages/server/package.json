@@ -6,7 +6,8 @@
   "scripts": {
     "audit": "npm audit fix",
     "build": "rollup -c",
-    "start": "node exports/server.js",
+    "start": "cross-env NODE_ENV=production node exports/server.js",
+    "start:dev": "cross-env NODE_ENV=development nodemon exports/server.js",
     "ncu": "ncu -u --install always",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -38,7 +39,9 @@
     "@types/koa-router": "^7.4.8",
     "@types/mime-types": "^2.1.4",
     "@types/nodemailer": "^6.4.17",
+    "cross-env": "^7.0.3",
     "mime-types": "^2.1.35",
+    "nodemon": "^3.1.9",
     "ora": "^8.2.0"
   }
 }
