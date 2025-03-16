@@ -4,8 +4,11 @@ import { css, html, LiteElement, query, customElement, property } from '@vandeur
 // import { Html5QrcodeResult } from 'html5-qrcode'
 // import { Html5QrcodeScanner, Html5Qrcode } from 'html5-qrcode'
 
+import { Html5Qrcode } from 'html5-qrcode'
+
 @customElement('qrcode-scanner')
 export class QRCodeScanner extends LiteElement {
+  _reject
   @property({ type: Boolean, reflect: true }) accessor scanning
   static styles = [
     css`
@@ -37,33 +40,52 @@ export class QRCodeScanner extends LiteElement {
         height: 100%;
         width: 100%;
       }
+      custom-icon-button {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+      }
     `
   ]
 
   reader
 
-  connectedCallback(): void {
-    this.shadowRoot.innerHTML = '<slot></slot>'
+  render() {
+    return html`<slot></slot
+      ><custom-icon-button
+        icon="close"
+        @click=${() => this.stop('close')}></custom-icon-button> `
+  }
+
+  firstRender(): void {
     this.innerHTML = '<div id="reader"></div>'
 
     this.reader = new Html5Qrcode('reader')
-    console.log(this.reader)
   }
 
-  async scan() {
-    return new Promise(async (resolve) => {
+  async scan(onscan?: (result: string) => boolean): Promise<string> {
+    return new Promise(async (resolve, reject) => {
       this.scanning = true
       const config = {
         fps: 10,
         qrbox: {
           width: 320,
-          height: 320
+          height: 500
         }
       }
+      this._reject = reject
+
       const qrCodeSuccessCallback = (decodedText: string) => {
         // handle the scanned code as you like
-        if (decodedText && decodedText.length === 13) {
+        if (onscan) {
+          const scanResult = onscan(decodedText)
+          if (scanResult) {
+            resolve(decodedText)
+            this.stop()
+          }
+        } else if (decodedText) {
           resolve(decodedText)
+          this.stop()
         }
       }
 
@@ -78,9 +100,12 @@ export class QRCodeScanner extends LiteElement {
     })
   }
 
-  stop() {
+  stop = (reason?) => {
+    console.log('stop')
+
     this.reader.stop()
     this.scanning = false
+    if (reason) this._reject(reason)
   }
 }
 

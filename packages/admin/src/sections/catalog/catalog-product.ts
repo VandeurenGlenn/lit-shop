@@ -9,7 +9,6 @@ import '@vandeurenglenn/lite-elements/dropdown-menu.js'
 import '@vandeurenglenn/lite-elements/icon'
 import '@vandeurenglenn/lite-elements/list-item.js'
 import '@vandeurenglenn/lite-elements/toggle-button.js'
-import '@vandeurenglenn/lite-elements/pages.js'
 import '@vandeurenglenn/lite-elements/selector.js'
 import '../../elements/time/time-ago.js'
 import '@vandeurenglenn/flex-elements/container.js'
@@ -20,18 +19,13 @@ import '../../elements/product/product-image.js'
 import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 
 import { map } from 'lit/directives/map.js'
-import { CustomPages } from '../../types.js'
 import { LiteElement, customElement, property, query, html } from '@vandeurenglenn/lite'
 import { StyleList, css } from '@vandeurenglenn/lite/element'
-import { Product } from '@lit-shop/types'
 import firebase from '../../firebase.js'
 
 @customElement('catalog-product')
 export default class CatalogProduct extends LiteElement {
   key: string
-
-  @query('custom-pages')
-  accessor pages: CustomPages
 
   // @ts-ignore
   @property({ type: Array })

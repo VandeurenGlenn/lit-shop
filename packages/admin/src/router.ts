@@ -71,6 +71,9 @@ export default class Router {
     '/orders': {
       tag: 'orders-section'
     },
+    '/orders/order': {
+      tag: 'order-section'
+    },
     '/stock': {
       tag: 'stock-section'
     },

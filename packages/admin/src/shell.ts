@@ -107,7 +107,13 @@ export class AdminShell extends PropertyProviders {
     // if (paths.includes('catalog') && !customElements.get('catalog-section')) await import('./catalog.js')
     // if (paths.includes('media') && !customElements.get('media-section')) await import('./media.js')
     // const routeInfo = Router.routes[route]
-    if (paths[0] === 'catalog' || paths[0] === 'categories' || paths[0] === 'settings' || paths[0] === 'media') {
+    if (
+      paths[0] === 'catalog' ||
+      paths[0] === 'categories' ||
+      paths[0] === 'settings' ||
+      paths[0] === 'media' ||
+      paths[0] === 'orders'
+    ) {
       if (!customElements.get(`${paths[0]}-section`)) await import(`./${paths[0]}-section.js`)
     }
     if (!customElements.get(routeInfo.tag)) await import(`./${routeInfo.import || routeInfo.tag}.js`)
@@ -119,6 +125,9 @@ export class AdminShell extends PropertyProviders {
     let previous = this.pages.querySelector(`[route="${paths[0]}"]`)
     if (previous) this.lastSelected = previous
     console.log(previous)
+
+    previous.selection = selection
+    previous.select?.(paths[0], selection)
 
     paths.shift()
     // if (routeInfo.hideHeader) this.#hideHeader()
@@ -145,10 +154,18 @@ export class AdminShell extends PropertyProviders {
       console.log(el)
 
       if (el) this.lastSelected = el
+
       const route = el ? el.getAttribute('route') : paths[i]
       console.log({ route })
+
       // TODO: once all updates are handed local atleast cache for a minute
       switch (route) {
+        case 'orders':
+        case 'order':
+          console.log('orders')
+
+          promises.push(this.handlePropertyProvider('orders'))
+          break
         case 'product':
           // load products only when undefined
           promises.push(
@@ -193,9 +210,9 @@ export class AdminShell extends PropertyProviders {
           promises.push(this.handlePropertyProvider(route))
       }
 
-      if (selection && i === paths.length - 1 && el) el.selection = selection
+      if (selection && el) el.selection = selection
 
-      previous.select(paths[i], selection)
+      previous.select?.(paths[i], selection)
       if (el) previous = el
     }
 

@@ -11,7 +11,7 @@ import '@material/web/select/select-option.js'
 import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
 import { debounce } from '../../debounce.js'
 import '../camera/element.js'
-import '../qrcode-scanner.js'
+import '@vandeurenglenn/qrcode-scanner'
 
 @customElement('sku-field')
 export class SkuField extends LiteElement {
@@ -97,9 +97,9 @@ export class SkuField extends LiteElement {
 
   scanBarcode = async (label) => {
     const scanner = document.querySelector('qrcode-scanner')
-    const code = await scanner.scan()
-    scanner.stop()
-
+    const code = await scanner.scan((result) => {
+      return result && result.length === 13
+    })
     this.field[label] = code
     this.requestRender()
   }

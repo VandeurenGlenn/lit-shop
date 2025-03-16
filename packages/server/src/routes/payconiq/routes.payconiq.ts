@@ -112,7 +112,7 @@ router.post(CREATE_PAYMENT, async (ctx) => {
         paymentId: payment.paymentId,
         amount: amount,
         status: payment.status,
-        giftcards: giftcards || [],
+        giftcards: `giftcards` || [],
         order: orderKey
       }
       const snap = transactionsRef.push(firebaseTransaction)
@@ -200,11 +200,18 @@ router.post('/checkout/payconiq/callbackUrl', async (ctx) => {
                 }
               }
             }
-            await database.ref('users').child(order.user).child('orders').update({ status: 'PAID' })
             await database
-              .ref('orders')
+              .ref('users')
+              .child(order.user)
+              .child('orders')
               .child(firebaseTransaction.order)
-              .update({ status: 'PAID', updatedAt: Date.now(), items: order.items })
+              .update({ status: 'PAID' })
+            await database.ref('orders').child(firebaseTransaction.order).update({
+              status: 'PAID',
+              updatedAt: Date.now(),
+              items: order.items,
+              transaction: payconiqTransaction.transactionId
+            })
           }
           try {
             await sendOrderMail(

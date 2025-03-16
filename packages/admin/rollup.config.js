@@ -1,16 +1,13 @@
 import json from '@rollup/plugin-json'
 import resolve from '@rollup/plugin-node-resolve'
-import cjs from '@rollup/plugin-commonjs'
 import { execSync } from 'child_process'
 import { writeFileSync, readFileSync } from 'fs'
 import typescript from '@rollup/plugin-typescript'
-import builtins from 'rollup-plugin-node-builtins'
 import { cp, readdir } from 'fs/promises'
 import { join } from 'path'
 import materialSymbols from 'rollup-plugin-material-symbols'
 import terser from '@rollup/plugin-terser'
 import { generateSW } from 'rollup-plugin-workbox'
-import commonjs from '@rollup/plugin-commonjs'
 
 cp('../../node_modules/@vandeurenglenn/lite-elements/exports/themes', 'www/themes', {
   recursive: true

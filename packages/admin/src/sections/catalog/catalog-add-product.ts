@@ -104,7 +104,7 @@ export default class CatalogAddProduct extends LiteElement {
               .shadowRoot.querySelector('sku-fields') as SkuFields
             return field.checkValidityAndGetValues()
           },
-          fields: [{ amount: 100, unit: 'ml', price: 10, stock: 10, EAN: '' }]
+          fields: [{ amount: 100, unit: 'ml', price: 10, EAN: '' }]
         },
         {
           step: 'images',

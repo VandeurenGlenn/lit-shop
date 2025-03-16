@@ -53,6 +53,9 @@ export default html`
       <span name="download">@symbol-download</span>
       <span name="redeem">@symbol-redeem</span>
       <span name="point_of_sale">@symbol-point_of_sale</span>
+      <span name="paid">@symbol-paid</span>
+      <span name="pending">@symbol-pending</span>
+      <span name="shipped">@symbol-delivery_truck_speed</span>
     </template>
   </custom-icon-set>
   <custom-drawer-layout appBarType="center-aligned">
